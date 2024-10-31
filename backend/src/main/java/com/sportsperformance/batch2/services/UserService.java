@@ -10,10 +10,16 @@ import com.sportsperformance.batch2.models.BaseUser;
 import com.sportsperformance.batch2.models.Coach;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Optional;
 
 @Service
@@ -117,4 +123,27 @@ public class UserService {
     public boolean checkPassword(String rawPassword, String storedPassword) {
         return passwordEncoder.matches(rawPassword, storedPassword);
     }
+
+//    @Override
+//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//        BaseUser user = findByEmailOrUsername(username);
+//        if(user instanceof Athlete){
+//            return new org.springframework.security.core.userdetails.User(
+//                    user.getUsername(), user.getPassword(),
+//                    Collections.singleton(new SimpleGrantedAuthority("ATHLETE")));
+//        } else if(user instanceof Coach){
+//            return new org.springframework.security.core.userdetails.User(
+//                    user.getUsername(), user.getPassword(),
+//                    Collections.singleton(new SimpleGrantedAuthority("COACH")));
+//        } else if(user instanceof Admin){
+//            return new org.springframework.security.core.userdetails.User(
+//                    user.getUsername(), user.getPassword(),
+//                    Collections.singleton(new SimpleGrantedAuthority("ADMIN")));
+//        }
+
+//        return new org.springframework.security.core.userdetails.User(
+//                user.getUsername(), user.getPassword(),
+//                Collections.singleton(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
+//        );
+//    }
 }

@@ -1,16 +1,32 @@
 package com.sportsperformance.batch2.models;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.List;
 
 @Entity
 @Table(name = "coaches")
 @Data
 public class Coach extends BaseUser {
-    private String specialty;
-    private int experienceYears;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long coachId;
+
+    private String firstName;
+    private String lastName;
+
+    @OneToMany(mappedBy = "coach")
+    private List<Athlete> athletes;
+
+    @OneToMany(mappedBy = "coach")
+    private List<Achievement> achievements;
+
+    @OneToMany(mappedBy = "coach")
+    private List<AssistanceRequest> assistanceRequests;
+
 
     // Getters and Setters
 

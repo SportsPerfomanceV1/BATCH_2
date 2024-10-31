@@ -14,19 +14,23 @@ import java.util.Map;
 public class JwtUtil {
     private String SECRET_KEY = "secret"; // Use a secure key in production
 
-    public String generateToken(String username) {
-        Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, username);
+    public String generateToken(String username, String role) {
+//        Map<String, Object> claims = new HashMap<>();
+        return createToken(username, role);
     }
 
-    private String createToken(Map<String, Object> claims, String subject) {
+    private String createToken( String subject, String role) {
         return Jwts.builder()
-                .setClaims(claims)
+//                .setClaims(claims)
                 .setSubject(subject)
+                .claim("role", role)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours expiration
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
+    }
+    public String extractRole(String token) {
+        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().get("role").toString();
     }
 
     public boolean validateToken(String token, String username) {

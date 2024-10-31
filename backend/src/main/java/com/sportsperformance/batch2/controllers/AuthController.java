@@ -3,7 +3,9 @@ package com.sportsperformance.batch2.Controllers;
 import com.sportsperformance.batch2.DTO.LoginDTO;
 import com.sportsperformance.batch2.DTO.UserDTO;
 import com.sportsperformance.batch2.Services.UserService;
+import com.sportsperformance.batch2.models.Athlete;
 import com.sportsperformance.batch2.models.BaseUser;
+import com.sportsperformance.batch2.models.Coach;
 import com.sportsperformance.batch2.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -37,8 +39,17 @@ public class AuthController {
 
         if (user != null && userService.checkPassword(loginDTO.getPassword(), user.getPassword())) {
             System.out.println("check1");
-            String token = jwtUtil.generateToken(user.getUsername());
-            return ResponseEntity.ok(token);
+            if(user instanceof Athlete){
+
+                String token = jwtUtil.generateToken(user.getUsername(), "ATHLETE");
+                return ResponseEntity.ok(token);
+            } else if(user instanceof Coach){
+                String token = jwtUtil.generateToken(user.getUsername(), "COACH");
+                return ResponseEntity.ok(token);
+            } else{
+                String token = jwtUtil.generateToken(user.getUsername(), "ADMIN");
+                return ResponseEntity.ok(token);
+            }
         } else {
             return ResponseEntity.status(401).body("Invalid credentials");
         }

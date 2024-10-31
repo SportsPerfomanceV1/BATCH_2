@@ -1,6 +1,7 @@
 package com.sportsperformance.batch2.Security;
 
 import com.sportsperformance.batch2.filter.JwtRequestFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,16 +17,24 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
+
+    private final JwtRequestFilter jwtRequestFilter; // Injected via constructor
+
+    public SecurityConfig(JwtRequestFilter jwtRequestFilter) {
+        this.jwtRequestFilter = jwtRequestFilter; // Constructor injection
+    }
+
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // Configure HTTP security
         http
                 .authorizeHttpRequests(authorize -> authorize
-//                        .requestMatchers("/admin/**").hasAuthority("admin")
-//                        .requestMatchers("/coach/**").hasAuthority("coach")
-//                        .requestMatchers("/athlete/**").hasAuthority("athlete")
-                        .requestMatchers("api/authenticate").permitAll()
-                        .requestMatchers("api/register").permitAll()
+                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/coach/**").hasAuthority("COACH")
+                        .requestMatchers("/athlete/**").hasAuthority("ATHLETE")
+                        .requestMatchers("/api/authenticate").permitAll()
+                        .requestMatchers("/api/register").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -36,7 +45,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
 
         // Adding JWT filter
-        http.addFilterBefore(new JwtRequestFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build(); // Build the SecurityFilterChain
     }
@@ -46,3 +55,5 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder(); // Password encoder bean
     }
 }
+
+

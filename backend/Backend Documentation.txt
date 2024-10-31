@@ -13,6 +13,7 @@ Request Payload:
     "username": "string",
     "email": "string",
     "password": "string"
+    "role" : "string" // "athlete", "coach", "admin"
 }
 
 
