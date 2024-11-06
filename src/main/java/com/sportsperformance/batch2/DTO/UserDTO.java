@@ -1,0 +1,12 @@
+package com.sportsperformance.batch2.DTO;
+
+import lombok.Data;
+
+@Data
+public class UserDTO {
+    private String username;
+    private String email;
+    private String password;
+    private String role; // This will be 'athlete', 'coach', or 'admin'
+
+}
