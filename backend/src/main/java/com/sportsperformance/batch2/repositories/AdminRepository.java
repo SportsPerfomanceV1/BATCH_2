@@ -1,4 +1,4 @@
-package com.sportsperformance.batch2.repositories;
+package com.sportsperformance.batch2.Repositories;
 
 import com.sportsperformance.batch2.models.Admin;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface AdminRepository extends JpaRepository<Admin, Long> {
-//    Admin findByUsername(String username);
-    Optional<Admin> findByEmail(String Email);
+    Optional<Admin> findByEmail(String email);
+    Optional<Admin> findByUsername(String username);
 }

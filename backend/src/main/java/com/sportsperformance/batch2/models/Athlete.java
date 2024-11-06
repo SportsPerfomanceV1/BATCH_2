@@ -1,111 +1,50 @@
 package com.sportsperformance.batch2.models;
 
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
+//@EqualsAndHashCode(callSuper = true)
 @Entity
-public class Athlete {
+@Table(name = "athletes")
+@Data
+public class Athlete extends BaseUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long athleteId;
-    private String email;
-    private String password;
+
+    @ManyToOne
+    @JoinColumn(name = "coachId", insertable = false, updatable = false)
+    private Coach coach;
+
     private String firstName;
     private String lastName;
     private Date birthDate;
     private String gender;
-    private Float height;
+    private float height;
+    private float weight;
     private String category;
-    private Float weight;
     private String photoUrl;
 
-    public String getEmail() {
-        return email;
-    }
+    @OneToMany(mappedBy = "athlete")
+    private List<EventResult> eventResults;
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    @OneToMany(mappedBy = "athlete")
+    private List<Registration> registrations;
 
-    public String getPassword() {
-        return password;
-    }
+    @OneToMany(mappedBy = "athlete")
+    private List<DailyDiet> dailyDiets;
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-// Getters and Setters
+    @OneToMany(mappedBy = "athlete")
+    private List<AssistanceRequest> assistanceRequests;
 
-    public Long getAthleteId() {
-        return athleteId;
-    }
+    @OneToMany(mappedBy = "athlete")
+    private List<WeightPlan> weightPlans;
 
-    public void setAthleteId(Long athleteId) {
-        this.athleteId = athleteId;
-    }
 
-    public String getFirstName() {
-        return firstName;
-    }
+    // Getters and Setters
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public Date getBirthDate() {
-        return birthDate;
-    }
-
-    public void setBirthDate(Date birthDate) {
-        this.birthDate = birthDate;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
-
-    public Float getHeight() {
-        return height;
-    }
-
-    public void setHeight(Float height) {
-        this.height = height;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public Float getWeight() {
-        return weight;
-    }
-
-    public void setWeight(Float weight) {
-        this.weight = weight;
-    }
-
-    public String getPhotoUrl() {
-        return photoUrl;
-    }
-
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
-    }
 }
