@@ -2,6 +2,7 @@ package com.sportsperformance.batch2.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.util.List;
@@ -15,10 +16,18 @@ public class Event {
     private int eventId;
 
     private String eventTitle;
-    private String meetName;
+
+    @ManyToOne
+    @JoinColumn(name = "meetId", nullable = false)
+    private Meet meetId;
+
     private String category;
     private String location;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date eventDate;
+
+    private String eventDescription;
+    private String imageUrl;
 
 
 

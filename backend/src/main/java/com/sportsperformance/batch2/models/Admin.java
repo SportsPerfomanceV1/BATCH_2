@@ -13,4 +13,6 @@ public class Admin extends BaseUser {
     private Long adminId;
     // Additional fields specific to Admins if needed
     private String name;
+
+    private String[] meet;
 }
