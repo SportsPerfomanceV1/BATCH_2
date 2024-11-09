@@ -1,10 +1,14 @@
 package com.sportsperformance.batch2.Services;
 
 import com.sportsperformance.batch2.DTO.CreateEventDTO;
+import com.sportsperformance.batch2.Repositories.AthleteRepository;
 import com.sportsperformance.batch2.Repositories.EventRepository;
 import com.sportsperformance.batch2.Repositories.MeetRepository;
+import com.sportsperformance.batch2.Repositories.RegistrationRepository;
+import com.sportsperformance.batch2.models.Athlete;
 import com.sportsperformance.batch2.models.Event;
 import com.sportsperformance.batch2.models.Meet;
+import com.sportsperformance.batch2.models.Registration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -89,5 +93,37 @@ public class AdminService {
     // Method to get all meets
     public List<Meet> getAllMeets() {
         return meetRepository.findAll();
+    }
+
+    @Autowired
+    private RegistrationRepository registrationRepository;
+
+    // 1. Update Registration Status (Approve/Reject)
+    public void updateRegistrationStatus(Long registrationId, String status) throws Exception {
+        Registration registration = registrationRepository.findById(registrationId)
+                .orElseThrow(() -> new Exception("Registration not found"));
+
+        registration.setStatus(status);
+
+        registrationRepository.save(registration);
+    }
+
+    // 2. Get All Registrations
+    public List<Registration> getAllRegistrations() {
+        return registrationRepository.findAll();
+    }
+    @Autowired
+    private AthleteRepository athleteRepository;
+
+    // 3. Get Athlete by ID
+    public Athlete getAthleteById(Long athleteId) throws Exception {
+        return athleteRepository.findById(athleteId)
+                .orElseThrow(() -> new Exception("Athlete not found"));
+    }
+
+    // 4. Get Event by ID
+    public Event getEventById(Long eventId) throws Exception {
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> new Exception("Event not found"));
     }
 }

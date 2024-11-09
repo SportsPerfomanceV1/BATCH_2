@@ -21,6 +21,8 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
+
+
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody UserDTO userDTO) {
         System.out.println("check perfect");

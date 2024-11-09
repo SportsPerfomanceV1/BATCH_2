@@ -22,7 +22,7 @@ public class Registration {
     private Athlete athlete;
 
     private Date registrationDate;
-    private String status;
+    private String status; //Pending, Approved, Rejected
     private String remarks;
 
     // Getters and setters...
