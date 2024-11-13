@@ -1,5 +1,6 @@
 package com.sportsperformance.batch2.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -13,10 +14,12 @@ public class EventResult {
 
     @ManyToOne
     @JoinColumn(name = "eventId", nullable = false)
+    @JsonIgnoreProperties("eventResults")
     private Event event;
 
     @ManyToOne
     @JoinColumn(name = "athleteId", nullable = false)
+    @JsonIgnoreProperties("eventResults")
     private Athlete athlete;
 
     private float score;

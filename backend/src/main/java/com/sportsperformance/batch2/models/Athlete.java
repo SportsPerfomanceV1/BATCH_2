@@ -1,5 +1,6 @@
 package com.sportsperformance.batch2.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -29,19 +30,24 @@ public class Athlete extends BaseUser {
     private String category;
     private String photoUrl;
 
+    @JsonIgnoreProperties("athlete")
     @OneToMany(mappedBy = "athlete")
     private List<EventResult> eventResults;
 
     @OneToMany(mappedBy = "athlete")
+    @JsonIgnoreProperties("athlete")
     private List<Registration> registrations;
 
     @OneToMany(mappedBy = "athlete")
+    @JsonIgnoreProperties("athlete")
     private List<DailyDiet> dailyDiets;
 
     @OneToMany(mappedBy = "athlete")
+    @JsonIgnoreProperties("athlete")
     private List<AssistanceRequest> assistanceRequests;
 
     @OneToMany(mappedBy = "athlete")
+    @JsonIgnoreProperties("athlete")
     private List<WeightPlan> weightPlans;
 
 

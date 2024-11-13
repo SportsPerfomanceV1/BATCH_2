@@ -32,6 +32,30 @@ const Register = () => {
         }
     };
 
+    const handleAdminTest = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                setMessage("No token found in localStorage");
+                return;
+            }
+
+            const response = await fetch("/admin/test", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}` // Pass the token in the Authorization header
+                }
+            });
+
+            const result = await response.text();
+            setMessage(response.ok ? `Admin test successful: ${result}` : `Error: ${result}`);
+        } catch (error) {
+            setMessage(`Error: ${error.message}`);
+        }
+    };
+
+
     return (
         <Box className="form-container">
             <Typography variant="h5" sx={{ fontWeight: "bold", color: "#000000" }}>Register</Typography>
@@ -46,6 +70,10 @@ const Register = () => {
                 <Button type="submit" fullWidth sx={{ backgroundColor: "#000000", color: "#ffffff", marginTop: "1rem" }}>Register</Button>
             </form>
             {message && <Typography sx={{ color: "#000000", marginTop: "1rem" }}>{message}</Typography>}
+         {/* New Button for /admin/test API */}
+         {/* <Button onClick={handleAdminTest} fullWidth sx={{ backgroundColor: "#4CAF50", color: "#ffffff", marginTop: "1rem" }}>
+                Test Admin API
+            </Button> */}
         </Box>
     );
 };

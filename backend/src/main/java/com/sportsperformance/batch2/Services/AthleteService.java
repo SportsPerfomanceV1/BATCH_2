@@ -17,10 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -74,8 +71,8 @@ public class AthleteService {
         athleteRepository.save(athlete);
     }
 
-    public Athlete getAthleteProfile(Long athleteId) throws Exception {
-        Optional<Athlete> athleteOptional = athleteRepository.findById(athleteId);
+    public Athlete getAthleteProfile(String athleteId) throws Exception {
+        Optional<Athlete> athleteOptional = athleteRepository.findByUsername(athleteId);
         if (athleteOptional.isEmpty()) {
             throw new Exception("Athlete with ID " + athleteId + " not found.");
         }
@@ -115,14 +112,12 @@ public class AthleteService {
     }
 
     // 2. Get Registered Events for Athlete
-    public List<Event> getRegisteredEvents(String username) throws Exception {
+    public List<Registration> getRegisteredEvents(String username) throws Exception {
         Athlete athlete = athleteRepository.findByUsername(username)
                 .orElseThrow(() -> new Exception("Athlete not found"));
 
         List<Registration> registrations = registrationRepository.findByAthlete(athlete);
-        return registrations.stream()
-                .map(Registration::getEvent)
-                .collect(Collectors.toList());
+        return new ArrayList<>(registrations);
     }
 
 }

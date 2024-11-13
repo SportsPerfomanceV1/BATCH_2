@@ -3,6 +3,9 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import Login from "./components/Login";
 import Register from "./components/Register";
+import AdminDashboard from "./components/AdminDashboard";
+import AthleteDashboard from "./components/AthleteDashboard";
+
 import { AppBar, Toolbar, Button, Typography, Box } from "@mui/material";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import LoginIcon from "@mui/icons-material/Login";
@@ -23,12 +26,17 @@ const App = () => {
                         <Link to="/login" style={{ textDecoration: "none", color: "#000000" }}>
                             <Button startIcon={<LoginIcon />} sx={{ color: "#000000" }}>Login</Button>
                         </Link>
+                        {/* <Link to="/adminDashboard" style={{ textDecoration: "none", color: "#000000" }}>
+                            <Button startIcon={<LoginIcon />} sx={{ color: "#000000" }}>Dashboard</Button>
+                        </Link> */}
                     </Box>
                 </Toolbar>
             </AppBar>
             <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/adminDashboard" element={<AdminDashboard />} />
+                <Route path="/athleteDashboard" element={<AthleteDashboard />} />
             </Routes>
         </Router>
     );

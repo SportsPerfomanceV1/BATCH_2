@@ -1,10 +1,12 @@
 package com.sportsperformance.batch2.Controllers;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sportsperformance.batch2.DTO.AthleteProfileDTO;
 import com.sportsperformance.batch2.DTO.RegistrationRequestDTO;
 import com.sportsperformance.batch2.Services.AthleteService;
 import com.sportsperformance.batch2.models.Athlete;
 import com.sportsperformance.batch2.models.Event;
+import com.sportsperformance.batch2.models.Registration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@JsonIgnoreProperties({"parentField"})
 @RestController
 @RequestMapping("/athlete")
 public class AthleteController {
@@ -38,10 +40,12 @@ public class AthleteController {
         }
     }
 
-    @GetMapping("/profile/{athleteId}")
-    public ResponseEntity<Athlete> getAthleteProfile(@PathVariable Long athleteId) {
+    @GetMapping("/profile")
+    public ResponseEntity<Athlete> getAthleteProfile() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
         try {
-            Athlete athlete = athleteService.getAthleteProfile(athleteId);
+            Athlete athlete = athleteService.getAthleteProfile(username);
             return ResponseEntity.ok(athlete);  // Return athlete profile as response
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);  // If athlete not found
@@ -70,14 +74,15 @@ public class AthleteController {
     }
 
     @GetMapping("/events/registered")
-    public ResponseEntity<List<Event>> getRegisteredEvents() {
+    public ResponseEntity<List<Registration>> getRegisteredEvents() {
         try {
             // Get the current logged-in athlete's username
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String username = userDetails.getUsername();
 
-            List<Event> events = athleteService.getRegisteredEvents(username);
-            return ResponseEntity.ok(events);
+//            List<Event> events = athleteService.getRegisteredEvents(username);
+            List<Registration> registrations = athleteService.getRegisteredEvents(username);
+            return ResponseEntity.ok(registrations);
         } catch (Exception e) {
             return ResponseEntity.status(400).body(null);
         }
