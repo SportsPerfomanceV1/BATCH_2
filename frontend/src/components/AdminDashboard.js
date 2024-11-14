@@ -1,6 +1,38 @@
 import React, { useEffect, useState } from "react";
 import { Box, TextField, Button, MenuItem } from "@mui/material";
 import { redirect } from "react-router-dom";
+import { Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
+import { styled } from "@mui/system";
+
+
+// Styled Components
+const StyledButton = styled(Button)(({ theme }) => ({
+    backgroundColor: "#000",
+    color: "#fff",
+    fontWeight: "bold",
+    padding: "10px 20px",
+    margin: "10px",
+    '&:hover': {
+        backgroundColor: "#15c143",
+    },
+}));
+
+const DashboardContainer = styled(Box)({
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: '20px',
+    backgroundColor: '#f8f8f8',
+    minHeight: '100vh',
+});
+
+const MeetTable = styled(TableContainer)({
+    marginTop: '20px',
+    width: '80%',
+    borderRadius: '8px',
+    boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
+});
+
 
 const Meet = ({ onClose }) => {
     // const [meetName, setMeetName] = useState("");
@@ -66,7 +98,7 @@ const Meet = ({ onClose }) => {
                     zIndex: 1000,
                 }}
             >
-                <h2>Create Meet</h2>
+                <h2 style={{marginLeft:'36%'}}>Create Meet</h2>
                 <form onSubmit={handleCreateMeet}>
                     <TextField
                         name="meetName"
@@ -85,7 +117,14 @@ const Meet = ({ onClose }) => {
                         Create Meet
                     </Button>
                 </form>
-                <Button onClick={onClose} sx={{ marginTop: "1rem" }}>
+                <Button onClick={onClose} sx={{
+                    marginTop:'5px',marginLeft:'42%',
+                                    color: "#000000",
+                                    "&:hover": {
+                                        color: "#fff",
+                                        backgroundColor:"#15c143"  // Change this to the desired hover color
+                                    }
+                                }}>
                     Close
                 </Button>
             </div>
@@ -213,7 +252,7 @@ const Event = ({ onClose }) => {
                             overflowY: "auto" // Enables vertical scrolling within the form
                         }}
                     >
-                        <h2>Create Event</h2>
+                        <h2 style={{marginLeft:'36%'}}>Create Event</h2>
                      
         <form onSubmit={handleCreateEvent}>
             <TextField
@@ -285,7 +324,14 @@ const Event = ({ onClose }) => {
                 Create Event
             </Button>
         </form>
-        <Button onClick={onClose} sx={{ marginTop: "1rem" }}>
+        <Button onClick={onClose} sx={{
+            marginTop:'5px',marginLeft:'42%',
+                                    color: "#000000",
+                                    "&:hover": {
+                                        color: "#fff"  ,// Change this to the desired hover color
+                                        backgroundColor:"#15c143" 
+                                    }
+                                }}>
                     Close
                 </Button>
         </div>
@@ -310,9 +356,28 @@ const Event = ({ onClose }) => {
 
 const AdminDashboard = () => {
     const [meetVisible, setMeetVisible] = useState(false);
-
+    const [meets, setMeets] = useState([]);
     const [eventVisible, setEventVisible] = useState(false);
 
+    useEffect(() => {
+        const fetchMeets = async () => {
+            const token = localStorage.getItem("token");
+            try {
+                const response = await fetch("/admin/allMeet", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                    },
+                });
+                const meetData = await response.json();
+                setMeets(meetData);
+            } catch (error) {
+                console.error("Error fetching meets:", error);
+            }
+        };
+        fetchMeets();
+    }, []);
+    
     const openMeet = () => {
         setMeetVisible(true);
     };
@@ -330,19 +395,48 @@ const AdminDashboard = () => {
     };
 
     return (
-        <Box className="adminDashboardHome">
-            <Button id="btnMeet" onClick={openMeet}>
-                CREATE MEET
-            </Button>
+        <DashboardContainer className="adminDashboardHome">
+             <Typography variant="h4" gutterBottom>
+                Admin Dashboard
+            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <StyledButton id="btnMeet" onClick={openMeet}>
+            ✨ Create Meet
+            </StyledButton>
 
             {meetVisible && <Meet onClose={closeMeet} />}
 
-            <Button id="btnEvent" onClick={openEvent}>
-                CREATE EVENT
-            </Button>
+            <StyledButton id="btnEvent" onClick={openEvent}>
+            📅 create Event
+            </StyledButton>
 
             {eventVisible && <Event onClose={closeEvent} />}
-        </Box>
+
+            <StyledButton>👥 Shortlist Candidates</StyledButton>
+            <StyledButton>📊 Publish Results</StyledButton>
+            </Box>
+            <Typography variant="h5" sx={{ marginTop: '30px' }}>
+            Created Meets
+        </Typography>
+        <MeetTable component={Paper}>
+            <Table aria-label="created meets table">
+                <TableHead>
+                    <TableRow>
+                        <TableCell>MEET ID</TableCell>
+                        <TableCell>MEET NAME</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {meets.map((meet) => (
+                        <TableRow key={meet.id}>
+                            <TableCell>{meet.meetId}</TableCell>
+                            <TableCell>{meet.meetName}</TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </MeetTable>
+        </DashboardContainer>
     );
 };
 
