@@ -1,10 +1,8 @@
 package com.sportsperformance.batch2.Controllers;
 
-import com.sportsperformance.batch2.DTO.AthleteResultDTO;
-import com.sportsperformance.batch2.DTO.CreateEventDTO;
+import com.sportsperformance.batch2.DTO.*;
 
-import com.sportsperformance.batch2.DTO.EventWithPendingResultDTO;
-import com.sportsperformance.batch2.DTO.MeetDTO;
+import com.sportsperformance.batch2.Repositories.EventRepository;
 import com.sportsperformance.batch2.Services.AdminService;
 import com.sportsperformance.batch2.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/admin")
@@ -32,13 +28,54 @@ public class AdminController {
     @PostMapping(value = "/createevent", consumes = "multipart/form-data")
     public ResponseEntity<Event> createEvent(@ModelAttribute CreateEventDTO eventDTO) {
         try {
-            
             Event createdEvent = adminService.createEvent(eventDTO);
             return new ResponseEntity<>(createdEvent, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
+    private EventResponseDTO mapToDTO(Event event) {
+        EventResponseDTO dto = new EventResponseDTO();
+        dto.setEventTitle(event.getEventTitle());
+        dto.setCategory(event.getCategory());
+        dto.setLocation(event.getLocation());
+        dto.setEventDate(event.getEventDate());
+        dto.setEventDescription(event.getEventDescription());
+
+        if (event.getImage() != null) {
+            dto.setImageBase64(Base64.getEncoder().encodeToString(event.getImage()));
+        }
+
+        return dto;
+    }
+    @Autowired
+    EventRepository eventRepository;
+    @GetMapping("/events/{id}")
+    public ResponseEntity<EventResponseDTO> getEvent(@PathVariable Long id) {
+        Optional<Event> eventOptional = eventRepository.findById(id);
+        if (eventOptional.isPresent()) {
+            EventResponseDTO dto = mapToDTO(eventOptional.get());
+            return ResponseEntity.ok(dto);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+
+    @GetMapping("/registrations/pending")
+    public ResponseEntity<List<RegistrationDTO>> getPendingRegistrations() {
+        try {
+            // Fetch the pending registrations from the service
+            List<RegistrationDTO> registrationDTOs = adminService.getPendingRegistrations();
+            return ResponseEntity.ok(registrationDTOs);
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(null);
+        }
+    }
+
+
+
+
 
     @PostMapping("/createmeet")
     public ResponseEntity<Meet> createMeet(@RequestBody MeetDTO meetRequest) {
@@ -91,15 +128,15 @@ public class AdminController {
     }
 
     // 4. Fetch Event by ID
-    @GetMapping("/event/{eventId}")
-    public ResponseEntity<Event> getEvent(@PathVariable Long eventId) {
-        try {
-            Event event = adminService.getEventById(eventId);
-            return ResponseEntity.ok(event);
-        } catch (Exception e) {
-            return ResponseEntity.status(400).body(null);
-        }
-    }
+//    @GetMapping("/event/{eventId}")
+//    public ResponseEntity<Event> getEvent(@PathVariable Long eventId) {
+//        try {
+//            Event event = adminService.getEventById(eventId);
+//            return ResponseEntity.ok(event);
+//        } catch (Exception e) {
+//            return ResponseEntity.status(400).body(null);
+//        }
+//    }
 //
 //    @GetMapping("/events/pending-results")
 //    public ResponseEntity<List<EventWithPendingResultDTO>> getEventsWithPendingResults() {

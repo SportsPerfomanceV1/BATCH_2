@@ -180,11 +180,11 @@ function AthleteDashboard() {
   const filterMyEvents = () => {
     switch (selectedTab) {
       case 'Pending':
-        return myEvents.filter(event => event.status === 'PENDING');
+        return myEvents.filter(event => event.status === 'Pending');
       case 'Approved':
-        return myEvents.filter(event => event.status === 'APPROVED');
+        return myEvents.filter(event => event.status === 'Approved');
       case 'Rejected':
-        return myEvents.filter(event => event.status === 'REJECTED');
+        return myEvents.filter(event => event.status === 'Rejected');
       default:
         return myEvents;
     }
@@ -209,8 +209,8 @@ function AthleteDashboard() {
             {athlete && (
               <>
                 <img
-                  src={`${athlete.photoUrl || '/default-profile.jpg'}`}
-                
+                  // src={`${athlete.photoUrl || '/default-profile.jpg'}`}
+                  src={athlete.photoBase64 ? `data:image/jpeg;base64,${athlete.photoBase64}` : '/default-profile.jpg'}
                   className="profile-photo"
                 />
                 <div className="athlete-info">
@@ -327,7 +327,9 @@ function AthleteDashboard() {
             <div className="events-container">
               {events.map(event => (
                 <div key={event.id} className="event-card">
-                  <img src={event.imageUrl || '/default-event.jpg'} alt={event.eventTitle} onClick={() => handleViewEvent(event)} />
+                  <img 
+                  src={event.imageBase64 ? `data:image/jpeg;base64,${event.imageBase64}` : '/default-profile.jpg'}
+                  alt={event.eventTitle} onClick={() => handleViewEvent(event)} />
                   <h4>{event.eventTitle}</h4>
                   <p>Meet: {event.meetId.meetName}</p>
                   <p>Category: {event.category}</p>
@@ -345,7 +347,7 @@ function AthleteDashboard() {
               <h2>{selectedEvent.eventTitle}</h2>
               <p>Meet: {selectedEvent.meetId.meetName}</p>
               <p>Category: {selectedEvent.category}</p>
-              <p>Description: {selectedEvent.description}</p>
+              <p>Description: {selectedEvent.eventDescription}</p>
               <p>Location: {selectedEvent.location}</p>
               <p>Event Date: {selectedEvent.eventDate}</p>
               <textarea placeholder="Remarks (optional)" value={remark} onChange={(e) => setRemark(e.target.value)}></textarea>
@@ -366,7 +368,7 @@ function AthleteDashboard() {
           </div>
         )}
 
-        {currentSection === 'myEvents' && (
+{currentSection === 'myEvents' && (
           <div className="my-events-section">
             <h3>My Events</h3>
             <div className="tabs">
@@ -380,14 +382,30 @@ function AthleteDashboard() {
                 </button>
               ))}
             </div>
-            {filterMyEvents().map(regis => (
-              <div key={regis.id} className="event">
-                <h4>{regis.event.eventTitle}</h4>
-                <p>Status: {regis.status}</p>
-              </div>
-            ))}
+            <table>
+  <thead>
+    <tr>
+      <th>Event Name</th>
+      <th>Meet Name</th>
+      <th>Registration Date</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {filterMyEvents().map((regis) => (
+      <tr key={regis.id}>
+        <td>{regis.eventName}</td>
+        <td>{regis.meetName}</td>
+        <td>{regis.registrationDate}</td>
+        <td>{regis.status}</td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
           </div>
         )}
+       
 
         {currentSection === 'coach' && (
           <div className="coach-section">

@@ -1,9 +1,6 @@
 package com.sportsperformance.batch2.Services;
 
-import com.sportsperformance.batch2.DTO.AthleteResultDTO;
-import com.sportsperformance.batch2.DTO.CreateEventDTO;
-import com.sportsperformance.batch2.DTO.EventResultDTO;
-import com.sportsperformance.batch2.DTO.EventWithPendingResultDTO;
+import com.sportsperformance.batch2.DTO.*;
 import com.sportsperformance.batch2.Repositories.*;
 import com.sportsperformance.batch2.models.*;
 import jakarta.transaction.Transactional;
@@ -52,26 +49,11 @@ public class AdminService {
         // Handle image file upload
         MultipartFile imageFile = eventDTO.getImage();
         if (imageFile != null && !imageFile.isEmpty()) {
-            // Create the upload directory if it doesn't exist
-            File directory = new File(uploadDir);
-            if (!directory.exists()) {
-                boolean created = directory.mkdirs();
-                if (!created) {
-                    throw new Exception("Failed to create directory: " + uploadDir);
-                }
-            }
-
-            // Generate a unique filename
-            String fileName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
-            File file = new File(directory, fileName); // Create the file object
-
-            // Save the image file using InputStream and Files.copy
-            try (InputStream inputStream = imageFile.getInputStream()) {
-                Files.copy(inputStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                event.setImageUrl(file.getAbsolutePath()); // Store the file path in the event
+            try {
+                // Convert the uploaded file to a byte array
+                event.setImage(imageFile.getBytes());
             } catch (IOException e) {
-                e.printStackTrace(); // Log the exception
-                throw new Exception("Failed to upload image: " + e.getMessage());
+                throw new Exception("Failed to process image file: " + e.getMessage());
             }
         }
 
@@ -230,5 +212,25 @@ public class AdminService {
             eventResultRepository.save(eventResult);
         }
     }
+    public List<RegistrationDTO> getPendingRegistrations() throws Exception {
+        List<Registration> registrations = registrationRepository.findByStatus("Pending");
 
+        if (registrations.isEmpty()) {
+            throw new Exception("No pending registrations found");
+        }
+
+        // Map each Registration to RegistrationDTO
+        return registrations.stream()
+                .map(registration -> new RegistrationDTO(
+                        registration.getRegistrationId(),
+                        registration.getEvent().getEventId(),
+                        registration.getAthlete().getAthleteId(),
+                        registration.getEvent().getEventTitle(),
+                        registration.getRegistrationDate(),
+                        registration.getStatus(),
+                        registration.getRemarks(),
+                        registration.getEvent().getMeetId().getMeetName()
+                ))
+                .collect(Collectors.toList());
+    }
 }

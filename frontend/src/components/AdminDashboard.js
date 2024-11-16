@@ -4,6 +4,7 @@ import { redirect } from "react-router-dom";
 import { Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 import { styled } from "@mui/system";
 import axios from "axios";
+// import "../styles/shortlist.css";
 
 // Styled Components
 const StyledButton = styled(Button)(({ theme }) => ({
@@ -32,6 +33,354 @@ const MeetTable = styled(TableContainer)({
     borderRadius: '8px',
     boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
 });
+
+
+
+// const ShortlistCandidatesModal = ({ isOpen, onClose }) => {
+//     const [registrations, setRegistrations] = useState([]);
+  
+//     useEffect(() => {
+        
+//       if (isOpen) {
+//         const token = localStorage.fetch("token");
+//         axios
+//           .get('/admin/registrations/pending', {
+//             headers: {
+//                 Authorization: `Bearer ${token}`
+//             }
+//         })
+//           .then((response) => {
+//             setRegistrations(response.data);
+//           })
+//           .catch((error) => console.error('Error fetching pending registrations:', error));
+//       }
+//     }, [isOpen]);
+  
+//     const handleApprove = (registrationId) => {
+//         const token = localStorage.fetch("token");
+//       axios
+//         .put(`/admin/registration/${registrationId}?status=Approved`, {
+//             headers: {
+//                 Authorization: `Bearer ${token}`
+//             }
+//         })
+//         .then((response) => {
+//           console.log(response.data);
+//           // Re-fetch the pending registrations after approving
+//           setRegistrations(registrations.filter(reg => reg.registrationId !== registrationId));
+//         })
+//         .catch((error) => console.error('Error approving registration:', error));
+//     };
+  
+//     const handleReject = (registrationId) => {
+//         const token = localStorage.fetch("token");
+//       axios
+//         .put(`/admin/registration/${registrationId}?status=Rejected`, {
+//             headers: {
+//                 Authorization: `Bearer ${token}`
+//             }
+//         })
+//         .then((response) => {
+//           console.log(response.data);
+//           // Re-fetch the pending registrations after rejecting
+//           setRegistrations(registrations.filter(reg => reg.registrationId !== registrationId));
+//         })
+//         .catch((error) => console.error('Error rejecting registration:', error));
+//     };
+  
+//     const handleViewEvent = (eventId) => {
+//         const token = localStorage.fetch("token");
+//       axios
+//         .get(`/admin/events/${eventId}`, {
+//             headers: {
+//                 Authorization: `Bearer ${token}`
+//             }
+//         })
+//         .then((response) => {
+//           alert('Event: ' + response.data.name + '\n' + response.data.description);
+//         })
+//         .catch((error) => console.error('Error fetching event:', error));
+//     };
+  
+//     const handleViewAthlete = (athleteId) => {
+//         const token = localStorage.fetch("token");
+//       axios
+//         .get(`/admin/athlete/${athleteId}`, {
+//             headers: {
+//                 Authorization: `Bearer ${token}`
+//             }
+//         })
+//         .then((response) => {
+//           alert('Athlete: ' + response.data.name + '\n' + response.data.age);
+//         })
+//         .catch((error) => console.error('Error fetching athlete:', error));
+//     };
+  
+//     return (
+//         <>
+//         <div
+//                 className="shortPopup"
+//                 style={{
+//                     position: "fixed",
+//                     top: "50%",
+//                     left: "50%",
+//                     transform: "translate(-50%, -50%)",
+//                     width: "90%", // Adjusted width for better responsiveness on smaller screens
+//                     maxWidth: "100vh", // Set a max width for larger screens
+//                     maxHeight: "100vh",
+//                      // Limit height to make it scrollable within the viewport
+//                     backgroundColor: "#fff",
+//                     boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
+//                     padding: "20px",
+//                     borderRadius: "8px",
+//                     zIndex: 1000,
+//                     overflowY: "auto" // Enables vertical scrolling within the form
+//                 }}
+//             >
+//       <div className={`modal ${isOpen ? 'open' : ''}`}>
+//         <div className="modal-content">
+//           <button className="close-btn" onClick={onClose}>&times;</button>
+//           <h2>Pending Registrations</h2>
+//           <table>
+//             <thead>
+//               <tr>
+//                 <th>Event Name</th>
+//                 <th>Athlete Name</th>
+//                 <th>View Event</th>
+//                 <th>View Athlete</th>
+//                 <th>Approve</th>
+//                 <th>Reject</th>
+//               </tr>
+//             </thead>
+//             <tbody>
+//               {registrations.map((reg) => (
+//                 <tr key={reg.registrationId}>
+//                   <td>{reg.eventName}</td>
+//                   <td>{reg.athleteName}</td>
+//                   <td>
+//                     <button onClick={() => handleViewEvent(reg.eventId)}>View Event</button>
+//                   </td>
+//                   <td>
+//                     <button onClick={() => handleViewAthlete(reg.athleteId)}>View Athlete</button>
+//                   </td>
+//                   <td>
+//                     <button onClick={() => handleApprove(reg.registrationId)}>Approve</button>
+//                   </td>
+//                   <td>
+//                     <button onClick={() => handleReject(reg.registrationId)}>Reject</button>
+//                   </td>
+//                 </tr>
+//               ))}
+//             </tbody>
+//           </table>
+//         </div>
+//       </div>
+//       </div>
+//       <div
+//                 style={{
+//                     position: "fixed",
+//                     top: 0,
+//                     left: 0,
+//                     width: "100vw",
+//                     height: "100vh",
+//                     backgroundColor: "rgba(0, 0, 0, 0.5)",
+//                     zIndex: 999,
+//                 }}
+//                 onClick={onClose}
+//             />
+//       </>
+//     );
+//   };
+const ShortlistCandidatesModal = ({ onClose }) => {
+    const [registrations, setRegistrations] = useState([]);
+  
+    useEffect(() => {
+        
+            const token = localStorage.getItem("token"); // Fix: Use getItem for localStorage
+            axios
+                .get('/admin/registrations/pending', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                })
+                .then((response) => {
+                    setRegistrations(response.data);
+                })
+                .catch((error) => console.error('Error fetching pending registrations:', error));
+        
+    });
+
+    const handleApprove = (registrationId) => {
+        const token = localStorage.getItem("token"); // Fix: Use getItem for localStorage
+        axios
+            .put(`/admin/registration/${registrationId}?status=Approved`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            .then((response) => {
+                console.log(response.data);
+                // Re-fetch the pending registrations after approving
+                setRegistrations(registrations.filter(reg => reg.registrationId !== registrationId));
+            })
+            .catch((error) => console.error('Error approving registration:', error));
+    };
+  
+    const handleReject = (registrationId) => {
+        const token = localStorage.getItem("token"); // Fix: Use getItem for localStorage
+        axios
+            .put(`/admin/registration/${registrationId}?status=Rejected`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            .then((response) => {
+                console.log(response.data);
+                // Re-fetch the pending registrations after rejecting
+                setRegistrations(registrations.filter(reg => reg.registrationId !== registrationId));
+            })
+            .catch((error) => console.error('Error rejecting registration:', error));
+    };
+  
+    const handleViewEvent = (eventId) => {
+        const token = localStorage.getItem("token"); // Fix: Use getItem for localStorage
+        axios
+            .get(`/admin/events/${eventId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            .then((response) => {
+                alert('Event: ' + response.data.name + '\n' + response.data.description);
+            })
+            .catch((error) => console.error('Error fetching event:', error));
+    };
+  
+    const handleViewAthlete = (athleteId) => {
+        const token = localStorage.getItem("token"); // Fix: Use getItem for localStorage
+        axios
+            .get(`/admin/athlete/${athleteId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            .then((response) => {
+                alert('Athlete: ' + response.data.name + '\n' + response.data.age);
+            })
+            .catch((error) => console.error('Error fetching athlete:', error));
+    };
+  
+    return (
+        <>
+            <div
+                className="shortPopup"
+                style={{
+                    position: "fixed",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    width: "100%",
+                    maxWidth: "100vh",
+                    maxHeight: "100vh",
+                    backgroundColor: "#fff",
+                    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
+                    padding: "20px",
+                    borderRadius: "8px",
+                    zIndex: 1000,
+                    overflowY: "auto",
+                }}
+            >
+                    <div className="">
+                        <button className="close-btn" onClick={onClose}>&times;</button>
+                        <h2>Pending Registrations</h2>
+                        <table style={{ width: "100vh", borderCollapse: "collapse" }}>
+                            <thead>
+                                <tr style={{ backgroundColor: "#f4f4f4" }}>
+                                    <th style={styles.th}>Event Name</th>
+                                    <th style={styles.th}>Athlete Name</th>
+                                    <th style={styles.th}>View Event</th>
+                                    <th style={styles.th}>View Athlete</th>
+                                    <th style={styles.th}>Approve</th>
+                                    <th style={styles.th}>Reject</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {registrations.map((reg) => (
+                                    <tr key={reg.registrationId}>
+                                        <td style={styles.td}>{reg.eventName}</td>
+                                        <td style={styles.td}>{reg.athleteName}</td>
+                                        <td style={styles.td}>
+                                            <button style={styles.btn} onClick={() => handleViewEvent(reg.eventId)}>View Event</button>
+                                        </td>
+                                        <td style={styles.td}>
+                                            <button style={styles.btn} onClick={() => handleViewAthlete(reg.athleteId)}>View Athlete</button>
+                                        </td>
+                                        <td style={styles.td}>
+                                            <button style={styles.approveBtn} onClick={() => handleApprove(reg.registrationId)}>Approve</button>
+                                        </td>
+                                        <td style={styles.td}>
+                                            <button style={styles.rejectBtn} onClick={() => handleReject(reg.registrationId)}>Reject</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            <div
+                style={{
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    width: "100vw",
+                    height: "100vh",
+                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                    zIndex: 999,
+                }}
+                onClick={onClose}
+            />
+        </>
+    );
+};
+
+const styles = {
+    th: {
+        backgroundColor: "#007BFF",
+        color: "#fff",
+        padding: "12px 15px",
+        textAlign: "left",
+    },
+    td: {
+        padding: "12px 15px",
+        borderBottom: "1px solid #ddd",
+    },
+    btn: {
+        padding: "6px 12px",
+        backgroundColor: "#007BFF",
+        color: "#fff",
+        border: "none",
+        borderRadius: "4px",
+        cursor: "pointer",
+    },
+    approveBtn: {
+        padding: "6px 12px",
+        backgroundColor: "#28a745",
+        color: "#fff",
+        border: "none",
+        borderRadius: "4px",
+        cursor: "pointer",
+    },
+    rejectBtn: {
+        padding: "6px 12px",
+        backgroundColor: "#dc3545",
+        color: "#fff",
+        border: "none",
+        borderRadius: "4px",
+        cursor: "pointer",
+    },
+};
+
+  
 
 
 const PublishResults = ({ onClose }) => {
@@ -520,6 +869,8 @@ const AdminDashboard = () => {
     const [eventVisible, setEventVisible] = useState(false);
     const [resultVisible, setResultVisible] = useState(false);
 
+    const [regVisible, setRegVisible] = useState(false);
+
     // const openPublish = () => {
     //     setPublishVisible(true);
     // };
@@ -572,6 +923,15 @@ const AdminDashboard = () => {
         setResultVisible(false);
     };
 
+    const openReg = () => {
+        setRegVisible(true);
+    };
+
+    const closeReg = () => {
+        setRegVisible(false);
+    };
+    
+
     return (
         <DashboardContainer className="adminDashboardHome">
             <Typography variant="h4" gutterBottom>
@@ -590,7 +950,9 @@ const AdminDashboard = () => {
 
                 {eventVisible && <Event onClose={closeEvent} />}
 
-                <StyledButton>👥 Shortlist Candidates</StyledButton>
+                <StyledButton onClick={openReg}>👥 Shortlist Candidates</StyledButton>
+                {regVisible && <ShortlistCandidatesModal onClose={closeReg} />}
+
                 <StyledButton onClick={openResult}>📊 Publish Results</StyledButton>
                 {resultVisible && <PublishResults onClose={closeResult} />}
 
