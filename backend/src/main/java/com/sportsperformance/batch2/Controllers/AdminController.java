@@ -1,13 +1,12 @@
 package com.sportsperformance.batch2.Controllers;
 
+import com.sportsperformance.batch2.DTO.AthleteResultDTO;
 import com.sportsperformance.batch2.DTO.CreateEventDTO;
 
+import com.sportsperformance.batch2.DTO.EventWithPendingResultDTO;
 import com.sportsperformance.batch2.DTO.MeetDTO;
 import com.sportsperformance.batch2.Services.AdminService;
-import com.sportsperformance.batch2.models.Athlete;
-import com.sportsperformance.batch2.models.Event;
-import com.sportsperformance.batch2.models.Meet;
-import com.sportsperformance.batch2.models.Registration;
+import com.sportsperformance.batch2.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -101,5 +100,71 @@ public class AdminController {
             return ResponseEntity.status(400).body(null);
         }
     }
+//
+//    @GetMapping("/events/pending-results")
+//    public ResponseEntity<List<EventWithPendingResultDTO>> getEventsWithPendingResults() {
+//        return ResponseEntity.ok(adminService.getEventsWithPendingResults());
+//    }
+//
+//    @GetMapping("/events/{eventId}/athletes")
+//    public ResponseEntity<List<AthleteResultDTO>> getAthletesForEvent(@PathVariable int eventId) {
+//        return ResponseEntity.ok(adminService.getAthletesForEvent(eventId));
+//    }
+//
+//    @PostMapping("/events/{eventId}/publish-results")
+//    public ResponseEntity<String> publishResults(
+//            @PathVariable Long eventId,
+//            @RequestBody List<AthleteResultDTO> results) {
+//        // Save each result to the database
+//        results.forEach(result -> {
+//            EventResult eventResult = new EventResult();
+//            try {
+//                eventResult.setEvent(adminService.getEventById(eventId));
+//            } catch (Exception e) {
+//                throw new RuntimeException(e);
+//            }
+//            try {
+//                eventResult.setAthlete(adminService.getAthleteById(result.getAthleteId()));
+//            } catch (Exception e) {
+//                throw new RuntimeException(e);
+//            }
+//            eventResult.setScore(result.getScore());
+//            eventResult.setComment(result.getComment());
+//            adminService.saveEventResult(eventResult);
+//        });
+//        return ResponseEntity.ok("Results published successfully!");
+//    }
 
+
+
+    // Endpoint to get events with pending results
+    @GetMapping("/events/pending-results")
+    public ResponseEntity<List<EventWithPendingResultDTO>> getEventsWithPendingResults() {
+        List<EventWithPendingResultDTO> pendingResults = adminService.getEventsWithPendingResults();
+        return ResponseEntity.ok(pendingResults);
+    }
+
+    // Endpoint to get athletes for a specific event
+    @GetMapping("/events/{eventId}/athletes")
+    public ResponseEntity<List<AthleteResultDTO>> getAthletesForEvent(@PathVariable Long eventId) {
+        try {
+            List<AthleteResultDTO> athletes = adminService.getAthletesForEvent(eventId);
+            return ResponseEntity.ok(athletes);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+    // Endpoint to publish results for a specific event
+    @PostMapping("/events/{eventId}/publish-results")
+    public ResponseEntity<String> publishResults(
+            @PathVariable Long eventId,
+            @RequestBody List<AthleteResultDTO> results) {
+        try {
+            adminService.saveEventResult(eventId, results);
+            return ResponseEntity.ok("Results published successfully!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 }

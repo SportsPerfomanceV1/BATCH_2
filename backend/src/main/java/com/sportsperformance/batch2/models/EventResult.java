@@ -23,6 +23,7 @@ public class EventResult {
     private Athlete athlete;
 
     private float score;
+    private String comment;
 
     // Getters and setters...
 }
