@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../athlete.css';
+import '../styles/athlete.css';
 
 function AthleteDashboard() {
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ function AthleteDashboard() {
     category: '',
     coach: '',
   });
-
+  
   useEffect(() => {
     loadAthleteProfile();
     loadAllEvents();
@@ -38,6 +38,7 @@ function AthleteDashboard() {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json" 
         }
       });
       const data = await response.json();
@@ -56,6 +57,8 @@ function AthleteDashboard() {
       console.error("Error loading athlete profile:", error);
     }
   };
+
+  
 
   const loadAllEvents = async () => {
     try {
@@ -90,7 +93,7 @@ function AthleteDashboard() {
   };
 
   const handleLogout = () => {
-    navigate('/login'); // Redirect to login page
+    navigate('/*'); // Redirect to login page
   };
 
   const handleEditProfile = () => {
@@ -144,6 +147,7 @@ function AthleteDashboard() {
 
       if (response.ok) {
         setEditingProfile(false);
+        <p>Updated</p>
         loadAthleteProfile(); // Reload the profile data
       } else {
         console.error('Error saving profile:', response);
@@ -323,41 +327,42 @@ function AthleteDashboard() {
 
 {currentSection === 'events' && (
           <div className="events-section">
-            <h3>All Events</h3>
+            <h1 style={{textAlign:'center '}}>ALL EVENTS</h1>
             <div className="events-container">
               {events.map(event => (
                 <div key={event.id} className="event-card">
                   <img 
                   src={event.imageBase64 ? `data:image/jpeg;base64,${event.imageBase64}` : '/default-profile.jpg'}
                   alt={event.eventTitle} onClick={() => handleViewEvent(event)} />
-                  <h4>{event.eventTitle}</h4>
+                  <h3 style={{textAlign:'center'}}>{event.eventTitle}</h3>
                   <p>Meet: {event.meetId.meetName}</p>
                   <p>Category: {event.category}</p>
-                  <button onClick={() => handleViewEvent(event)}>View</button>
-                  <button onClick={() => handleOpenRegisterPopup(event)}>Register</button>
+                  <button class="button-19" onClick={() => handleViewEvent(event)}>View</button>
+                  <p></p>
+                  <button class="button-19" onClick={() => handleOpenRegisterPopup(event)}>Register</button>
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        {selectedEvent && (
-          <div className="modal">
-            <div className="modal-content">
-              <h2>{selectedEvent.eventTitle}</h2>
-              <p>Meet: {selectedEvent.meetId.meetName}</p>
-              <p>Category: {selectedEvent.category}</p>
-              <p>Description: {selectedEvent.eventDescription}</p>
-              <p>Location: {selectedEvent.location}</p>
-              <p>Event Date: {selectedEvent.eventDate}</p>
-              <textarea placeholder="Remarks (optional)" value={remark} onChange={(e) => setRemark(e.target.value)}></textarea>
-              <button onClick={() => handleRegisterForEvent(selectedEvent.eventId)}>Register</button>
-              <button onClick={handleCloseModal}>Close</button>
-            </div>
-          </div>
-        )}
+{selectedEvent && (
+  <div className="modal">
+    <div className="modal-content">
+      <h2>{selectedEvent.eventTitle}</h2>
+      <p>Meet: {selectedEvent.meetId.meetName}</p>
+      <p>Category: {selectedEvent.category}</p>
+      <p>Description: {selectedEvent.description}</p>
+      <p>Location: {selectedEvent.location}</p>
+      <p>Event Date: {selectedEvent.eventDate}</p>
+      <textarea placeholder="Remarks (optional)" value={remark} onChange={(e) => setRemark(e.target.value)}></textarea>
+      <button onClick={() => handleRegisterForEvent(selectedEvent.eventId)}>Register</button>
+      <button onClick={handleCloseModal}>Close</button>
+    </div>
+  </div>
+)}
 
-        {registeringEvent && (
+{registeringEvent && (
           <div className="modal">
             <div className="modal-content">
               <h3>Register for {registeringEvent.eventTitle}</h3>
@@ -405,7 +410,6 @@ function AthleteDashboard() {
 
           </div>
         )}
-       
 
         {currentSection === 'coach' && (
           <div className="coach-section">
@@ -420,6 +424,6 @@ function AthleteDashboard() {
       </div>
     </div>
   );
-}
 
+}
 export default AthleteDashboard;

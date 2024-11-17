@@ -204,4 +204,19 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+
+    @DeleteMapping("/registration/{registrationId}")
+    public ResponseEntity<String> deleteRegistration(@PathVariable Long registrationId) {
+        try {
+            adminService.deleteRegistrationById(registrationId);
+            return ResponseEntity.ok("Registration deleted successfully.");
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: Registration not found.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    }
+
+
 }

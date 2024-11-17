@@ -32,30 +32,6 @@ const Register = () => {
         }
     };
 
-    const handleAdminTest = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                setMessage("No token found in localStorage");
-                return;
-            }
-
-            const response = await fetch("/admin/test", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}` // Pass the token in the Authorization header
-                }
-            });
-
-            const result = await response.text();
-            setMessage(response.ok ? `Admin test successful: ${result}` : `Error: ${result}`);
-        } catch (error) {
-            setMessage(`Error: ${error.message}`);
-        }
-    };
-
-
     return (
         <Box className="form-container">
             <Typography variant="h5" sx={{ fontWeight: "bold", color: "#000000" }}>Register</Typography>

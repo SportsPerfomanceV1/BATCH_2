@@ -90,15 +90,28 @@ public class AthleteController {
         return ResponseEntity.ok("Registration successful");
     }
 
+//    @GetMapping("/events")
+//    public ResponseEntity<List<EventResponseDTO>> getAllEvents() {
+//        try {
+//            List<EventResponseDTO> events = athleteService.getAllEvents();
+//            return ResponseEntity.ok(events);
+//        } catch (Exception e) {
+//            return ResponseEntity.status(400).body(null);
+//        }
+//    }
+
     @GetMapping("/events")
-    public ResponseEntity<List<EventResponseDTO>> getAllEvents() {
+    public ResponseEntity<List<EventResponseDTO>> getAvailableEvents() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
         try {
-            List<EventResponseDTO> events = athleteService.getAllEvents();
+            List<EventResponseDTO> events = athleteService.getAvailableEvents(username);
             return ResponseEntity.ok(events);
         } catch (Exception e) {
-            return ResponseEntity.status(400).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
+
 
     @GetMapping("/events/registered")
     public ResponseEntity<List<RegistrationDTO>> getRegisteredEvents() {

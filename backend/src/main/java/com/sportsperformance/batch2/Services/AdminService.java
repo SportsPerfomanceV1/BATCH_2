@@ -16,6 +16,7 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -232,5 +233,14 @@ public class AdminService {
                         registration.getEvent().getMeetId().getMeetName()
                 ))
                 .collect(Collectors.toList());
+    }
+
+
+
+    public void deleteRegistrationById(Long registrationId) {
+        if (!registrationRepository.existsById(registrationId)) {
+            throw new NoSuchElementException("Registration not found.");
+        }
+        registrationRepository.deleteById(registrationId);
     }
 }
