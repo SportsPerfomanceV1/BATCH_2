@@ -29,7 +29,11 @@ public class Event {
     private Date eventDate;
 
     private String eventDescription;
-    private String imageUrl;
+//    private String imageUrl;
+
+    @Lob
+    @Column(name = "image", columnDefinition = "BLOB")
+    private byte[] image; // Store the image as a BLOB
 
 
 

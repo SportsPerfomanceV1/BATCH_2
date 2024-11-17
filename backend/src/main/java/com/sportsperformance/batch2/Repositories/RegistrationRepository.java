@@ -12,4 +12,9 @@ import java.util.Optional;
 public interface RegistrationRepository extends JpaRepository<Registration, Long> {
     Optional<Registration> findById(Long id);
     List<Registration> findByAthlete(Athlete athlete);
+    List<Registration> findByEvent_EventIdAndStatus(Long eventId, String status);
+    Optional<Registration> findByEvent_EventIdAndAthlete_AthleteIdAndStatus(Long eventId, Long athleteId, String status);
+
+    List<Registration> findByStatus(String status);
+
 }

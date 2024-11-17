@@ -1,14 +1,9 @@
 package com.sportsperformance.batch2.Services;
 
-import com.sportsperformance.batch2.DTO.CreateEventDTO;
-import com.sportsperformance.batch2.Repositories.AthleteRepository;
-import com.sportsperformance.batch2.Repositories.EventRepository;
-import com.sportsperformance.batch2.Repositories.MeetRepository;
-import com.sportsperformance.batch2.Repositories.RegistrationRepository;
-import com.sportsperformance.batch2.models.Athlete;
-import com.sportsperformance.batch2.models.Event;
-import com.sportsperformance.batch2.models.Meet;
-import com.sportsperformance.batch2.models.Registration;
+import com.sportsperformance.batch2.DTO.*;
+import com.sportsperformance.batch2.Repositories.*;
+import com.sportsperformance.batch2.models.*;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,9 +13,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminService {
@@ -51,26 +49,11 @@ public class AdminService {
         // Handle image file upload
         MultipartFile imageFile = eventDTO.getImage();
         if (imageFile != null && !imageFile.isEmpty()) {
-            // Create the upload directory if it doesn't exist
-            File directory = new File(uploadDir);
-            if (!directory.exists()) {
-                boolean created = directory.mkdirs();
-                if (!created) {
-                    throw new Exception("Failed to create directory: " + uploadDir);
-                }
-            }
-
-            // Generate a unique filename
-            String fileName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
-            File file = new File(directory, fileName); // Create the file object
-
-            // Save the image file using InputStream and Files.copy
-            try (InputStream inputStream = imageFile.getInputStream()) {
-                Files.copy(inputStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                event.setImageUrl(file.getAbsolutePath()); // Store the file path in the event
+            try {
+                // Convert the uploaded file to a byte array
+                event.setImage(imageFile.getBytes());
             } catch (IOException e) {
-                e.printStackTrace(); // Log the exception
-                throw new Exception("Failed to upload image: " + e.getMessage());
+                throw new Exception("Failed to process image file: " + e.getMessage());
             }
         }
 
@@ -125,5 +108,129 @@ public class AdminService {
     public Event getEventById(Long eventId) throws Exception {
         return eventRepository.findById(eventId)
                 .orElseThrow(() -> new Exception("Event not found"));
+    }
+
+
+    // Update in EventService
+    public List<EventWithPendingResultDTO> getEventsWithPendingResults() {
+        LocalDate today = LocalDate.now();
+        return eventRepository.findAll().stream()
+                .filter(event -> event.getEventDate()
+                        .toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate()
+                        .isBefore(today)
+                        && event.getEventResults().isEmpty())
+                .map(event -> {
+                    EventWithPendingResultDTO dto = new EventWithPendingResultDTO();
+                    dto.setEventId(event.getEventId());
+                    dto.setEventTitle(event.getEventTitle());
+                    dto.setCategory(event.getCategory());
+                    dto.setLocation(event.getLocation());
+                    dto.setEventDate(event.getEventDate().toString());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+    public List<AthleteResultDTO> getAthletesForEvent(Long eventId) {
+        List<Registration> registrations = registrationRepository.findByEvent_EventIdAndStatus(eventId, "Approved");
+        return registrations.stream().map(reg -> {
+            AthleteResultDTO dto = new AthleteResultDTO();
+            dto.setAthleteId(reg.getAthlete().getAthleteId());
+            String name = reg.getAthlete().getFirstName() + reg.getAthlete().getLastName();
+            dto.setAthleteName(name);
+            dto.setAthletePicture(reg.getAthlete().getPhotoUrl());
+            reg.getEvent().getEventResults().stream()
+                    .filter(result -> result.getAthlete().getAthleteId() == reg.getAthlete().getAthleteId())
+                    .findFirst()
+                    .ifPresent(result -> {
+                        dto.setScore(result.getScore());
+                        dto.setComment(result.getComment());
+                    });
+            return dto;
+        }).collect(Collectors.toList());
+    }
+    @Autowired
+    private EventResultRepository eventResultRepository;
+
+//    @Transactional
+//    public void saveEventResult(Long eventId, List<EventResultDTO> eventResults) throws Exception {
+//        // Fetch the event by ID
+//        Event event = eventRepository.findById(eventId)
+//                .orElseThrow(() -> new Exception("Event not found with ID: " + eventId));
+//
+//        for (EventResultDTO resultDTO : eventResults) {
+//            // Validate if the athlete was registered and approved for the event
+//            Registration registration = registrationRepository
+//                    .findByEvent_EventIdAndAthlete_AthleteIdAndStatus(eventId, resultDTO.getAthleteId(), "Approved")
+//                    .orElseThrow(() -> new Exception("Athlete not registered or not approved for this event"));
+//
+//            // Check if the result already exists
+//            EventResult existingResult = eventResultRepository
+//                    .findByEvent_EventIdAndAthlete_AthleteId(eventId, resultDTO.getAthleteId());
+//
+//            if (existingResult != null) {
+//                // Update existing result
+//                existingResult.setScore(resultDTO.getScore());
+//                existingResult.setComment(resultDTO.getComment());
+//                eventResultRepository.save(existingResult);
+//            } else {
+//                // Create a new result
+//                EventResult newResult = new EventResult();
+//                newResult.setEvent(event);
+//                newResult.setAthlete(registration.getAthlete());
+//                newResult.setScore(resultDTO.getScore());
+//                newResult.setComment(resultDTO.getComment());
+//                eventResultRepository.save(newResult);
+//            }
+//        }
+//    }
+
+    @Transactional
+    public void saveEventResult(Long eventId, List<AthleteResultDTO> results) throws Exception {
+        // Fetch the event by ID
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new Exception("Event not found with ID: " + eventId));
+
+        for (AthleteResultDTO resultDTO : results) {
+            // Validate if the athlete was registered and approved for the event
+            Registration registration = registrationRepository
+                    .findByEvent_EventIdAndAthlete_AthleteIdAndStatus(eventId, resultDTO.getAthleteId(), "Approved")
+                    .orElseThrow(() -> new Exception("Athlete not registered or approved for this event"));
+
+            // Check if the result already exists
+            Optional<EventResult> existingResultOpt = eventResultRepository
+                    .findByEvent_EventIdAndAthlete_AthleteId(eventId, resultDTO.getAthleteId());
+
+            EventResult eventResult = existingResultOpt.orElse(new EventResult());
+            eventResult.setEvent(event);
+            eventResult.setAthlete(registration.getAthlete());
+            eventResult.setScore(resultDTO.getScore());
+            eventResult.setComment(resultDTO.getComment());
+
+            // Save or update the result
+            eventResultRepository.save(eventResult);
+        }
+    }
+    public List<RegistrationDTO> getPendingRegistrations() throws Exception {
+        List<Registration> registrations = registrationRepository.findByStatus("Pending");
+
+        if (registrations.isEmpty()) {
+            throw new Exception("No pending registrations found");
+        }
+
+        // Map each Registration to RegistrationDTO
+        return registrations.stream()
+                .map(registration -> new RegistrationDTO(
+                        registration.getRegistrationId(),
+                        registration.getEvent().getEventId(),
+                        registration.getAthlete().getAthleteId(),
+                        registration.getEvent().getEventTitle(),
+                        registration.getRegistrationDate(),
+                        registration.getStatus(),
+                        registration.getRemarks(),
+                        registration.getEvent().getMeetId().getMeetName()
+                ))
+                .collect(Collectors.toList());
     }
 }

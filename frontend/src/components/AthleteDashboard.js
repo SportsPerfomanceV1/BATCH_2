@@ -11,13 +11,10 @@ function AthleteDashboard() {
   const [currentSection, setCurrentSection] = useState('profile');
   const [editingProfile, setEditingProfile] = useState(false);
   const [newImage, setNewImage] = useState(null);
-  const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [selectedTab, setSelectedTab] = useState('Overview');
   const [remark, setRemark] = useState('');
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [registeringEvent, setRegisteringEvent] = useState(null);
-  const [isRegistered, setIsRegistered] = useState(false);
-const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [updatedProfile, setUpdatedProfile] = useState({
     firstName: '',
     lastName: '',
@@ -230,8 +227,8 @@ const [registrationSuccess, setRegistrationSuccess] = useState(false);
             {athlete && (
               <>
                 <img
-                  src={`${athlete.photoUrl || '/default-profile.jpg'}`}
-                
+                  // src={`${athlete.photoUrl || '/default-profile.jpg'}`}
+                  src={athlete.photoBase64 ? `data:image/jpeg;base64,${athlete.photoBase64}` : '/default-profile.jpg'}
                   className="profile-photo"
                 />
                 <div className="athlete-info">
@@ -344,25 +341,20 @@ const [registrationSuccess, setRegistrationSuccess] = useState(false);
 
 {currentSection === 'events' && (
           <div className="events-section">
-            <h1 style={{textAlign:'center'}}>ALL EVENTS</h1>
+            <h3>All Events</h3>
             <div className="events-container">
-            {events.map(event => (
-  <div key={event.id} className="event-card">
-    <img src={event.imageUrl || '/default-event.jpg'} alt={event.eventTitle} onClick={() => handleViewEvent(event)} />
-    <h4>{event.eventTitle}</h4>
-    <p>Meet: {event.meetId.meetName}</p>
-    <p>Category: {event.category}</p>
-
-    <button onClick={() => handleViewEvent(event)}>View</button>
-
-    {/* Conditionally render the Register button */}
-    {isEventRegistered(event.id) ? (
-      <button disabled>Applied</button> // Disabled if already registered
-    ) : (
-      <button onClick={() => handleOpenRegisterPopup(event)}>Register</button>
-    )}
-  </div>
-))}
+              {events.map(event => (
+                <div key={event.id} className="event-card">
+                  <img 
+                  src={event.imageBase64 ? `data:image/jpeg;base64,${event.imageBase64}` : '/default-profile.jpg'}
+                  alt={event.eventTitle} onClick={() => handleViewEvent(event)} />
+                  <h4>{event.eventTitle}</h4>
+                  <p>Meet: {event.meetId.meetName}</p>
+                  <p>Category: {event.category}</p>
+                  <button onClick={() => handleViewEvent(event)}>View</button>
+                  <button onClick={() => handleOpenRegisterPopup(event)}>Register</button>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -371,52 +363,13 @@ const [registrationSuccess, setRegistrationSuccess] = useState(false);
   <div className="modal">
     <div className="modal-content">
       <h2>{selectedEvent.eventTitle}</h2>
-      {selectedEvent.imageUrl ? (
-        <img
-          src={selectedEvent.imageUrl}
-          alt={selectedEvent.eventTitle}
-          style={{
-            width: '100%',
-            height: 'auto',
-            maxHeight: '300px',
-            objectFit: 'cover',
-            marginBottom: '20px',
-          }}
-        />
-      ) : (
-        <img
-          src="/default-event.jpg"
-          alt="Default Event"
-          style={{
-            width: '100%',
-            height: 'auto',
-            maxHeight: '300px',
-            objectFit: 'cover',
-            marginBottom: '20px',
-          }}
-        />
-      )}
-
       <p>Meet: {selectedEvent.meetId.meetName}</p>
       <p>Category: {selectedEvent.category}</p>
       <p>Description: {selectedEvent.description}</p>
       <p>Location: {selectedEvent.location}</p>
       <p>Event Date: {selectedEvent.eventDate}</p>
-
-      
-
-      {/* Register button logic in the modal */}
-      {isEventRegistered(selectedEvent.id) ? (
-        <button disabled>Applied</button> // Disabled and shows "Applied"
-      ) : (
-        <button
-          onClick={() => handleRegisterForEvent(selectedEvent.id)}
-          disabled={isRegistered} // Disable if already registered
-        >
-          Register
-        </button>
-      )}
-
+      <textarea placeholder="Remarks (optional)" value={remark} onChange={(e) => setRemark(e.target.value)}></textarea>
+      <button onClick={() => handleRegisterForEvent(selectedEvent.eventId)}>Register</button>
       <button onClick={handleCloseModal}>Close</button>
     </div>
   </div>
@@ -487,6 +440,56 @@ const [registrationSuccess, setRegistrationSuccess] = useState(false);
 
           </div>
         )}
+
+        {registeringEvent && (
+          <div className="modal">
+            <div className="modal-content">
+              <h3>Register for {registeringEvent.eventTitle}</h3>
+              <textarea placeholder="Add your remark" required value={remark} onChange={(e) => setRemark(e.target.value)}></textarea>
+              <button onClick={() => handleRegisterForEvent(registeringEvent.eventId)}>Submit</button>
+              <button onClick={handleCloseModal}>Cancel</button>
+            </div>
+          </div>
+        )}
+
+{currentSection === 'myEvents' && (
+          <div className="my-events-section">
+            <h3>My Events</h3>
+            <div className="tabs">
+              {['Overview', 'Pending', 'Approved', 'Rejected'].map((tab) => (
+                <button
+                  key={tab}
+                  className={selectedTab === tab ? 'active' : ''}
+                  onClick={() => setSelectedTab(tab)}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+            <table>
+  <thead>
+    <tr>
+      <th>Event Name</th>
+      <th>Meet Name</th>
+      <th>Registration Date</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {filterMyEvents().map((regis) => (
+      <tr key={regis.id}>
+        <td>{regis.eventName}</td>
+        <td>{regis.meetName}</td>
+        <td>{regis.registrationDate}</td>
+        <td>{regis.status}</td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
+          </div>
+        )}
+       
 
         {currentSection === 'coach' && (
           <div className="coach-section">
