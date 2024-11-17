@@ -1,54 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Box, TextField, Button, MenuItem } from "@mui/material";
-import { redirect } from "react-router-dom";
-import { Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
-import { styled } from "@mui/system";
-
-
-// Styled Components
-const StyledButton = styled(Button)(({ theme }) => ({
-    backgroundColor: "#000",
-    color: "#fff",
-    fontWeight: "bold",
-    padding: "10px 20px",
-    margin: "10px",
-    '&:hover': {
-        backgroundColor: "#15c143",
-    },
-}));
-
-const DashboardContainer = styled(Box)({
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    padding: '20px',
-    backgroundColor: '#f8f8f8',
-    minHeight: '100vh',
-});
-
-const MeetTable = styled(TableContainer)({
-    marginTop: '20px',
-    width: '80%',
-    borderRadius: '8px',
-    boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
-});
-
+import { Button, Box, TextField, MenuItem } from "@mui/material";
+import { Typography, AppBar, Table, Toolbar, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
+import { Link, useNavigate } from "react-router-dom";
+import LoginIcon from "@mui/icons-material/Login";
+import { Tab, Tabs } from '@mui/material';
+import '../styles/AdminDashboard.css';
 
 const Meet = ({ onClose }) => {
-    // const [meetName, setMeetName] = useState("");
-    const [formData, setFormData] = useState({ meetName: ""});
-
+    const [formData, setFormData] = useState({ meetName: "" });
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
-
-
     const handleCreateMeet = async (event) => {
         event.preventDefault();
-
         try {
             const token = localStorage.getItem("token");
             if (!token) {
@@ -59,97 +26,60 @@ const Meet = ({ onClose }) => {
             const response = await fetch("/admin/createmeet", {
                 method: "POST",
                 headers: {
-                    
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}` // Pass the token in the Authorization header
-                }, body: JSON.stringify(formData),
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(formData),
             });
-            // const result = await response.text();
+            
             if(response.ok){
                 alert("Meet Created Successfully")
                 onClose();
             } else {
                 alert("Kindly login as admin again")
             }
-
-            
         } catch (error) {
-            
+            console.error("Error creating meet:", error);
         }
-        // console.log("Creating meet with name:", meetName);
-        return redirect("/adminDashboard")
     };
 
     return (
         <>
-            <div
-                className="meetPopup"
-                style={{
-                    position: "fixed",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    width: "400px",
-                    height: "300px",
-                    backgroundColor: "#fff",
-                    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
-                    padding: "20px",
-                    borderRadius: "8px",
-                    zIndex: 1000,
-                }}
-            >
-                <h2 style={{marginLeft:'36%'}}>Create Meet</h2>
-                <form onSubmit={handleCreateMeet}>
+            <div className="popup meetPopup">
+                <h2 className="popup-title">Create Meet</h2>
+                <form onSubmit={handleCreateMeet} className="popup-form">
                     <TextField
                         name="meetName"
                         label="Meet Name"
                         fullWidth
                         margin="normal"
                         required
-                        // value={meetName}
                         onChange={handleChange}
+                        className="form-field"
+                    />
+                    <input
+                        type="file"
+                        name="image"
+                        accept="image/*"
+                        className="file-input"
+                        fullWidth
                     />
                     <Button
                         type="submit"
                         fullWidth
-                        sx={{ backgroundColor: "#000000", color: "#ffffff", marginTop: "1rem" }}
+                        className="submit-button"
                     >
                         Create Meet
                     </Button>
                 </form>
-                <Button onClick={onClose} sx={{
-                    marginTop:'5px',marginLeft:'42%',
-                                    color: "#000000",
-                                    "&:hover": {
-                                        color: "#fff",
-                                        backgroundColor:"#15c143"  // Change this to the desired hover color
-                                    }
-                                }}>
+                <Button onClick={onClose} className="close-button">
                     Close
                 </Button>
             </div>
-
-            {/* Overlay */}
-            <div
-                style={{
-                    position: "fixed",
-                    top: 0,
-                    left: 0,
-                    width: "100vw",
-                    height: "100vh",
-                    backgroundColor: "rgba(0, 0, 0, 0.5)",
-                    zIndex: 999,
-                }}
-                onClick={onClose}
-            />
-
-
+            <div className="overlay" onClick={onClose} />
         </>
-
-        
     );
 };
-
 
 const Event = ({ onClose }) => {
     const [formData, setFormData] = useState({
@@ -161,10 +91,9 @@ const Event = ({ onClose }) => {
         eventDescription: "",
         image: null,
     });
-    const [meets, setMeets] = useState([]); // Store available meets
+    const [meets, setMeets] = useState([]);
 
     useEffect(() => {
-        // Fetch meets from API
         const fetchMeets = async () => {
             const token = localStorage.getItem("token");
             try {
@@ -202,15 +131,13 @@ const Event = ({ onClose }) => {
         }
 
         const formDataToSend = new FormData();
-        formDataToSend.append("eventTitle", formData.eventTitle);
-        formDataToSend.append("eventDate", formData.eventDate);
-        formDataToSend.append("meetId", formData.meetId);
-        formDataToSend.append("location", formData.location);
-        formDataToSend.append("category", formData.category);
-        formDataToSend.append("eventDescription", formData.eventDescription);
-        if (formData.image) {
-            formDataToSend.append("image", formData.image);
-        }
+        Object.keys(formData).forEach(key => {
+            if (key === 'image' && formData[key]) {
+                formDataToSend.append(key, formData[key]);
+            } else if (key !== 'image') {
+                formDataToSend.append(key, formData[key]);
+            }
+        });
 
         try {
             const response = await fetch("/admin/createevent", {
@@ -234,130 +161,110 @@ const Event = ({ onClose }) => {
 
     return (
         <>
-            <div
-                className="eventPopup"
-                        style={{
-                            position: "fixed",
-                            top: "50%",
-                            left: "50%",
-                            transform: "translate(-50%, -50%)",
-                            width: "90%", // Adjusted width for better responsiveness on smaller screens
-                            maxWidth: "500px", // Set a max width for larger screens
-                            maxHeight: "100vh", // Limit height to make it scrollable within the viewport
-                            backgroundColor: "#fff",
-                            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
-                            padding: "20px",
-                            borderRadius: "8px",
-                            zIndex: 1000,
-                            overflowY: "auto" // Enables vertical scrolling within the form
-                        }}
+            <div className="popup eventPopup">
+                <h2 className="popup-title">Create Event</h2>
+                <form onSubmit={handleCreateEvent} className="popup-form">
+                    <TextField
+                        name="eventTitle"
+                        label="Event Title"
+                        fullWidth
+                        margin="normal"
+                        required
+                        onChange={handleChangeEvent}
+                        className="form-field"
+                    />
+                    <TextField
+                        name="eventDate"
+                        label="Event Date"
+                        type="date"
+                        fullWidth
+                        margin="normal"
+                        required
+                        InputLabelProps={{ shrink: true }}
+                        onChange={handleChangeEvent}
+                        className="form-field"
+                    />
+                    <TextField
+                        select
+                        name="meetId"
+                        label="Select Meet"
+                        fullWidth
+                        margin="normal"
+                        required
+                        value={formData.meetId}
+                        onChange={handleChangeEvent}
+                        className="form-field"
                     >
-                        <h2 style={{marginLeft:'36%'}}>Create Event</h2>
-                     
-        <form onSubmit={handleCreateEvent}>
-            <TextField
-                name="eventTitle"
-                label="Event Title"
-                fullWidth
-                margin="normal"
-                required
-                onChange={handleChangeEvent}
-            />
-            <TextField
-                name="eventDate"
-                label="Event Date"
-                type="date"
-                fullWidth
-                margin="normal"
-                required
-                InputLabelProps={{ shrink: true }}
-                onChange={handleChangeEvent}
-            />
-            <TextField
-                select
-                name="meetId"
-                label="Select Meet"
-                fullWidth
-                margin="normal"
-                required
-                value={formData.meetId}
-                onChange={handleChangeEvent}
-            >
-                {meets.map((meet) => (
-                    <MenuItem key={meet.id} value={meet.meetId}>
-                        {meet.meetName}
-                    </MenuItem>
-                ))}
-            </TextField>
-            <TextField
-                name="location"
-                label="Location"
-                fullWidth
-                margin="normal"
-                required
-                onChange={handleChangeEvent}
-            />
-            <TextField
-                name="category"
-                label="Category"
-                fullWidth
-                margin="normal"
-                required
-                onChange={handleChangeEvent}
-            />
-            <TextField
-                name="eventDescription"
-                label="Event Description"
-                fullWidth
-                margin="normal"
-                required
-                onChange={handleChangeEvent}
-            />
-            <input
-                type="file"
-                name="image"
-                accept="image/*"
-                onChange={handleImageChange}
-                style={{ marginTop: "1rem" }}
-            />
-            <Button type="submit" fullWidth sx={{ backgroundColor: "#000000", color: "#ffffff", marginTop: "1rem" }}>
-                Create Event
-            </Button>
-        </form>
-        <Button onClick={onClose} sx={{
-            marginTop:'5px',marginLeft:'42%',
-                                    color: "#000000",
-                                    "&:hover": {
-                                        color: "#fff"  ,// Change this to the desired hover color
-                                        backgroundColor:"#15c143" 
-                                    }
-                                }}>
+                        {meets.map((meet) => (
+                            <MenuItem key={meet.id} value={meet.meetId}>
+                                {meet.meetName}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+                    <TextField
+                        name="location"
+                        label="Location"
+                        fullWidth
+                        margin="normal"
+                        required
+                        onChange={handleChangeEvent}
+                        className="form-field"
+                    />
+                    <TextField
+                        name="category"
+                        label="Category"
+                        fullWidth
+                        margin="normal"
+                        required
+                        onChange={handleChangeEvent}
+                        className="form-field"
+                    />
+                    <TextField
+                        name="eventDescription"
+                        label="Event Description"
+                        fullWidth
+                        margin="normal"
+                        required
+                        onChange={handleChangeEvent}
+                        className="form-field"
+                    />
+                    <input
+                        type="file"
+                        name="image"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="file-input"
+                    />
+                    <Button type="submit" fullWidth className="submit-button">
+                        Create Event
+                    </Button>
+                </form>
+                <Button onClick={onClose} className="close-button">
                     Close
                 </Button>
-        </div>
-         {/* Overlay */}
-             <div
-                style={{
-                    position: "fixed",
-                    top: 0,
-                    left: 0,
-                    width: "100vw",
-                    height: "100vh",
-                    backgroundColor: "rgba(0, 0, 0, 0.5)",
-                    zIndex: 999,
-                }}
-                onClick={onClose}
-            />
+            </div>
+            <div className="overlay" onClick={onClose} />
         </>
     );
 };
-
-
 
 const AdminDashboard = () => {
     const [meetVisible, setMeetVisible] = useState(false);
     const [meets, setMeets] = useState([]);
     const [eventVisible, setEventVisible] = useState(false);
+    const navigate = useNavigate();
+    const [events, setEvents] = useState([])
+    const [activeTab, setActiveTab] = useState(0);
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/*');
+    };
+
+    const handleTabChange = (event, newValue) => {
+        setActiveTab(newValue);
+    };
+ 
 
     useEffect(() => {
         const fetchMeets = async () => {
@@ -375,68 +282,153 @@ const AdminDashboard = () => {
                 console.error("Error fetching meets:", error);
             }
         };
-        fetchMeets();
-    }, []);
-    
-    const openMeet = () => {
-        setMeetVisible(true);
-    };
+        const loadAllEvents = async () => {
+            try {
+              const token = localStorage.getItem("token");
+              const response = await fetch('athlete/events', {
+                method: "GET",
+                headers: {
+                  "Authorization": `Bearer ${token}`,
+                }
+              });
+              const data = await response.json();
+              setEvents(data);
+            } catch (error) {
+              console.error("Error loading events:", error);
+            }
+          };
+        loadAllEvents();
+    fetchMeets();
+}, []);
 
-    const closeMeet = () => {
-        setMeetVisible(false);
-    };
+    const openMeet = () => setMeetVisible(true);
+    const closeMeet = () => setMeetVisible(false);
+    const openEvent = () => setEventVisible(true);
+    const closeEvent = () => setEventVisible(false);
 
-    const openEvent = () => {
-        setEventVisible(true);
-    };
-
-    const closeEvent = () => {
-        setEventVisible(false);
-    };
-
-    return (
-        <DashboardContainer className="adminDashboardHome">
-             <Typography variant="h4" gutterBottom>
-                Admin Dashboard
-            </Typography>
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            <StyledButton id="btnMeet" onClick={openMeet}>
-            ✨ Create Meet
-            </StyledButton>
-
-            {meetVisible && <Meet onClose={closeMeet} />}
-
-            <StyledButton id="btnEvent" onClick={openEvent}>
-            📅 create Event
-            </StyledButton>
-
-            {eventVisible && <Event onClose={closeEvent} />}
-
-            <StyledButton>👥 Shortlist Candidates</StyledButton>
-            <StyledButton>📊 Publish Results</StyledButton>
-            </Box>
-            <Typography variant="h5" sx={{ marginTop: '30px' }}>
-            Created Meets
-        </Typography>
-        <MeetTable component={Paper}>
-            <Table aria-label="created meets table">
+    const MeetsTable = () => (
+        <TableContainer component={Paper} className="table-container">
+            <Table aria-label="created meets table" className="table">
                 <TableHead>
                     <TableRow>
-                        <TableCell>MEET ID</TableCell>
-                        <TableCell>MEET NAME</TableCell>
+                        <TableCell className="table-header">MEET ID</TableCell>
+                        <TableCell className="table-header">MEET NAME</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {meets.map((meet) => (
-                        <TableRow key={meet.id}>
-                            <TableCell>{meet.meetId}</TableCell>
-                            <TableCell>{meet.meetName}</TableCell>
+                        <TableRow key={meet.id} className="table-row">
+                            <TableCell className="table-cell">{meet.meetId}</TableCell>
+                            <TableCell className="table-cell">{meet.meetName}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
             </Table>
-        </MeetTable>
-        </DashboardContainer>
+        </TableContainer>
+    );
+
+    const EventsTable = () => {
+       
+    
+        return (
+            <TableContainer component={Paper} className="table-container">
+                <Table aria-label="created events table" className="table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell className="table-header">EVENT TITLE</TableCell>
+                            <TableCell className="table-header">MEET NAME</TableCell>
+                            <TableCell className="table-header">DATE</TableCell>
+                            <TableCell className="table-header">LOCATION</TableCell>
+                            <TableCell className="table-header">CATEGORY</TableCell>
+                        </TableRow>
+                    </TableHead>
+
+                    <TableBody>
+                       {events.map((event) => (
+                        <TableRow key={event.id} className="table-row">
+                                <TableCell className="table-cell">{event.eventTitle}</TableCell>
+                                <TableCell className="table-cell">{event.meetId ? event.meetId.meetName : 'N/A'}</TableCell>
+                                <TableCell className="table-cell">{new Date(event.eventDate).toLocaleDateString()}</TableCell>
+                                <TableCell className="table-cell">{event.location}</TableCell>
+                                <TableCell className="table-cell">{event.category}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            
+        );
+    };
+    
+
+    return (
+        <div className="adminDashboardHome">
+            <AppBar position="static" className="navbar">
+                <Toolbar className="navbar-content">
+                    <Typography variant="h5" className="navbar-title">
+                        Admin Dashboard
+                    </Typography>
+                    <Box className="navbar-actions">
+                        <Link to="" className="logout-link">
+                            <Button >
+                                Athlete
+                            </Button>
+                        </Link>
+                        <Link to="" className="logout-link">
+                            <Button >
+                                Coach
+                            </Button>
+                        </Link>
+                        <Link to="/*" className="logout-link">
+                            <Button 
+                                onClick={handleLogout} 
+                                startIcon={<LoginIcon />}
+                                className="logout-button"
+                            >
+                                Logout
+                            </Button>
+                        </Link>
+                    </Box>
+                </Toolbar>
+            </AppBar>
+
+            <div className="dashboard-actions">
+                <Button id="btnMeet" onClick={openMeet} className="action-button">
+                    ✨ Create Meet
+                </Button>
+
+                {meetVisible && <Meet onClose={closeMeet} />}
+
+                <Button id="btnEvent" onClick={openEvent} className="action-button">
+                    📅 Create Event
+                </Button>
+
+                {eventVisible && <Event onClose={closeEvent} />}
+
+                <Button className="action-button">
+                    👥 Shortlist Candidates
+                </Button>
+                <Button className="action-button">
+                    📊 Publish Results
+                </Button>
+            </div>
+            <div className="table-section">
+                <Tabs 
+                    value={activeTab} 
+                    onChange={handleTabChange} 
+                    className="tabs-container"
+                    centered
+                >
+                    <Tab label="Created Meets" className="tab" />
+                    <Tab label="Created Events" className="tab" />
+                </Tabs>
+
+                <div className="table-content">
+                    {activeTab === 0 ? <MeetsTable /> : <EventsTable />}
+                </div>
+            </div>
+           
+        </div>
     );
 };
 

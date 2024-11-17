@@ -77,7 +77,7 @@ public class AdminService {
         // Save and return the event
         return eventRepository.save(event);
     }
-
+    
     // Method to create a new meet
     public Meet createMeet(String meetName) {
         Meet meet = new Meet();
@@ -94,7 +94,7 @@ public class AdminService {
     public List<Meet> getAllMeets() {
         return meetRepository.findAll();
     }
-
+    
     @Autowired
     private RegistrationRepository registrationRepository;
 

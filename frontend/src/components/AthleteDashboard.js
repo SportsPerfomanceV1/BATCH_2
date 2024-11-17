@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../athlete.css';
+import { parseISO} from 'date-fns';
+import '../styles/athlete.css';
 
 function AthleteDashboard() {
   const navigate = useNavigate();
@@ -10,6 +11,13 @@ function AthleteDashboard() {
   const [currentSection, setCurrentSection] = useState('profile');
   const [editingProfile, setEditingProfile] = useState(false);
   const [newImage, setNewImage] = useState(null);
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [selectedTab, setSelectedTab] = useState('Overview');
+  const [remark, setRemark] = useState('');
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [registeringEvent, setRegisteringEvent] = useState(null);
+  const [isRegistered, setIsRegistered] = useState(false);
+const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [updatedProfile, setUpdatedProfile] = useState({
     firstName: '',
     lastName: '',
@@ -20,7 +28,7 @@ function AthleteDashboard() {
     category: '',
     coach: '',
   });
-
+  
   useEffect(() => {
     loadAthleteProfile();
     loadAllEvents();
@@ -37,11 +45,15 @@ function AthleteDashboard() {
         }
       });
       const data = await response.json();
+      const parsedDate = parseISO(data.birthDate); // Parsing the date string to Date object
+      const formattedDate = (parsedDate.getMonth() + 1).toString().padStart(2, '0') + '/' + 
+      parsedDate.getDate().toString().padStart(2, '0') + '/' + 
+      parsedDate.getFullYear();
       setAthlete(data);
       setUpdatedProfile({
         firstName: data.firstName,
         lastName: data.lastName,
-        birthDate: data.birthDate,
+        birthDate: formattedDate,
         gender: data.gender,
         height: data.height,
         weight: data.weight,
@@ -86,11 +98,28 @@ function AthleteDashboard() {
   };
 
   const handleLogout = () => {
-    navigate('/login'); // Redirect to login page
+    navigate('/*'); // Redirect to login page
+  };
+  const handleOkClick = () => {
+    setRegistrationSuccess(false);
+
+      // Close the success popup
+      // Redirect to the events section
   };
 
   const handleEditProfile = () => {
     setEditingProfile(true);
+  };
+  const handleOpenRegisterPopup = (event) => setRegisteringEvent(event);
+
+  const handleViewEvent = (event) => setSelectedEvent(event);
+
+
+  const handleCloseModal = () => {
+    setEditingProfile(false); // Close the modal
+    setSelectedEvent(null);   // Reset the selected event state
+    setRegisteringEvent(null); // Reset the registering event state
+    setRemark(''); 
   };
 
   const handleImageChange = (e) => {
@@ -103,6 +132,10 @@ function AthleteDashboard() {
       ...updatedProfile,
       [name]: value,
     });
+  };
+
+  const isEventRegistered = (eventId) => {
+    return myEvents.some((event) => event.id === eventId); // Assuming `myEvents` holds the registered events
   };
 
   const handleSaveProfile = async () => {
@@ -122,11 +155,9 @@ function AthleteDashboard() {
       const response = await fetch('/athlete/createProfile', {
         method: 'POST',
         body: formData,
-
         headers: {
           "Authorization": `Bearer ${token}`,
         }
-
       });
 
       if (response.ok) {
@@ -145,20 +176,38 @@ function AthleteDashboard() {
       const token = localStorage.getItem("token");
       const response = await fetch(`/athlete/registerForEvent/${eventId}`, {
         method: 'POST',
-
         headers: {
           "Authorization": `Bearer ${token}`,
-        }
-
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          remarks: remark
+        })
       });
 
       if (response.ok) {
+        setRegistrationSuccess(true);  // Show success modal
+      setIsRegistered(true);
+      setShowRegisterModal(false); 
         loadMyEvents(); // Reload my events after registering
       } else {
         console.error('Error registering for event:', response);
       }
     } catch (error) {
       console.error('Error registering for event:', error);
+    }
+  };
+
+  const filterMyEvents = () => {
+    switch (selectedTab) {
+      case 'Pending':
+        return myEvents.filter(event => event.status === 'Pending');
+      case 'Approved':
+        return myEvents.filter(event => event.status === 'Approved');
+      case 'Rejected':
+        return myEvents.filter(event => event.status === 'Rejected');
+      default:
+        return myEvents;
     }
   };
 
@@ -181,12 +230,12 @@ function AthleteDashboard() {
             {athlete && (
               <>
                 <img
-                  src={`${athlete.photoUrl} || '/default-profile.jpg'}`}
-                  alt={`${athlete.firstName} ${athlete.lastName}`}
+                  src={`${athlete.photoUrl || '/default-profile.jpg'}`}
+                
                   className="profile-photo"
                 />
                 <div className="athlete-info">
-                  <h2>{athlete.firstName} {athlete.lastName}</h2>
+                  <p>Name: {athlete.firstName} {athlete.lastName}</p>
                   <p>Date of Birth: {athlete.birthDate}</p>
                   <p>Gender: {athlete.gender}</p>
                   <p>Height: {athlete.height}</p>
@@ -200,148 +249,253 @@ function AthleteDashboard() {
           </div>
         )}
 
-        {editingProfile && currentSection === 'profile' && (
-          <div className="edit-profile-section">
-            <h3>Edit Profile</h3>
-            <form onSubmit={(e) => e.preventDefault()}>
-              <label>
-                First Name:
-                <input
-                  type="text"
-                  name="firstName"
-                  value={updatedProfile.firstName}
-                  onChange={handleProfileChange}
-                />
-              </label>
-              <label>
-                Last Name:
-                <input
-                  type="text"
-                  name="lastName"
-                  value={updatedProfile.lastName}
-                  onChange={handleProfileChange}
-                />
-              </label>
-              <label>
-                Date of Birth:
-                <input
-                  type="date"
-                  name="birthDate"
-                  value={updatedProfile.birthDate}
-                  onChange={handleProfileChange}
-                />
-              </label>
-              <label>
-                Gender:
-                <input
-                  type="text"
-                  name="gender"
-                  value={updatedProfile.gender}
-                  onChange={handleProfileChange}
-                />
-              </label>
-              <label>
-                Height:
-                <input
-                  type="text"
-                  name="height"
-                  value={updatedProfile.height}
-                  onChange={handleProfileChange}
-                />
-              </label>
-              <label>
-                Weight:
-                <input
-                  type="text"
-                  name="weight"
-                  value={updatedProfile.weight}
-                  onChange={handleProfileChange}
-                />
-              </label>
-              <label>
-                Category:
-                <input
-                  type="text"
-                  name="category"
-                  value={updatedProfile.category}
-                  onChange={handleProfileChange}
-                />
-              </label>
-              <label>
-                Coach:
-                <input
-                  type="text"
-                  name="coach"
-                  value={updatedProfile.coach}
-                  onChange={handleProfileChange}
-                />
-              </label>
-              <label>
-                Profile Image:
-                <input
-                  type="file"
-                  onChange={handleImageChange}
-                />
-              </label>
-              <button type="button" onClick={handleSaveProfile}>Save</button>
-            </form>
+        {editingProfile && (
+          <div className="modal">
+            <div className="modal-content">
+              <h2>Edit Profile</h2>
+              <form onSubmit={(e) => e.preventDefault()}>
+                <label>
+                  First Name:
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={updatedProfile.firstName}
+                    onChange={handleProfileChange}
+                  />
+                </label>
+                <label>
+                  Last Name:
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={updatedProfile.lastName}
+                    onChange={handleProfileChange}
+                  />
+                </label>
+                <label>
+                  Date of Birth:
+                  <input
+                    type="date"
+                    name="birthDate"
+                    value={updatedProfile.birthDate}
+                    onChange={handleProfileChange}
+                  />
+                </label>
+                <label>
+                  Gender:
+                  <input
+                    type="text"
+                    name="gender"
+                    value={updatedProfile.gender}
+                    onChange={handleProfileChange}
+                  />
+                </label>
+                <label>
+                  Height:
+                  <input
+                    type="text"
+                    name="height"
+                    value={updatedProfile.height}
+                    onChange={handleProfileChange}
+                  />
+                </label>
+                <label>
+                  Weight:
+                  <input
+                    type="text"
+                    name="weight"
+                    value={updatedProfile.weight}
+                    onChange={handleProfileChange}
+                  />
+                </label>
+                <label>
+                  Category:
+                  <input
+                    type="text"
+                    name="category"
+                    value={updatedProfile.category}
+                    onChange={handleProfileChange}
+                  />
+                </label>
+                <label>
+                  Coach:
+                  <input
+                    type="text"
+                    name="coach"
+                    value={updatedProfile.coach}
+                    onChange={handleProfileChange}
+                  />
+                </label>
+                <label>
+                  Profile Image:
+                  <input
+                    type="file"
+                    onChange={handleImageChange}
+                  />
+                </label>
+                <div className="modal-actions">
+                  <button type="button" onClick={handleSaveProfile}>Save</button>
+                  <button type="button" onClick={handleCloseModal}>Cancel</button>
+                </div>
+              </form>
+            </div>
           </div>
         )}
 
-        {currentSection === 'events' && (
+{currentSection === 'events' && (
           <div className="events-section">
-            <h3>All Events</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Event Name</th>
-                  <th>Description</th>
-                  <th>Date</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {events.map(event => (
-                  <tr key={event.eventId}>
-                    <td>{event.eventTitle}</td>
-                    <td>{event.eventDescription}</td>
-                    <td>{event.eventDate}</td>
-                    <td>
-                      <button onClick={() => handleRegisterForEvent(event.eventId)}>Register</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <h1 style={{textAlign:'center'}}>ALL EVENTS</h1>
+            <div className="events-container">
+            {events.map(event => (
+  <div key={event.id} className="event-card">
+    <img src={event.imageUrl || '/default-event.jpg'} alt={event.eventTitle} onClick={() => handleViewEvent(event)} />
+    <h4>{event.eventTitle}</h4>
+    <p>Meet: {event.meetId.meetName}</p>
+    <p>Category: {event.category}</p>
+
+    <button onClick={() => handleViewEvent(event)}>View</button>
+
+    {/* Conditionally render the Register button */}
+    {isEventRegistered(event.id) ? (
+      <button disabled>Applied</button> // Disabled if already registered
+    ) : (
+      <button onClick={() => handleOpenRegisterPopup(event)}>Register</button>
+    )}
+  </div>
+))}
+            </div>
           </div>
         )}
 
+{selectedEvent && (
+  <div className="modal">
+    <div className="modal-content">
+      <h2>{selectedEvent.eventTitle}</h2>
+      {selectedEvent.imageUrl ? (
+        <img
+          src={selectedEvent.imageUrl}
+          alt={selectedEvent.eventTitle}
+          style={{
+            width: '100%',
+            height: 'auto',
+            maxHeight: '300px',
+            objectFit: 'cover',
+            marginBottom: '20px',
+          }}
+        />
+      ) : (
+        <img
+          src="/default-event.jpg"
+          alt="Default Event"
+          style={{
+            width: '100%',
+            height: 'auto',
+            maxHeight: '300px',
+            objectFit: 'cover',
+            marginBottom: '20px',
+          }}
+        />
+      )}
+
+      <p>Meet: {selectedEvent.meetId.meetName}</p>
+      <p>Category: {selectedEvent.category}</p>
+      <p>Description: {selectedEvent.description}</p>
+      <p>Location: {selectedEvent.location}</p>
+      <p>Event Date: {selectedEvent.eventDate}</p>
+
+      
+
+      {/* Register button logic in the modal */}
+      {isEventRegistered(selectedEvent.id) ? (
+        <button disabled>Applied</button> // Disabled and shows "Applied"
+      ) : (
+        <button
+          onClick={() => handleRegisterForEvent(selectedEvent.id)}
+          disabled={isRegistered} // Disable if already registered
+        >
+          Register
+        </button>
+      )}
+
+      <button onClick={handleCloseModal}>Close</button>
+    </div>
+  </div>
+)}
+
+{registeringEvent && (
+          <div className="modal">
+            <div className="modal-content">
+              <h3>Register for {registeringEvent.eventTitle}</h3>
+              <textarea placeholder="Add your remark" required value={remark} onChange={(e) => setRemark(e.target.value)}></textarea>
+              <button onClick={() => handleRegisterForEvent(registeringEvent.eventId)}>Submit</button>
+              <button onClick={handleCloseModal}>Cancel</button>
+            </div>
+          </div>
+        )}
+
+      {/* Registration Success Modal */}
+      {registrationSuccess && (
+  <div className="success-popup">
+    <div className="popup-content">
+      <h3>Registration Successful!</h3>
+      <p>You have successfully registered for the event.</p>
+      <button
+              onClick={handleOkClick}  // Redirect to events when clicked
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+
+
+ 
         {currentSection === 'myEvents' && (
           <div className="my-events-section">
-            <h3>My Events</h3>
+            <h1 style={{textAlign:'center'}}>MY EVENTS</h1>
+            <div className="tabs">
+              {['Overview', 'Pending', 'Approved', 'Rejected'].map((tab) => (
+                <button
+                  key={tab}
+                  className={selectedTab === tab ? 'active' : ''}
+                  onClick={() => setSelectedTab(tab)}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
             <table>
-              <thead>
-                <tr>
-                  <th>Event Name</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {myEvents.map(registration => (
-                  <tr key={registration.eventId}>
-                    <td>{registration.event.eventTitle}</td>
-                    <td>{registration.status}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+  <thead >
+    <tr>
+      <th>Event ID</th>
+      <th>Event Name</th>
+      <th>Category</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {filterMyEvents().map((regis) => (
+      <tr key={regis.id}>
+        <td>{regis.event.eventId}</td>
+        <td>{regis.event.eventTitle}</td>
+        <td>{regis.event.category}</td>
+        <td>{regis.status}</td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
           </div>
         )}
 
         {currentSection === 'coach' && (
           <div className="coach-section">
-            <h3>Coach Section</h3>
-            <p>Details about the coach will be available here.</p>
+            <h3>Coaches</h3>
+            {athlete?.coach && (
+              <div className="coach-profile">
+                <p>Name: {athlete.coach}</p>
+              </div>
+            )}
           </div>
         )}
       </div>
