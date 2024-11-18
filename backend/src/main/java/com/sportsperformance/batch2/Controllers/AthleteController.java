@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Base64;
 import java.util.List;
+import java.util.NoSuchElementException;
+
 @JsonIgnoreProperties({"parentField"})
 @RestController
 @RequestMapping("/athlete")
@@ -127,6 +129,20 @@ public class AthleteController {
             return ResponseEntity.status(400).body(null);
         }
     }
+
+
+    @DeleteMapping("/registration/{registrationId}")
+    public ResponseEntity<String> deleteRegistration(@PathVariable Long registrationId) {
+        try {
+            athleteService.deleteRegistrationById(registrationId);
+            return ResponseEntity.ok("Registration deleted successfully.");
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: Registration not found.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    }
+
 
 
 }

@@ -243,5 +243,12 @@ public class AthleteService {
         }
     }
 
+    public void deleteRegistrationById(Long registrationId) {
+        if (!registrationRepository.existsById(registrationId)) {
+            throw new NoSuchElementException("Registration not found.");
+        }
+        registrationRepository.deleteById(registrationId);
+    }
+
 
 }
