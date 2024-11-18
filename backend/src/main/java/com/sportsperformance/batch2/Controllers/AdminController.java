@@ -218,5 +218,15 @@ public class AdminController {
         }
     }
 
+    @GetMapping("/events")
+    public ResponseEntity<List<EventResponseDTO>> getAllEvents() {
+        try {
+            List<EventResponseDTO> events = adminService.getAllEvents();
+            return ResponseEntity.ok(events);
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(null);
+        }
+    }
+
 
 }
