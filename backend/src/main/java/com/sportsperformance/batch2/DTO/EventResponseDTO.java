@@ -9,6 +9,7 @@ import java.util.Date;
 public class EventResponseDTO {
 
     private String eventTitle;
+    private int eventId;
     private String category;
     private String location;
     private Date eventDate;

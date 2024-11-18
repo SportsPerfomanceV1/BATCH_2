@@ -218,6 +218,7 @@ public class AthleteService {
         dto.setEventTitle(event.getEventTitle());
         dto.setMeetId(event.getMeetId());
         dto.setCategory(event.getCategory());
+        dto.setEventId(event.getEventId());
 
 //        dto.setEventDescription(event.getEventDescription());
         dto.setLocation(event.getLocation());
