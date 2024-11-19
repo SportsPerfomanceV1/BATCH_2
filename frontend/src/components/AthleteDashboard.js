@@ -1,7 +1,8 @@
 import React, { useState, useEffect} from 'react';
-import React, { useState, useEffect} from 'react';
-import { useNavigate } from 'react-router-dom';
-import { parseISO} from 'date-fns';
+import { Box, Button ,Typography, AppBar, Toolbar} from "@mui/material";
+import { useNavigate ,Link} from 'react-router-dom';
+import { format, parseISO} from 'date-fns';
+import LoginIcon from "@mui/icons-material/Login";
 import '../styles/athlete.css';
 
 function AthleteDashboard() {
@@ -12,11 +13,10 @@ function AthleteDashboard() {
   const [currentSection, setCurrentSection] = useState('profile');
   const [editingProfile, setEditingProfile] = useState(false);
   const [newImage, setNewImage] = useState(null);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [selectedTab, setSelectedTab] = useState('Overview');
   const [remark, setRemark] = useState('');
-  const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [registeringEvent, setRegisteringEvent] = useState(null);
   const [updatedProfile, setUpdatedProfile] = useState({
     firstName: '',
@@ -101,6 +101,9 @@ function AthleteDashboard() {
       console.error("Error loading my events:", error);
     }
   };
+  const closeSuccessPopup = () => {
+    setShowSuccessPopup(false);
+  };
 
   const handleLogout = () => {
     navigate('/*'); // Redirect to login page
@@ -182,7 +185,10 @@ function AthleteDashboard() {
       });
 
       if (response.ok) {
+        loadAllEvents();
         loadMyEvents(); // Reload my events after registering
+        setShowSuccessPopup(true); 
+        handleCloseModal();
       } else {
         console.log(`${eventId}`);
         console.error('Error registering for event:', response);
@@ -192,11 +198,6 @@ function AthleteDashboard() {
     }
   };
 
-
-  const isEventRegistered = (eventId) => {
-    return myEvents.some((regis) => regis.id === eventId);
-  };
-  
 
   const filterMyEvents = () => {
     switch (selectedTab) {
@@ -257,6 +258,7 @@ function AthleteDashboard() {
 
       <div className="content">
         {currentSection === 'profile' && (
+           <div className="transition-container">
           <div className="profile-section">
             {athlete && (
               <>
@@ -267,7 +269,8 @@ function AthleteDashboard() {
                 />
                 <div className="athlete-info">
                   <p>Name: {athlete.firstName} {athlete.lastName}</p>
-                  <p>Date of Birth: {athlete.birthDate.split('T')[0]}</p>
+                  <p>Date of Birth: {athlete.birthDate ? athlete.birthDate.split('T')[0] : 'N/A'}
+                  </p>
                   <p>Gender: {athlete.gender}</p>
                   <p>Height: {athlete.height}</p>
                   <p>Weight: {athlete.weight}</p>
@@ -277,6 +280,7 @@ function AthleteDashboard() {
                 </div>
               </>
             )}
+          </div>
           </div>
         )}
 
@@ -387,8 +391,9 @@ function AthleteDashboard() {
         )}
 
 {currentSection === 'events' && (
+   <div className="transition-container">
           <div className="events-section">
-            <h3>All Events</h3>
+            <h2 style={{textAlign:'center '}}>ALL EVENTS</h2>
             <div className="events-container">
               {events.map(event => (
                 <div key={event.id} className="event-card">
@@ -398,18 +403,19 @@ function AthleteDashboard() {
                   <h3 style={{textAlign:'center'}}>{event.eventTitle}</h3>
                   <p>Meet: {event.meetId.meetName}</p>
                   <p>Category: {event.category}</p>
-                  <button class="button-19" onClick={() => handleViewEvent(event)}>View</button>
-                  <p></p>
-                  <button class="button-19" onClick={() => handleOpenRegisterPopup(event)}>Register</button>
-                </div>
+                    <button className="button-19" onClick={() => handleViewEvent(event)}>View</button>
+                    <p></p>
+                    <button className="button-19" onClick={() => handleOpenRegisterPopup(event)}>Register</button>
+                  </div>
               ))}
             </div>
+          </div>
           </div>
         )}
 
 {selectedEvent && (
   <div className="modal">
-    <div className="modal-content">
+    <div className="modal-content" style={{height:'90%'}}>
       <h2>{selectedEvent.eventTitle}</h2>
       <img src={selectedEvent.imageBase64 ? `data:image/jpeg;base64,${selectedEvent.imageBase64}` : '/default-profile.jpg'}
        alt={selectedEvent.eventTitle} onClick={() => handleViewEvent(selectedEvent)} width={'385px'} height={'200px'} style={
@@ -417,7 +423,6 @@ function AthleteDashboard() {
           paddingLeft:"5%"
         }
        }/>
-       console.log(asd`$(selectedEvent.id)`);
       <p>Meet: {selectedEvent.meetId.meetName}</p>
       <p>Category: {selectedEvent.category}</p>
       <p>Description: {selectedEvent.description}</p>
@@ -425,94 +430,36 @@ function AthleteDashboard() {
       <p>Event Date: {selectedEvent.eventDate.split('T')[0]}</p>
       <textarea placeholder="Remarks (optional)" value={remark} onChange={(e) => setRemark(e.target.value)}></textarea>
       <p></p>
-      {isEventRegistered(selectedEvent.id) ?  (<button disabled className='btn2'>Applied</button>):(
-      <button onClick={() => handleRegisterForEvent(selectedEvent.id)} className='btn2'>Register</button>
-
-      )}
       
-      <button onClick={handleCloseModal}className='btn2'>Close</button>
+      <button onClick={() => handleRegisterForEvent(selectedEvent.eventId)} style={{width:'210px',marginRight:'13px'}}>Register</button>
+      <button onClick={handleCloseModal} style={{width:'210px'}}>Close</button>
     </div>
   </div>
 )}
 
 {registeringEvent && (
-          <div className="modal">
-            <div className="modal-content">
-              <h3>Register for {registeringEvent.eventTitle}</h3>
+          <div className="modal" >
+            <div className="modal-content" style={{width:'400px',height:'300px',textAlign:'center'}}>
+              <h1>Register for {registeringEvent.eventTitle}</h1>
               <textarea placeholder="Add your remark" required value={remark} onChange={(e) => setRemark(e.target.value)}></textarea>
-              <button onClick={() => handleRegisterForEvent(registeringEvent.eventId)}>Submit</button>
-              <button onClick={handleCloseModal}>Cancel</button>
+              <p></p>
+              <button onClick={() => handleRegisterForEvent(registeringEvent.eventId)} style={{width:'150px',marginRight:'15px'}}>Submit</button>
+              <button onClick={handleCloseModal} style={{width:'150px',marginRight:'15px'}}>Cancel</button>
             </div>
           </div>
         )}
-
-      {/* Registration Success Modal */}
-      {registrationSuccess && (
-  <div className="success-popup">
-    <div className="popup-content">
-      <h3>Registration Successful!</h3>
-      <p>You have successfully registered for the event.</p>
-      <button
-              onClick={handleOkClick}  // Redirect to events when clicked
-            >
-              OK
-            </button>
-          </div>
+        {showSuccessPopup && (
+      <div className="modal">
+        <div className="modal-content" style={{ textAlign: 'center' , height:'200px'}}>
+          <h2>Registration Successful!</h2>
+          <p>You have successfully registered for the event.</p>
+          <button onClick={closeSuccessPopup} style={{ marginTop: '20px' }}>OK</button>
         </div>
-      )}
-
-
- 
-        {currentSection === 'myEvents' && (
-          <div className="my-events-section">
-            <h1 style={{textAlign:'center'}}>MY EVENTS</h1>
-            <div className="tabs">
-              {['Overview', 'Pending', 'Approved', 'Rejected'].map((tab) => (
-                <button
-                  key={tab}
-                  className={selectedTab === tab ? 'active' : ''}
-                  onClick={() => setSelectedTab(tab)}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
-            <table>
-  <thead >
-    <tr>
-      <th>Event ID</th>
-      <th>Event Name</th>
-      <th>Category</th>
-      <th>Status</th>
-    </tr>
-  </thead>
-  <tbody>
-    {filterMyEvents().map((regis) => (
-      <tr key={regis.id}>
-        <td>{regis.event.eventId}</td>
-        <td>{regis.event.eventTitle}</td>
-        <td>{regis.event.category}</td>
-        <td>{regis.status}</td>
-      </tr>
-    ))}
-  </tbody>
-</table>
-
-          </div>
-        )}
-
-        {registeringEvent && (
-          <div className="modal">
-            <div className="modal-content">
-              <h3>Register for {registeringEvent.eventTitle}</h3>
-              <textarea placeholder="Add your remark" required value={remark} onChange={(e) => setRemark(e.target.value)}></textarea>
-              <button onClick={() => handleRegisterForEvent(registeringEvent.eventId)}>Submit</button>
-              <button onClick={handleCloseModal}>Cancel</button>
-            </div>
-          </div>
-        )}
+      </div>
+    )}
 
 {currentSection === 'myEvents' && (
+   <div className="transition-container">
           <div className="my-events-section">
             <h2 style={{textAlign:'center'}}>MY EVENTS</h2>
             <div className="tabs">
@@ -540,13 +487,13 @@ function AthleteDashboard() {
       <tr key={regis.id}>
         <td>{regis.eventName}</td>
         <td>{regis.meetName}</td>
-        <td>{regis.registrationDate}</td>
+        <td>{regis.registrationDate.split('T')[0]}</td>
         <td>{regis.status}</td>
       </tr>
     ))}
   </tbody>
 </table>
-
+</div>
           </div>
         )}
 

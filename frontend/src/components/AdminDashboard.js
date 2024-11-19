@@ -121,13 +121,14 @@ const ShortlistCandidatesModal = ({ onClose }) => {
             <div
                 className="shortPopup"
                 style={{
+                    
                     position: "fixed",
                     top: "50%",
                     left: "50%",
                     transform: "translate(-50%, -50%)",
                     width: "100%",
-                    maxWidth: "100vh",
-                    maxHeight: "100vh",
+                    maxWidth: "610px",
+                    maxHeight: "90vh",
                     backgroundColor: "#fff",
                     boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
                     padding: "20px",
@@ -136,9 +137,9 @@ const ShortlistCandidatesModal = ({ onClose }) => {
                     overflowY: "auto",
                 }}
             >
-                    <div className="">
+                    <div className="" style={{height:'1%'}}>
                         <button className="close-btn" onClick={onClose}>&times;</button>
-                        <h2>Pending Registrations</h2>
+                        <h2 style={{textAlign:"center"}}>Pending Registrations</h2>
                         <table style={{ width: "100vh", borderCollapse: "collapse" }}>
                             <thead>
                                 <tr style={{ backgroundColor: "#f4f4f4" }}>
@@ -296,6 +297,13 @@ const PublishResults = ({ onClose }) => {
         <>
             <div className="resultPopupoutside">
     <div className="resultPopup">
+    <button className="close-btn" onClick={onClose} style={{
+            width: '20px',
+            position: 'absolute',
+            top: '10px',
+            left: '10px',
+            justifyContent: 'left',
+        }}>&times;</button>
         <h2>Publish Event Results</h2>
         {!selectedEvent ? (
             <div>
@@ -312,7 +320,7 @@ const PublishResults = ({ onClose }) => {
                     {events.map(event => (
                         <tr key={event.eventId}>
                             <td>{event.eventTitle}</td>
-                            <td>{event.eventDate}</td>
+                            <td>{event.eventDate.split(' ')[0]}</td>
                             <td>
                                 <button style={{width:'250px'}}onClick={() => handleEventClick(event.eventId)}>
                                     Publish Results
