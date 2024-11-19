@@ -15,9 +15,8 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,7 +59,7 @@ public class AdminService {
         // Save and return the event
         return eventRepository.save(event);
     }
-    
+
     // Method to create a new meet
     public Meet createMeet(String meetName) {
         Meet meet = new Meet();
@@ -77,7 +76,7 @@ public class AdminService {
     public List<Meet> getAllMeets() {
         return meetRepository.findAll();
     }
-    
+
     @Autowired
     private RegistrationRepository registrationRepository;
 
@@ -232,5 +231,42 @@ public class AdminService {
                         registration.getEvent().getMeetId().getMeetName()
                 ))
                 .collect(Collectors.toList());
+    }
+
+
+
+    public void deleteRegistrationById(Long registrationId) {
+        if (!registrationRepository.existsById(registrationId)) {
+            throw new NoSuchElementException("Registration not found.");
+        }
+        registrationRepository.deleteById(registrationId);
+    }
+
+
+
+    private EventResponseDTO mapToDTO(Event event) {
+        EventResponseDTO dto = new EventResponseDTO();
+        dto.setEventTitle(event.getEventTitle());
+        dto.setMeetId(event.getMeetId());
+        dto.setCategory(event.getCategory());
+        dto.setEventId(event.getEventId());
+
+//        dto.setEventDescription(event.getEventDescription());
+        dto.setLocation(event.getLocation());
+        dto.setEventDate(event.getEventDate());
+        dto.setEventDescription(event.getEventDescription());
+
+        if (event.getImage() != null) {
+            dto.setImageBase64(Base64.getEncoder().encodeToString(event.getImage()));
+        }
+
+        return dto;
+    }
+
+    public List<EventResponseDTO> getAllEvents() {
+        List<Event> events = eventRepository.findAll();
+        return events.stream()
+                .map(this::mapToDTO) // Convert each Event entity to EventResponseDTO
+                .toList();           // Collect results as a List
     }
 }

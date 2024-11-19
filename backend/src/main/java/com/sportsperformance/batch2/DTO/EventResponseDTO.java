@@ -9,6 +9,7 @@ import java.util.Date;
 public class EventResponseDTO {
 
     private String eventTitle;
+    private int eventId;
     private String category;
     private String location;
     private Date eventDate;
@@ -16,4 +17,3 @@ public class EventResponseDTO {
     private Meet meetId;
     private String imageBase64; // Base64-encoded image
 }
-

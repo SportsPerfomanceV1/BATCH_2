@@ -145,12 +145,35 @@ public class AthleteService {
 //        return eventRepository.findAll();
 //    }
 
-    public List<EventResponseDTO> getAllEvents() {
+//    public List<EventResponseDTO> getAllEvents() {
+//        List<Event> events = eventRepository.findAll();
+//        return events.stream()
+//                .map(this::mapToDTO) // Convert each Event entity to EventResponseDTO
+//                .toList();           // Collect results as a List
+//    }
+
+    public List<EventResponseDTO> getAvailableEvents(String username) {
+        // Fetch athlete by username
+        Athlete athlete = athleteRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Athlete not found"));
+
+        // Fetch all events
         List<Event> events = eventRepository.findAll();
+
+        // Fetch all event ids that the athlete has registered for
+        List<Integer> registeredEventIds = registrationRepository.findEventIdsByAthleteId(athlete.getAthleteId());
+
+        // Filter out events that the athlete has already registered for
         return events.stream()
-                .map(this::mapToDTO) // Convert each Event entity to EventResponseDTO
-                .toList();           // Collect results as a List
+                .filter(event -> !registeredEventIds.contains(event.getEventId()))
+                .map(this::mapToDTO) // Map Event to DTO
+                .toList();
     }
+
+
+
+
+
 
     // 2. Get Registered Events for Athlete
 //    public List<Registration> getRegisteredEvents(String username) throws Exception {
@@ -195,6 +218,7 @@ public class AthleteService {
         dto.setEventTitle(event.getEventTitle());
         dto.setMeetId(event.getMeetId());
         dto.setCategory(event.getCategory());
+        dto.setEventId(event.getEventId());
 
 //        dto.setEventDescription(event.getEventDescription());
         dto.setLocation(event.getLocation());
@@ -218,6 +242,13 @@ public class AthleteService {
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
+    }
+
+    public void deleteRegistrationById(Long registrationId) {
+        if (!registrationRepository.existsById(registrationId)) {
+            throw new NoSuchElementException("Registration not found.");
+        }
+        registrationRepository.deleteById(registrationId);
     }
 
 

@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Base64;
 import java.util.List;
+import java.util.NoSuchElementException;
+
 @JsonIgnoreProperties({"parentField"})
 @RestController
 @RequestMapping("/athlete")
@@ -90,15 +92,28 @@ public class AthleteController {
         return ResponseEntity.ok("Registration successful");
     }
 
+//    @GetMapping("/events")
+//    public ResponseEntity<List<EventResponseDTO>> getAllEvents() {
+//        try {
+//            List<EventResponseDTO> events = athleteService.getAllEvents();
+//            return ResponseEntity.ok(events);
+//        } catch (Exception e) {
+//            return ResponseEntity.status(400).body(null);
+//        }
+//    }
+
     @GetMapping("/events")
-    public ResponseEntity<List<EventResponseDTO>> getAllEvents() {
+    public ResponseEntity<List<EventResponseDTO>> getAvailableEvents() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
         try {
-            List<EventResponseDTO> events = athleteService.getAllEvents();
+            List<EventResponseDTO> events = athleteService.getAvailableEvents(username);
             return ResponseEntity.ok(events);
         } catch (Exception e) {
-            return ResponseEntity.status(400).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
+
 
     @GetMapping("/events/registered")
     public ResponseEntity<List<RegistrationDTO>> getRegisteredEvents() {
@@ -114,6 +129,34 @@ public class AthleteController {
             return ResponseEntity.status(400).body(null);
         }
     }
+
+
+    @DeleteMapping("/registration/{registrationId}")
+    public ResponseEntity<String> deleteRegistration(@PathVariable Long registrationId) {
+        try {
+            athleteService.deleteRegistrationById(registrationId);
+            return ResponseEntity.ok("Registration deleted successfully.");
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: Registration not found.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    }
+
+
+
+    @DeleteMapping("/registration/{registrationId}")
+    public ResponseEntity<String> deleteRegistration(@PathVariable Long registrationId) {
+        try {
+            athleteService.deleteRegistrationById(registrationId);
+            return ResponseEntity.ok("Registration deleted successfully.");
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: Registration not found.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    }
+
 
 
 }

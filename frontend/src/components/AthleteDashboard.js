@@ -1,4 +1,5 @@
 import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { parseISO} from 'date-fns';
 import '../styles/athlete.css';
@@ -13,7 +14,9 @@ function AthleteDashboard() {
   const [newImage, setNewImage] = useState(null);
   const [selectedTab, setSelectedTab] = useState('Overview');
   const [remark, setRemark] = useState('');
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [registeringEvent, setRegisteringEvent] = useState(null);
   const [updatedProfile, setUpdatedProfile] = useState({
     firstName: '',
@@ -39,6 +42,7 @@ function AthleteDashboard() {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json" 
         }
       });
       const data = await response.json();
@@ -50,7 +54,7 @@ function AthleteDashboard() {
       setUpdatedProfile({
         firstName: data.firstName,
         lastName: data.lastName,
-        birthDate: formattedDate,
+        birthDate: data.birthDate,
         gender: data.gender,
         height: data.height,
         weight: data.weight,
@@ -62,6 +66,8 @@ function AthleteDashboard() {
     }
   };
 
+  
+
   const loadAllEvents = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -72,6 +78,8 @@ function AthleteDashboard() {
         }
       });
       const data = await response.json();
+      console.log(data);
+      console.log(data.eventId);
       setEvents(data);
     } catch (error) {
       console.error("Error loading events:", error);
@@ -96,12 +104,6 @@ function AthleteDashboard() {
 
   const handleLogout = () => {
     navigate('/*'); // Redirect to login page
-  };
-  const handleOkClick = () => {
-    setRegistrationSuccess(false);
-
-      // Close the success popup
-      // Redirect to the events section
   };
 
   const handleEditProfile = () => {
@@ -131,10 +133,6 @@ function AthleteDashboard() {
     });
   };
 
-  const isEventRegistered = (eventId) => {
-    return myEvents.some((event) => event.id === eventId); // Assuming `myEvents` holds the registered events
-  };
-
   const handleSaveProfile = async () => {
     const formData = new FormData();
     formData.append('firstName', updatedProfile.firstName);
@@ -159,6 +157,7 @@ function AthleteDashboard() {
 
       if (response.ok) {
         setEditingProfile(false);
+        <p>Updated</p>
         loadAthleteProfile(); // Reload the profile data
       } else {
         console.error('Error saving profile:', response);
@@ -183,17 +182,21 @@ function AthleteDashboard() {
       });
 
       if (response.ok) {
-        setRegistrationSuccess(true);  // Show success modal
-      setIsRegistered(true);
-      setShowRegisterModal(false); 
         loadMyEvents(); // Reload my events after registering
       } else {
+        console.log(`${eventId}`);
         console.error('Error registering for event:', response);
       }
     } catch (error) {
       console.error('Error registering for event:', error);
     }
   };
+
+
+  const isEventRegistered = (eventId) => {
+    return myEvents.some((regis) => regis.id === eventId);
+  };
+  
 
   const filterMyEvents = () => {
     switch (selectedTab) {
@@ -210,16 +213,47 @@ function AthleteDashboard() {
 
   return (
     <div className="athlete-dashboard">
-      <header className="header">
-        <h1>Athletics</h1>
-        <nav>
-          <a href="#" onClick={() => setCurrentSection('profile')}>Profile</a>
-          <a href="#" onClick={() => setCurrentSection('events')}>Events</a>
-          <a href="#" onClick={() => setCurrentSection('myEvents')}>My Events</a>
-          <a href="#" onClick={() => setCurrentSection('coach')}>Coach</a>
-          <a href="#" onClick={handleLogout}>Logout</a>
-        </nav>
-      </header>
+      
+      <AppBar position="static" className="navbar">
+                <Toolbar className="navbar-content">
+                    <Typography variant="h5" className="navbar-title">
+                    Athletics
+                    </Typography>
+                    <Box className="navbar-actions">
+                        <Link to="" className="logout-link" >
+                            <Button className="logout-button" onClick={() => setCurrentSection('profile')}>
+                            Profile
+                            </Button>
+                        </Link>
+                        <Link to="" className="logout-link">
+                            <Button className="logout-button" onClick={() => setCurrentSection('events')}>
+                            Events
+                            </Button>
+                        </Link>
+                        <Link to="" className="logout-link">
+                            <Button className="logout-button"  onClick={() => setCurrentSection('myEvents')}>
+                            My Events
+                            </Button>
+                        </Link>
+                        <Link to="" className="logout-link">
+                            <Button className="logout-button"  onClick={() => setCurrentSection('coach')}>
+                            Coach
+                            </Button>
+                        </Link>
+                        <Link to="/*" className="logout-link">
+                            <Button 
+                                onClick={handleLogout} 
+                                startIcon={<LoginIcon />}
+                                className="logout-button"
+                            >
+                                Logout
+                            </Button>
+                        </Link>
+                    </Box>
+                </Toolbar>
+            </AppBar>
+        <h1></h1>
+        
 
       <div className="content">
         {currentSection === 'profile' && (
@@ -233,7 +267,7 @@ function AthleteDashboard() {
                 />
                 <div className="athlete-info">
                   <p>Name: {athlete.firstName} {athlete.lastName}</p>
-                  <p>Date of Birth: {athlete.birthDate}</p>
+                  <p>Date of Birth: {athlete.birthDate.split('T')[0]}</p>
                   <p>Gender: {athlete.gender}</p>
                   <p>Height: {athlete.height}</p>
                   <p>Weight: {athlete.weight}</p>
@@ -251,88 +285,101 @@ function AthleteDashboard() {
             <div className="modal-content">
               <h2>Edit Profile</h2>
               <form onSubmit={(e) => e.preventDefault()}>
+              <label>
+    <input
+      type="text"
+      name="firstName"
+      value={updatedProfile.firstName}
+      onChange={handleProfileChange}
+      placeholder=" " /* Placeholder for compatibility */
+    />
+    <span>First Name</span>
+  </label>
+
+  <label>
+    <input
+      type="text"
+      name="lastName"
+      value={updatedProfile.lastName}
+      onChange={handleProfileChange}
+      placeholder=" " 
+    />
+    <span>Last Name</span>
+  </label>
+
+  <label>
+    <input
+      type="date"
+      name="birthDate"
+      value={updatedProfile.birthDate}
+      onChange={handleProfileChange}
+      placeholder=" " 
+    />
+    <span>Date of Birth</span>
+  </label>
+
+  <label>
+    <input
+      type="text"
+      name="gender"
+      value={updatedProfile.gender}
+      onChange={handleProfileChange}
+      placeholder=" "
+    />
+    <span>Gender</span>
+  </label>
                 <label>
-                  First Name:
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={updatedProfile.firstName}
-                    onChange={handleProfileChange}
-                  />
-                </label>
-                <label>
-                  Last Name:
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={updatedProfile.lastName}
-                    onChange={handleProfileChange}
-                  />
-                </label>
-                <label>
-                  Date of Birth:
-                  <input
-                    type="date"
-                    name="birthDate"
-                    value={updatedProfile.birthDate}
-                    onChange={handleProfileChange}
-                  />
-                </label>
-                <label>
-                  Gender:
-                  <input
-                    type="text"
-                    name="gender"
-                    value={updatedProfile.gender}
-                    onChange={handleProfileChange}
-                  />
-                </label>
-                <label>
-                  Height:
                   <input
                     type="text"
                     name="height"
                     value={updatedProfile.height}
                     onChange={handleProfileChange}
+                    placeholder=" " 
                   />
+                  <span>Height</span>
                 </label>
                 <label>
-                  Weight:
                   <input
                     type="text"
                     name="weight"
                     value={updatedProfile.weight}
                     onChange={handleProfileChange}
+                    placeholder=''
                   />
+                  <span>Weight</span>
                 </label>
                 <label>
-                  Category:
                   <input
                     type="text"
                     name="category"
                     value={updatedProfile.category}
                     onChange={handleProfileChange}
+                    placeholder=''
                   />
+                  <span>Category</span>
                 </label>
                 <label>
-                  Coach:
                   <input
                     type="text"
                     name="coach"
                     value={updatedProfile.coach}
                     onChange={handleProfileChange}
+                    placeholder=''
                   />
+                  <span>Coach</span>
                 </label>
                 <label>
                   Profile Image:
                   <input
                     type="file"
+                    className='file-input'
                     onChange={handleImageChange}
                   />
                 </label>
+               
                 <div className="modal-actions">
-                  <button type="button" onClick={handleSaveProfile}>Save</button>
-                  <button type="button" onClick={handleCloseModal}>Cancel</button>
+                  <button type="button" onClick={handleSaveProfile} className='btn2'>Save</button>
+                  <button type="button" onClick={handleCloseModal} className='btn2'>Cancel</button>
                 </div>
               </form>
             </div>
@@ -348,11 +395,12 @@ function AthleteDashboard() {
                   <img 
                   src={event.imageBase64 ? `data:image/jpeg;base64,${event.imageBase64}` : '/default-profile.jpg'}
                   alt={event.eventTitle} onClick={() => handleViewEvent(event)} />
-                  <h4>{event.eventTitle}</h4>
+                  <h3 style={{textAlign:'center'}}>{event.eventTitle}</h3>
                   <p>Meet: {event.meetId.meetName}</p>
                   <p>Category: {event.category}</p>
-                  <button onClick={() => handleViewEvent(event)}>View</button>
-                  <button onClick={() => handleOpenRegisterPopup(event)}>Register</button>
+                  <button class="button-19" onClick={() => handleViewEvent(event)}>View</button>
+                  <p></p>
+                  <button class="button-19" onClick={() => handleOpenRegisterPopup(event)}>Register</button>
                 </div>
               ))}
             </div>
@@ -363,14 +411,26 @@ function AthleteDashboard() {
   <div className="modal">
     <div className="modal-content">
       <h2>{selectedEvent.eventTitle}</h2>
+      <img src={selectedEvent.imageBase64 ? `data:image/jpeg;base64,${selectedEvent.imageBase64}` : '/default-profile.jpg'}
+       alt={selectedEvent.eventTitle} onClick={() => handleViewEvent(selectedEvent)} width={'385px'} height={'200px'} style={
+        {
+          paddingLeft:"5%"
+        }
+       }/>
+       console.log(asd`$(selectedEvent.id)`);
       <p>Meet: {selectedEvent.meetId.meetName}</p>
       <p>Category: {selectedEvent.category}</p>
       <p>Description: {selectedEvent.description}</p>
       <p>Location: {selectedEvent.location}</p>
-      <p>Event Date: {selectedEvent.eventDate}</p>
+      <p>Event Date: {selectedEvent.eventDate.split('T')[0]}</p>
       <textarea placeholder="Remarks (optional)" value={remark} onChange={(e) => setRemark(e.target.value)}></textarea>
-      <button onClick={() => handleRegisterForEvent(selectedEvent.eventId)}>Register</button>
-      <button onClick={handleCloseModal}>Close</button>
+      <p></p>
+      {isEventRegistered(selectedEvent.id) ?  (<button disabled className='btn2'>Applied</button>):(
+      <button onClick={() => handleRegisterForEvent(selectedEvent.id)} className='btn2'>Register</button>
+
+      )}
+      
+      <button onClick={handleCloseModal}className='btn2'>Close</button>
     </div>
   </div>
 )}
@@ -454,7 +514,7 @@ function AthleteDashboard() {
 
 {currentSection === 'myEvents' && (
           <div className="my-events-section">
-            <h3>My Events</h3>
+            <h2 style={{textAlign:'center'}}>MY EVENTS</h2>
             <div className="tabs">
               {['Overview', 'Pending', 'Approved', 'Rejected'].map((tab) => (
                 <button
@@ -489,7 +549,6 @@ function AthleteDashboard() {
 
           </div>
         )}
-       
 
         {currentSection === 'coach' && (
           <div className="coach-section">
@@ -504,6 +563,6 @@ function AthleteDashboard() {
       </div>
     </div>
   );
-}
 
+}
 export default AthleteDashboard;
