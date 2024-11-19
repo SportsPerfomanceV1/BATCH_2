@@ -90,23 +90,102 @@ public class AdminService {
     }
 
     // 2. Get All Registrations
-    public List<Registration> getAllRegistrations() {
-        return registrationRepository.findAll();
+//    public List<Registration> getAllRegistrations() {
+//        return registrationRepository.findAll();
+//    }
+
+    public List<RegistrationDTO> getAllRegistrations() {
+        // Retrieve all registrations and map them to RegistrationDTOs
+        return registrationRepository.findAll()
+                .stream()
+                .map(registration -> {
+                    // Convert Athlete to AthleteProfileDTO
+                    AthleteProfileDTO athleteProfile = new AthleteProfileDTO();
+                    athleteProfile.setFirstName(registration.getAthlete().getFirstName());
+                    athleteProfile.setLastName(registration.getAthlete().getLastName());
+                    athleteProfile.setBirthDate(registration.getAthlete().getBirthDate());
+                    athleteProfile.setGender(registration.getAthlete().getGender());
+                    athleteProfile.setHeight(registration.getAthlete().getHeight());
+                    athleteProfile.setWeight(registration.getAthlete().getWeight());
+                    athleteProfile.setCategory(registration.getAthlete().getCategory());
+                    athleteProfile.setPhotoBase64(Arrays.toString(registration.getAthlete().getPhoto()));
+                    athleteProfile.setEmail(registration.getAthlete().getEmail());
+                    athleteProfile.setUsername(registration.getAthlete().getUsername());
+
+
+                    // Return a RegistrationDTO with the AthleteProfileDTO included
+                    return new RegistrationDTO(
+                            registration.getRegistrationId(),
+                            registration.getEvent().getEventId(),
+                            registration.getAthlete().getAthleteId(),
+                            registration.getEvent().getEventTitle(),
+                            registration.getRegistrationDate(),
+                            registration.getStatus(),
+                            registration.getRemarks(),
+                            registration.getEvent().getMeetId().getMeetName(),
+                            athleteProfile // Pass AthleteProfileDTO here
+                    );
+                })
+                .collect(Collectors.toList());
     }
+
+
+
+
     @Autowired
     private AthleteRepository athleteRepository;
+// Import necessary packages for mapping
 
-    // 3. Get Athlete by ID
-    public Athlete getAthleteById(Long athleteId) throws Exception {
-        return athleteRepository.findById(athleteId)
-                .orElseThrow(() -> new Exception("Athlete not found"));
-    }
 
-    // 4. Get Event by ID
-    public Event getEventById(Long eventId) throws Exception {
-        return eventRepository.findById(eventId)
-                .orElseThrow(() -> new Exception("Event not found"));
-    }
+        // 3. Get Athlete by ID
+        public AthleteProfileDTO getAthleteById(Long athleteId) throws Exception {
+            Athlete athlete = athleteRepository.findById(athleteId)
+                    .orElseThrow(() -> new Exception("Athlete not found"));
+
+            // Map the Athlete entity to AthleteProfileDTO
+            AthleteProfileDTO athleteProfileDTO = new AthleteProfileDTO();
+            athleteProfileDTO.setFirstName(athlete.getFirstName());
+            athleteProfileDTO.setLastName(athlete.getLastName());
+            athleteProfileDTO.setBirthDate(athlete.getBirthDate());
+            athleteProfileDTO.setGender(athlete.getGender());
+            athleteProfileDTO.setHeight(athlete.getHeight());
+            athleteProfileDTO.setWeight(athlete.getWeight());
+            athleteProfileDTO.setCategory(athlete.getCategory());
+
+            // Convert the athlete photo (if applicable) to Base64
+            if (athlete.getPhotoUrl() != null) {
+                byte[] photoBytes = athlete.getPhotoUrl().getBytes(); // Assuming this returns a byte array
+                athleteProfileDTO.setPhotoBase64(Base64.getEncoder().encodeToString(photoBytes));
+            }
+
+            return athleteProfileDTO;
+        }
+
+        // 4. Get Event by ID
+        public EventResponseDTO getEventById(Long eventId) throws Exception {
+            Event event = eventRepository.findById(eventId)
+                    .orElseThrow(() -> new Exception("Event not found"));
+
+            // Map the Event entity to EventResponseDTO
+            EventResponseDTO eventResponseDTO = new EventResponseDTO();
+            eventResponseDTO.setEventTitle(event.getEventTitle());
+            eventResponseDTO.setEventId(event.getEventId());
+            eventResponseDTO.setCategory(event.getCategory());
+            eventResponseDTO.setLocation(event.getLocation());
+            eventResponseDTO.setEventDate(event.getEventDate());
+            eventResponseDTO.setEventDescription(event.getEventDescription());
+            eventResponseDTO.setMeetId(event.getMeetId());
+
+            // Convert the event image (if applicable) to Base64
+            if (event.getImage() != null) {
+                byte[] imageBytes = event.getImage(); // Assuming this returns a byte array
+                eventResponseDTO.setImageBase64(Base64.getEncoder().encodeToString(imageBytes));
+            }
+
+            return eventResponseDTO;
+        }
+
+
 
 
     // Update in EventService
@@ -219,16 +298,33 @@ public class AdminService {
 
         // Map each Registration to RegistrationDTO
         return registrations.stream()
-                .map(registration -> new RegistrationDTO(
-                        registration.getRegistrationId(),
-                        registration.getEvent().getEventId(),
-                        registration.getAthlete().getAthleteId(),
-                        registration.getEvent().getEventTitle(),
-                        registration.getRegistrationDate(),
-                        registration.getStatus(),
-                        registration.getRemarks(),
-                        registration.getEvent().getMeetId().getMeetName()
-                ))
+                .map(registration -> {
+                    // Convert Athlete to AthleteProfileDTO
+                    AthleteProfileDTO athleteProfile = new AthleteProfileDTO();
+                    athleteProfile.setFirstName(registration.getAthlete().getFirstName());
+                    athleteProfile.setLastName(registration.getAthlete().getLastName());
+                    athleteProfile.setBirthDate(registration.getAthlete().getBirthDate());
+                    athleteProfile.setGender(registration.getAthlete().getGender());
+                    athleteProfile.setHeight(registration.getAthlete().getHeight());
+                    athleteProfile.setWeight(registration.getAthlete().getWeight());
+                    athleteProfile.setCategory(registration.getAthlete().getCategory());
+                    athleteProfile.setPhotoBase64(Arrays.toString(registration.getAthlete().getPhoto()));
+                    athleteProfile.setEmail(registration.getAthlete().getEmail());
+                    athleteProfile.setUsername(registration.getAthlete().getUsername());
+
+                    // Return a RegistrationDTO with the AthleteProfileDTO included
+                    return new RegistrationDTO(
+                            registration.getRegistrationId(),
+                            registration.getEvent().getEventId(),
+                            registration.getAthlete().getAthleteId(),
+                            registration.getEvent().getEventTitle(),
+                            registration.getRegistrationDate(),
+                            registration.getStatus(),
+                            registration.getRemarks(),
+                            registration.getEvent().getMeetId().getMeetName(),
+                            athleteProfile // Pass AthleteProfileDTO here
+                    );
+                })
                 .collect(Collectors.toList());
     }
 

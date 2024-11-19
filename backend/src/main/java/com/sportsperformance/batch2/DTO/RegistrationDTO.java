@@ -14,8 +14,13 @@ public class RegistrationDTO {
     private String status;
     private String remarks;
     private String meetName;
+//    private String athleteName;
+//    private String athleteUsername;
+//    private String athleteEmail;
 
-    public RegistrationDTO(int registrationId, int eventId, Long athleteId, String eventName, Date registrationDate, String status, String remarks, String meetName) {
+    private AthleteProfileDTO athlete;
+
+    public RegistrationDTO(int registrationId, int eventId, Long athleteId, String eventName, Date registrationDate, String status, String remarks, String meetName, AthleteProfileDTO athlete) {
         this.registrationId = registrationId;
         this.eventId = eventId;
         this.athleteId = athleteId;
@@ -24,5 +29,6 @@ public class RegistrationDTO {
         this.status = status;
         this.remarks = remarks;
         this.meetName = meetName;
+        this.athlete = athlete;
     }
 }

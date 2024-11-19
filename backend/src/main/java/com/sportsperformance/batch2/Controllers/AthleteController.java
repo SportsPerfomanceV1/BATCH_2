@@ -51,8 +51,8 @@ public class AthleteController {
         dto.setLastName(athlete.getLastName());
         dto.setBirthDate(athlete.getBirthDate());
         dto.setGender(athlete.getGender());
-        dto.setHeight(String.valueOf(athlete.getHeight()));
-        dto.setWeight(String.valueOf(athlete.getWeight()));
+        dto.setHeight(athlete.getHeight());
+        dto.setWeight(athlete.getWeight());
         dto.setCategory(athlete.getCategory());
 
         if (athlete.getPhoto() != null) {

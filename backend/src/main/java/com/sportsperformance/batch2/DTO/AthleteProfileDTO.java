@@ -13,9 +13,11 @@ public class AthleteProfileDTO {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date birthDate;
     private String gender;
-    private String height;
-    private String weight;
+    private float height;
+    private float weight;
     private String category;
+    private String email;
+    private String username;
 
     private MultipartFile photoUrl; // For incoming file uploads
     private String photoBase64;     // For outgoing Base64-encoded image
