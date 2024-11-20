@@ -108,9 +108,9 @@ public class AdminController {
 
 
     @GetMapping("/registrations")
-    public ResponseEntity<List<Registration>> getAllRegistrations() {
+    public ResponseEntity<List<RegistrationDTO>> getAllRegistrations() {
         try {
-            List<Registration> registrations = adminService.getAllRegistrations();
+            List<RegistrationDTO> registrations = adminService.getAllRegistrations();
             return ResponseEntity.ok(registrations);
         } catch (Exception e) {
             return ResponseEntity.status(400).body(null);
@@ -118,9 +118,9 @@ public class AdminController {
     }
 
     @GetMapping("/athlete/{athleteId}")
-    public ResponseEntity<Athlete> getAthlete(@PathVariable Long athleteId) {
+    public ResponseEntity<AthleteProfileDTO> getAthlete(@PathVariable Long athleteId) {
         try {
-            Athlete athlete = adminService.getAthleteById(athleteId);
+            AthleteProfileDTO athlete = adminService.getAthleteById(athleteId);
             return ResponseEntity.ok(athlete);
         } catch (Exception e) {
             return ResponseEntity.status(400).body(null);

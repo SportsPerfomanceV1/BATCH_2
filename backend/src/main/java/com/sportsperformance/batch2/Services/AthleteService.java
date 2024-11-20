@@ -41,8 +41,8 @@ public class AthleteService {
         athlete.setLastName(profileDTO.getLastName());
         athlete.setBirthDate(profileDTO.getBirthDate());
         athlete.setGender(profileDTO.getGender());
-        athlete.setHeight(Float.parseFloat(profileDTO.getHeight()));
-        athlete.setWeight(Float.parseFloat(profileDTO.getWeight()));
+        athlete.setHeight(profileDTO.getHeight());
+        athlete.setWeight(profileDTO.getWeight());
         athlete.setCategory(profileDTO.getCategory());
 
         // Handle image file
@@ -199,16 +199,34 @@ public class AthleteService {
 
         // Map to DTOs
         return registrations.stream()
-                .map(registration -> new RegistrationDTO(
-                        registration.getRegistrationId(),
-                        registration.getEvent().getEventId(),
-                        registration.getAthlete().getAthleteId(),
-                        registration.getEvent().getEventTitle(), // Assuming Athlete has a method getName()
-                        registration.getRegistrationDate(),
-                        registration.getStatus(),
-                        registration.getRemarks(),
-                        registration.getEvent().getMeetId().getMeetName()
-                ))
+                .map(registration -> {
+                    // Convert Athlete to AthleteProfileDTO
+                    AthleteProfileDTO athleteProfile = new AthleteProfileDTO();
+                    athleteProfile.setFirstName(registration.getAthlete().getFirstName());
+                    athleteProfile.setLastName(registration.getAthlete().getLastName());
+                    athleteProfile.setBirthDate(registration.getAthlete().getBirthDate());
+                    athleteProfile.setGender(registration.getAthlete().getGender());
+                    athleteProfile.setHeight(registration.getAthlete().getHeight());
+                    athleteProfile.setWeight(registration.getAthlete().getWeight());
+                    athleteProfile.setCategory(registration.getAthlete().getCategory());
+                    athleteProfile.setPhotoBase64(Arrays.toString(registration.getAthlete().getPhoto()));
+                    athleteProfile.setEmail(registration.getAthlete().getEmail());
+                    athleteProfile.setUsername(registration.getAthlete().getUsername());
+
+
+                    // Return a RegistrationDTO with the AthleteProfileDTO included
+                    return new RegistrationDTO(
+                            registration.getRegistrationId(),
+                            registration.getEvent().getEventId(),
+                            registration.getAthlete().getAthleteId(),
+                            registration.getEvent().getEventTitle(),
+                            registration.getRegistrationDate(),
+                            registration.getStatus(),
+                            registration.getRemarks(),
+                            registration.getEvent().getMeetId().getMeetName(),
+                            athleteProfile // Pass AthleteProfileDTO here
+                    );
+                })
                 .collect(Collectors.toList());
     }
 
