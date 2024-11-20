@@ -11,7 +11,7 @@ public class Achievement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int achievementId;
+    private Long achievementId;
 
     @ManyToOne
     @JoinColumn(name = "coachId", nullable = false)
@@ -21,5 +21,4 @@ public class Achievement {
     private String description;
     private Date achievedDate;
 
-    // Getters and setters...
 }

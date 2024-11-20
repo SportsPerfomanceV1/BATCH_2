@@ -4,6 +4,7 @@ import com.sportsperformance.batch2.DTO.*;
 
 import com.sportsperformance.batch2.Repositories.EventRepository;
 import com.sportsperformance.batch2.Services.AdminService;
+import com.sportsperformance.batch2.Services.CoachService;
 import com.sportsperformance.batch2.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -227,6 +228,28 @@ public class AdminController {
             return ResponseEntity.status(400).body(null);
         }
     }
+
+    @Autowired
+    private CoachService coachService;
+
+    // Get all coaches
+    @GetMapping
+    public ResponseEntity<List<CoachSummaryDTO>> getAllCoaches() {
+        return ResponseEntity.ok(coachService.getAllCoaches());
+    }
+
+    // Get a specific coach by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<CoachDTO> getCoachById(@PathVariable Long id) {
+        return ResponseEntity.ok(coachService.getCoachById(id));
+    }
+
+    // Get all achievements by coachId
+    @GetMapping("achievements/coach/{coachId}")
+    public ResponseEntity<List<AchievementDTO>> getAllAchievementsByCoachId(@PathVariable Long coachId) {
+        return ResponseEntity.ok(coachService.getAllAchievementsByCoachId(coachId));
+    }
+
 
 
 }

@@ -44,10 +44,10 @@ public class Event {
     @OneToMany(mappedBy = "event")
     @JsonIgnoreProperties("event")
     private List<Registration> registrations;
-
-    @OneToMany(mappedBy = "event")
-    @JsonIgnoreProperties("event")
-    private List<AssistanceRequest> assistanceRequests;
+//
+//    @OneToMany(mappedBy = "event")
+//    @JsonIgnoreProperties("event")
+//    private List<AssistanceRequest> assistanceRequests;
 
     // Getters and setters...
 }

@@ -27,7 +27,8 @@ public class Coach extends BaseUser {
     @OneToMany(mappedBy = "coach")
     private List<AssistanceRequest> assistanceRequests;
 
-
-    // Getters and Setters
+    @Lob
+    @Column(name = "image", columnDefinition = "BLOB")
+    private byte[] image;
 
 }

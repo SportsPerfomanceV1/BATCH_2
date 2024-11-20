@@ -1,18 +1,13 @@
 package com.sportsperformance.batch2.Services;
 
-import com.sportsperformance.batch2.DTO.AthleteProfileDTO;
-import com.sportsperformance.batch2.DTO.EventResponseDTO;
-import com.sportsperformance.batch2.DTO.RegistrationDTO;
-import com.sportsperformance.batch2.DTO.RegistrationRequestDTO;
-import com.sportsperformance.batch2.Repositories.AthleteRepository;
-import com.sportsperformance.batch2.Repositories.EventRepository;
-import com.sportsperformance.batch2.Repositories.RegistrationRepository;
-import com.sportsperformance.batch2.models.Athlete;
-import com.sportsperformance.batch2.models.Registration;
-import com.sportsperformance.batch2.models.Event;
+import com.sportsperformance.batch2.DTO.*;
+import com.sportsperformance.batch2.Repositories.*;
+import com.sportsperformance.batch2.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -269,5 +264,110 @@ public class AthleteService {
         registrationRepository.deleteById(registrationId);
     }
 
+    @Autowired
+    private AssistanceRequestRepository assistanceRequestRepository;
+
+
+
+    @Autowired
+    private CoachRepository coachRepository;
+
+    // Fetch the logged-in user's username
+    private String getLoggedInUsername() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userDetails.getUsername();
+    }
+
+
+    public AssistanceRequestDTO createRequest(AssistanceRequestDTO dto) {
+        String username = getLoggedInUsername();
+
+        Athlete athlete = athleteRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Athlete not found with username: " + username));
+
+        Coach coach = coachRepository.findById((long) dto.getCoachId())
+                .orElseThrow(() -> new RuntimeException("Coach not found with ID: " + dto.getCoachId()));
+
+        AssistanceRequest request = new AssistanceRequest();
+        request.setAthlete(athlete);
+        request.setCoach(coach);
+        request.setStatus("Pending");
+        request.setRequestDate(new Date());
+        request.setRemarks(dto.getRemarks());
+
+        AssistanceRequest savedRequest = assistanceRequestRepository.save(request);
+
+        return mapToDTO(savedRequest);
+    }
+
+
+    private AssistanceRequestDTO mapToDTO(AssistanceRequest request) {
+        AssistanceRequestDTO dto = new AssistanceRequestDTO();
+        dto.setAssistanceRequestId(request.getAssistanceRequestId());
+        dto.setCoachId((Long) request.getCoach().getCoachId());
+        dto.setAthleteId((Long) request.getAthlete().getAthleteId()); // Set athleteId
+        dto.setStatus(request.getStatus());
+        dto.setRemarks(request.getRemarks());
+        dto.setRequestDate(request.getRequestDate());
+        return dto;
+    }
+
+    public List<AssistanceRequestDTO> getRequestsByLoggedInAthlete() {
+        String username = getLoggedInUsername();
+
+        Athlete athlete = athleteRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Athlete not found with username: " + username));
+
+        return assistanceRequestRepository.findByAthlete(athlete).stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+
+    @Autowired
+    private WeightPlanRepository weightPlanRepository;
+
+    @Autowired
+    private DailyDietRepository dailyDietRepository;
+
+    public List<DailyDietDTO> getDailyDietsByLoggedInAthlete(String username) {
+        Athlete athlete = athleteRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Athlete not found"));
+
+        return dailyDietRepository.findByAthleteAthleteIdOrderByDateDesc(athlete.getAthleteId()).stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<WeightPlanDTO> getWeightPlansByLoggedInAthlete(String username) {
+        Athlete athlete = athleteRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Athlete not found"));
+
+        return weightPlanRepository.findByAthleteAthleteId(athlete.getAthleteId()).stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private DailyDietDTO mapToDTO(DailyDiet dailyDiet) {
+        DailyDietDTO dto = new DailyDietDTO();
+        dto.setDietId(dailyDiet.getDietId());
+        dto.setAthleteId(dailyDiet.getAthlete().getAthleteId());
+        dto.setDate(dailyDiet.getDate());
+        dto.setCalories(dailyDiet.getCalories());
+        dto.setCurrentWeight(dailyDiet.getCurrentWeight());
+        dto.setWeightPlanId(dailyDiet.getWeightPlan() != null ? dailyDiet.getWeightPlan().getPlanId() : null);
+        return dto;
+    }
+
+    private WeightPlanDTO mapToDTO(WeightPlan weightPlan) {
+        WeightPlanDTO dto = new WeightPlanDTO();
+        dto.setPlanId(weightPlan.getPlanId());
+        dto.setAthleteId(weightPlan.getAthlete().getAthleteId());
+        dto.setStartWeight(weightPlan.getStartWeight());
+        dto.setTargetWeight(weightPlan.getTargetWeight());
+        dto.setPreference(weightPlan.getPreference());
+        dto.setDailyCalorieGoal(weightPlan.getDailyCalorieGoal());
+        return dto;
+    }
 
 }

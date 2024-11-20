@@ -1,11 +1,10 @@
 package com.sportsperformance.batch2.Controllers;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.sportsperformance.batch2.DTO.AthleteProfileDTO;
-import com.sportsperformance.batch2.DTO.EventResponseDTO;
-import com.sportsperformance.batch2.DTO.RegistrationDTO;
-import com.sportsperformance.batch2.DTO.RegistrationRequestDTO;
+import com.sportsperformance.batch2.DTO.*;
+import com.sportsperformance.batch2.Repositories.WeightPlanRepository;
 import com.sportsperformance.batch2.Services.AthleteService;
+import com.sportsperformance.batch2.Services.CoachService;
 import com.sportsperformance.batch2.models.Athlete;
 import com.sportsperformance.batch2.models.Event;
 import com.sportsperformance.batch2.models.Registration;
@@ -141,6 +140,51 @@ public class AthleteController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
         }
+    }
+
+    @Autowired
+    private CoachService coachService;
+
+    // Get all coaches
+    @GetMapping
+    public ResponseEntity<List<CoachSummaryDTO>> getAllCoaches() {
+        return ResponseEntity.ok(coachService.getAllCoaches());
+    }
+
+    // Get a specific coach by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<CoachDTO> getCoachById(@PathVariable Long id) {
+        return ResponseEntity.ok(coachService.getCoachById(id));
+    }
+
+    // Get all achievements by coachId
+    @GetMapping("achievements/coach/{coachId}")
+    public ResponseEntity<List<AchievementDTO>> getAllAchievementsByCoachId(@PathVariable Long coachId) {
+        return ResponseEntity.ok(coachService.getAllAchievementsByCoachId(coachId));
+    }
+    @PostMapping("/createassistancereq")
+    public ResponseEntity<AssistanceRequestDTO> createRequest(@RequestBody AssistanceRequestDTO dto) {
+        return ResponseEntity.ok(athleteService.createRequest(dto));
+    }
+    @GetMapping("/getassistancereq/")
+    public ResponseEntity<List<AssistanceRequestDTO>> getRequestsByLoggedInAthlete() {
+        return ResponseEntity.ok(athleteService.getRequestsByLoggedInAthlete());
+    }
+
+;
+
+    @GetMapping("/getdailydiets")
+    public List<DailyDietDTO> getDailyDietsForLoggedInAthlete() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+        return athleteService.getDailyDietsByLoggedInAthlete(username);
+    }
+
+    @GetMapping("/getweightplan")
+    public List<WeightPlanDTO> getWeightPlansForLoggedInAthlete() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+        return athleteService.getWeightPlansByLoggedInAthlete(username);
     }
 
 
