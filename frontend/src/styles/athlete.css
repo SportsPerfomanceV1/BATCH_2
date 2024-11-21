@@ -2,7 +2,6 @@
 .athlete-dashboard {
   font-family: Arial, sans-serif;
   max-width: 100%;
-  padding: 1em;
   box-sizing: border-box;
 }
 
@@ -40,11 +39,11 @@
 
 /* Profile and sections */
 .profile-section, .events-section, .my-events-section, .coaches-section {
-  margin-top: 2em;
+  margin: 1em;
   padding: 1em;
-  border: 1px solid #ddd;
+  border: 1px solid #fafafa;
   border-radius: 8px;
-  background-color: #fafafa;
+  background-color: #f8f8f8;
 }
 
 /* Button styles */
@@ -58,9 +57,6 @@ button {
   transition: background-color 0.3s;
 }
 
-button:hover {
-  background-color: #555;
-}
 
 /* Table styles */
 table {
@@ -78,10 +74,12 @@ th, td {
 }
 
 th {
-  background-color: white;
+  background-color: rgb(171, 168, 168);
   font-weight: bold;
 }
-
+td{
+  background-color: #f1f2f3;
+}
 /* List styles */
 ul {
   list-style-type: none;
@@ -108,24 +106,24 @@ ul li {
 
 .modal-content {
   background-color: white;
-  padding: 20px;
-  width: 400px;
+  padding: 10px;
+  width: 450px;
   max-width: 100%;
-  border-radius: 0;
-  height: 100%;
+  height: 95%;
+  border-radius: 15px;
   overflow-y: auto;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  text-align: center;
+  text-align: left;
+  padding-left: 30px;
+  padding-right: 30px;
 }
 
-.modal h2 {
-  margin-top: 25px;
-  font-weight: 800;
+.modal-content h2 {
+  text-align: center;
 }
 
 .modal label {
   display: block;
-  margin-bottom: 8px;
 }
 
 .modal input[type="text"],
@@ -133,7 +131,6 @@ ul li {
 .modal input[type="file"] {
   width: 100%;
   padding: 8px;
-  margin-bottom: 12px;
   border: 1px solid #ccc;
   border-radius: 0;
 }
@@ -255,17 +252,19 @@ ul li {
 .events-section,.my-events-section{
   margin-top: 20px;
   max-width: 100%;
-  background-color: #e5dfdf;
+  background-color: #eae6e6;
+  padding-left: 25px;
+  padding-right: 25px;
 }
 .profile-section {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #516477;
+  background: #c1c4c6;
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
-  max-width: 900px;
+  max-width: 1200px;
   margin: 40px auto;
   transition: transform 0.3s;
 }
@@ -278,7 +277,7 @@ ul li {
   width: 110px;
   height: 110px;
   border-radius: 50%;
-  border: 5px solid #f39c12;
+  border: 5px solid #f1ece3;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   margin-right: 60px;
   margin-left: 30px;
@@ -310,7 +309,40 @@ button:hover {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
 }
 
-
+.disabled{
+  appearance: button;
+  background-color: #1899D6;
+  border: solid transparent;
+  border-radius: 16px;
+  border-width: 0 0 4px;
+  box-sizing: border-box;
+  color: #FFFFFF;
+  cursor: pointer;
+  display: inline-block;
+  font-family: din-round,sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: .8px;
+  line-height: 20px;
+  margin: 0;
+  outline: none;
+  overflow: visible;
+  padding: 13px 16px;
+  text-align: center;
+  text-transform: uppercase;
+  touch-action: manipulation;
+  transform: translateZ(0);
+  transition: filter .2s;
+  user-select: none;
+  -webkit-user-select: none;
+  vertical-align: middle;
+  white-space: nowrap;
+  width: 100%;
+  background-color: #8b8d8e;
+}
+.disabled:hover{
+  background-color: #8b8d8e;
+}
 .button-19 {
   appearance: button;
   background-color: #1899D6;
@@ -374,4 +406,212 @@ button:hover {
 .button-19:active {
   border-width: 4px 0 0;
   background: none;
+}
+.btn2{
+  width: 180px;
+  margin-left: 10px;
+}
+.athlete-info {
+  background: linear-gradient(135deg, #525558, #43526c);
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  color: #ffffff;
+  font-family: 'Arial', sans-serif;
+}
+
+.profile-photo {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+}
+
+.athlete-info p {
+  margin: 10px 0;
+  font-size: 16px;
+}
+
+.athlete-info p span {
+  font-weight: bold;
+}
+
+button {
+  background-color: #ffa500;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #ff8c00;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 768px) {
+  .athlete-info {
+    padding: 15px;
+    font-size: 14px;
+  }
+
+  .profile-photo {
+    width: 120px;
+    height: 120px;
+  }
+
+  button {
+    padding: 8px 16px;
+  }
+}
+
+/* Floating label container */
+.modal-content label {
+  position: relative;
+  display: block;
+  margin: 20px 0;
+  font-family: Arial, sans-serif;
+}
+
+.modal-content label input {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 12px 8px;
+  font-size: 16px;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+.modal-content label input:focus {
+  border: 2px solid #007BFF;
+  outline: none;
+}
+
+.modal-content label input:focus + span,
+.modal-content label input:not(:placeholder-shown) + span {
+  transform: translateY(-140%);
+  font-size: 12px;
+  color: #96989b;
+}
+
+.modal-content label span {
+  position: absolute;
+  left: 8px;
+  top: 12px;
+  background: white;
+  padding: 0 4px;
+  font-size: 16px;
+  transition: 0.3s ease all;
+  pointer-events: none; /* Prevent label selection */
+  color: #757575;
+}
+
+label input:focus + span {
+  color: #434446;
+}
+
+.btn2{
+  background-color: #000;
+  color: white;
+  width: 200px;
+}
+.resultPopup{
+  max-width: 800px;
+  text-align: center;
+}
+
+textarea {
+  width: 93%;
+  min-height: 100px;
+  padding: 12px 15px;
+  font-size: 16px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  resize: vertical;
+  box-shadow: inset 0px 1px 3px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+textarea:focus {
+  border-color: #4a90e2;
+  box-shadow: 0px 0px 5px rgba(74, 144, 226, 0.5);
+  outline: none;
+}
+@keyframes swipeLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.transition-container {
+  animation: swipeLeft 0.5s ease forwards;
+}
+
+.events-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+}
+
+.event-card {
+  position: relative;
+  width: 250px;
+  padding: 20px;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.event-card:hover {
+  transform: scale(1.05);
+}
+
+.event-card img {
+  width: 100%;
+  height: 150px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.event-card h3,
+.event-card p {
+  text-align: center;
+  margin: 10px 0;
+}
+
+.event-card button {
+  display: none;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.event-card:hover button {
+  display: block;
+  opacity: 0;
+  animation: fadeIn 0.3s forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

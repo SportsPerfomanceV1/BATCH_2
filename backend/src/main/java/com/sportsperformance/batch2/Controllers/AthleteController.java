@@ -2,6 +2,7 @@ package com.sportsperformance.batch2.Controllers;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sportsperformance.batch2.DTO.*;
+import com.sportsperformance.batch2.Repositories.EventRepository;
 import com.sportsperformance.batch2.Repositories.WeightPlanRepository;
 import com.sportsperformance.batch2.Services.AthleteService;
 import com.sportsperformance.batch2.Services.CoachService;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Base64;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @JsonIgnoreProperties({"parentField"})
 @RestController
@@ -185,6 +187,34 @@ public class AthleteController {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
         return athleteService.getWeightPlansByLoggedInAthlete(username);
+    }
+
+    private EventResponseDTO mapToDTO(Event event) {
+        EventResponseDTO dto = new EventResponseDTO();
+        dto.setEventTitle(event.getEventTitle());
+        dto.setCategory(event.getCategory());
+        dto.setLocation(event.getLocation());
+        dto.setEventDate(event.getEventDate());
+        dto.setEventDescription(event.getEventDescription());
+
+        if (event.getImage() != null) {
+            dto.setImageBase64(Base64.getEncoder().encodeToString(event.getImage()));
+        }
+
+        return dto;
+    }
+
+    @Autowired
+    EventRepository eventRepository;
+    @GetMapping("/events/{id}")
+    public ResponseEntity<EventResponseDTO> getEvent(@PathVariable Long id) {
+        Optional<Event> eventOptional = eventRepository.findById(id);
+        if (eventOptional.isPresent()) {
+            EventResponseDTO dto = mapToDTO(eventOptional.get());
+            return ResponseEntity.ok(dto);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 
 

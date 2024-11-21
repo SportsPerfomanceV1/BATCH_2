@@ -250,6 +250,20 @@ public class AdminController {
         return ResponseEntity.ok(coachService.getAllAchievementsByCoachId(coachId));
     }
 
+    @PutMapping("/updateevent/{eventId}")
+    public ResponseEntity<Event> editEvent(
+            @PathVariable Long eventId,
+            @ModelAttribute CreateEventDTO eventDTO) {
+        Event updatedEvent = adminService.updateEvent(eventId, eventDTO);
+        return ResponseEntity.ok(updatedEvent);
+    }
+
+    @DeleteMapping("/deleteevent/{eventId}")
+    public ResponseEntity<Void> deleteEvent(@PathVariable Long eventId) {
+        adminService.deleteEvent(eventId);
+        return ResponseEntity.noContent().build();
+    }
+
 
 
 }

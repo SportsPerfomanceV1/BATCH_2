@@ -902,7 +902,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Box, TextField, Button, MenuItem } from "@mui/material";
-import { styled } from "@mui/system";
+import { styled, width } from "@mui/system";
 import axios from "axios";
 import { Tab, Tabs } from '@mui/material';
 import { Typography, AppBar, Table, Toolbar, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper , DialogTitle ,DialogContent, Dialog } from "@mui/material";
@@ -941,7 +941,11 @@ const MeetTable = styled(TableContainer)({
 
 const ShortlistCandidatesModal = ({ onClose }) => {
     const [registrations, setRegistrations] = useState([]);
-  
+    const [selectedEvent, setSelectedEvent] = useState({});
+    const [openEventDialog, setOpenEventDialog] = useState(false);
+    const [profileModalOpen, setProfileModalOpen] = useState(false);
+    const [athleteDetails, setAthleteDetails] = useState({});
+
     useEffect(() => {
         
             const token = localStorage.getItem("token"); // Fix: Use getItem for localStorage
@@ -999,7 +1003,8 @@ const ShortlistCandidatesModal = ({ onClose }) => {
                 }
             })
             .then((response) => {
-                alert('Event: ' + response.data.name + '\n' + response.data.description);
+                setSelectedEvent(response.data);
+                setOpenEventDialog(true);
             })
             .catch((error) => console.error('Error fetching event:', error));
     };
@@ -1013,9 +1018,21 @@ const ShortlistCandidatesModal = ({ onClose }) => {
                 }
             })
             .then((response) => {
-                alert('Athlete: ' + response.data.name + '\n' + response.data.age);
+                setAthleteDetails(response.data);
+
+                setProfileModalOpen(true);
             })
             .catch((error) => console.error('Error fetching athlete:', error));
+    };
+
+
+    const handleCloseEventDialog = () => {
+        setOpenEventDialog(false); 
+        ;// Close the dialog
+    };
+
+    const handleCloseProfileModal = () => {
+        setProfileModalOpen(false); // Close athlete profile dialog
     };
   
     return (
@@ -1056,7 +1073,7 @@ const ShortlistCandidatesModal = ({ onClose }) => {
                                 {registrations.map((reg) => (
                                     <tr key={reg.registrationId}>
                                         <td style={styles.td}>{reg.eventName}</td>
-                                        <td style={styles.td}>{reg.athleteName}</td>
+                                        <td style={styles.td}>{reg.athlete.firstName} {reg.athlete.lastName}</td>
                                         <td style={styles.td}>
                                             <button style={styles.btn} onClick={() => handleViewEvent(reg.eventId)}>View Event</button>
                                         </td>
@@ -1074,6 +1091,42 @@ const ShortlistCandidatesModal = ({ onClose }) => {
                             </tbody>
                         </table>
                     </div>
+                    <Dialog open={openEventDialog} onClose={handleCloseEventDialog} maxWidth="md" fullWidth>
+                <DialogTitle align="center">
+                    <strong>{selectedEvent.eventTitle}</strong>
+                </DialogTitle>
+                <DialogContent>
+                <img src={selectedEvent.imageBase64 ?` data:image/jpeg;base64,${selectedEvent.imageBase64} `: '/default-profile.jpg'} />
+
+                    <Typography variant="h6">Date: {selectedEvent.eventDate}</Typography>
+                    <Typography variant="h6">Location: {selectedEvent.location}</Typography>
+                    <Typography variant="h6">Category: {selectedEvent.category}</Typography>
+                    <Typography variant="h6">Description: {selectedEvent.eventDescription}</Typography>
+                    <Button onClick={handleCloseEventDialog} color="primary" variant="contained" style={{ marginTop: '20px' }}>
+                        Close
+                    </Button>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={profileModalOpen} onClose={handleCloseProfileModal} maxWidth="sm" fullWidth>
+                <DialogTitle>Athlete Profile</DialogTitle>
+                <DialogContent>
+                <img
+            src={athleteDetails.photoBase64 ? `data:image/jpeg;base64,${athleteDetails.photoBase64}` : '/default-profile.jpg'}
+            alt="Athlete"
+             />
+                    <Typography variant="h6">
+                        Name: {athleteDetails.firstName} {athleteDetails.lastName}
+                    </Typography>
+                    <Typography variant="h6">Gender: {athleteDetails.gender}</Typography>
+                    <Typography variant="h6">Category: {athleteDetails.category}</Typography>
+                    <Typography variant="h6">Height: {athleteDetails.height} cm</Typography>
+                    <Typography variant="h6">Weight: {athleteDetails.weight} kg</Typography>
+                    <Button onClick={handleCloseProfileModal} color="primary" variant="contained" style={{ marginTop: '20px' }}>
+                        Close
+                    </Button>
+                </DialogContent>
+            </Dialog>
                 </div>
             <div
                 style={{
@@ -1678,172 +1731,308 @@ const AdminDashboard = () => {
     );
  
 
-const EventsTable = () => {
-  const [events, setEvents] = useState([]);
-  const [selectedEvent, setSelectedEvent] = useState(null);
-  const [open, setOpen] = useState(false);
-  const [registrations, setRegistrations] = useState([]);
-  const [athleteDetails, setAthleteDetails] = useState(null);
-  const [profileModalOpen, setProfileModalOpen] = useState(false);
+    const EventsTable = () => {
+        const [events, setEvents] = useState([]);
+        const [selectedEvent, setSelectedEvent] = useState(null);
+        const [open, setOpen] = useState(false);
+        const [registrations, setRegistrations] = useState([]);
+        const [athleteDetails, setAthleteDetails] = useState(null);
+        const [profileModalOpen, setProfileModalOpen] = useState(false);
+        const [editEventOpen, setEditEventOpen] = useState(false);
+        const [updatedEvent, setUpdatedEvent] = useState(null);
+      
+        useEffect(() => {
+          const fetchEvents = async () => {
+            try {
+              const token = localStorage.getItem("token");
+              const response = await fetch("/admin/events", {
+                method: "GET",
+                headers: { Authorization: `Bearer ${token}` },
+              });
+              if (!response.ok) throw new Error("Failed to fetch events.");
+              const data = await response.json();
+              setEvents(data);
+            } catch (error) {
+              console.error("Error fetching events:", error);
+            }
+          };
+          
+          fetchEvents();
+        }, []);
+      
+        const fetchRegistrations = async (eventId) => {
+          try {
+            const token = localStorage.getItem("token");
+            const response = await fetch("/admin/registrations", {
+              method: "GET",
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            if (!response.ok) throw new Error("Failed to fetch registrations.");
+            const data = await response.json();
+            const filteredRegistrations = data.filter((reg) => reg.eventId === eventId);
+            setRegistrations(filteredRegistrations);
+          } catch (error) {
+            console.error("Error fetching registrations:", error);
+          }
+        };
+        
+        const handleViewAthleteProfile = async (athleteId) => {
+            try {
+              const token = localStorage.getItem("token");
+              const response = await fetch(`/admin/athlete/${athleteId}`, {
+                method: "GET",
+                headers: { Authorization: `Bearer ${token}` },
+              });
+              if (!response.ok) throw new Error("Failed to fetch athlete details.");
+              const data = await response.json();
+              setAthleteDetails(data);
+              setProfileModalOpen(true);
+            } catch (error) {
+              console.error("Error fetching athlete details:", error);
+            }
+          };
+        
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await fetch("/admin/events", {
-          method: "GET",
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!response.ok) throw new Error("Failed to fetch events.");
-        const data = await response.json();
-        setEvents(data);
-      } catch (error) {
-        console.error("Error fetching events:", error);
-      }
-    };
-
-    fetchEvents();
-  }, []);
-
-  const fetchRegistrations = async (eventId) => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch("/admin/registrations", {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!response.ok) throw new Error("Failed to fetch registrations.");
-      const data = await response.json();
-      const filteredRegistrations = data.filter((reg) => reg.eventId === eventId);
-      setRegistrations(filteredRegistrations);
-    } catch (error) {
-      console.error("Error fetching registrations:", error);
-    }
-  };
-
-  const handleViewEvent = (event) => {
-    setSelectedEvent(event);
-    setOpen(true);
-    fetchRegistrations(event.eventId);
-  };
-
-  const handleViewAthleteProfile = async (athleteId) => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(`/admin/athlete/${athleteId}`, {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!response.ok) throw new Error("Failed to fetch athlete details.");
-      const data = await response.json();
-      setAthleteDetails(data);
-      setProfileModalOpen(true);
-    } catch (error) {
-      console.error("Error fetching athlete details:", error);
-    }
-  };
-
-  const handleCloseEventDialog = () => {
-    setOpen(false);
-    setSelectedEvent(null);
-    setRegistrations([]);
-  };
-
-  const handleCloseProfileModal = () => {
-    setProfileModalOpen(false);
-    setAthleteDetails(null);
-  };
-
-  return (
-    <>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>EVENT TITLE</TableCell>
-              <TableCell>MEET NAME</TableCell>
-              <TableCell>ACTIONS</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {events.length > 0 ? (
-              events.map((event) => (
-                <TableRow key={event.eventId}>
-                  <TableCell>{event.eventTitle}</TableCell>
-                  <TableCell>{event.meetId?.meetName || "N/A"}</TableCell>
-                  <TableCell>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => handleViewEvent(event)}
-                    >
-                      View Event
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={3} align="center">
-                  No events available.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-
-      {selectedEvent && (
-        <Dialog open={open} onClose={handleCloseEventDialog} maxWidth="md" fullWidth>
-          <DialogTitle>{selectedEvent.eventTitle}</DialogTitle>
-          <DialogContent>
-            <Typography variant="h6">Date: {selectedEvent.eventDate}</Typography>
-            <Typography variant="h6">Location: {selectedEvent.location}</Typography>
-            <Typography variant="h6">Category: {selectedEvent.category}</Typography>
-            <Typography variant="h6">Description: {selectedEvent.eventDescription}</Typography>
-            <Typography variant="h6">Registrations:</Typography>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Email</TableCell>
-                  <TableCell>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {registrations.length > 0 ? (
-                  registrations.map((reg) => (
-                    <TableRow key={reg.registrationId}>
-                      <TableCell>{reg.athlete.firstName} {reg.athlete.lastName}</TableCell>
-                      <TableCell>{reg.athlete.email}</TableCell>
-                      <TableCell>
-                        <Button
-                          variant="outlined"
-                          color="secondary"
-                          onClick={() => handleViewAthleteProfile(reg.athleteId)}
-                        >
-                          View Profile
-                        </Button>
+        const handleViewEvent = (event) => {
+          setSelectedEvent(event);
+          setOpen(true);
+          fetchRegistrations(event.eventId);
+        };
+      
+        const handleDeleteEvent = async (eventId) => {
+          try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(`/admin/events/${eventId}`, {
+              method: "DELETE",
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            if (!response.ok) throw new Error("Failed to delete event.");
+            // Refresh events after deletion
+            const updatedEvents = events.filter((event) => event.eventId !== eventId);
+            setEvents(updatedEvents);
+            setOpen(false);
+          } catch (error) {
+            console.error("Error deleting event:", error);
+          }
+        };
+      
+        const handleEditEvent = (event) => {
+          setUpdatedEvent(event); // Store the selected event data for editing
+          setEditEventOpen(true);
+        };
+      
+        const handleUpdateEvent = async () => {
+            const formData = new FormData();
+            formData.append('eventTitle',updatedEvent.eventTitle);
+            formData.append('eventDate',updatedEvent.eventDate);
+            formData.append('location',updatedEvent.location);
+            formData.append('Category',updatedEvent.category);
+            formData.append('eventDescription',updatedEvent.eventDescription);
+          try {
+            const token = localStorage.getItem("token");
+            const response = await fetch('/admin/createevent', {
+              method: "POST",
+              body: formData,
+              headers: { 
+               
+                Authorization: `Bearer ${token}`,
+              }
+    
+            });
+            if (response.ok) {
+                alert("Updated Event Details Successfully");
+            }
+            const updatedEvents = events.map((event) =>
+              event.eventId === updatedEvent.eventId ? updatedEvent : event
+            );
+            setEvents(updatedEvents);
+            setEditEventOpen(false);
+            setUpdatedEvent(null);
+          } catch (error) {
+            console.error("Error updating event:", error);
+          }
+        };
+      
+        const handleCloseEventDialog = () => {
+          setOpen(false);
+          setSelectedEvent(null);
+          setRegistrations([]);
+        };
+      
+        const handleCloseProfileModal = () => {
+          setProfileModalOpen(false);
+          setAthleteDetails(null);
+        };
+      
+        const handleCloseEditEventModal = () => {
+          setEditEventOpen(false);
+          setUpdatedEvent(null);
+        };
+      
+        return (
+          <>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>EVENT TITLE</TableCell>
+                    <TableCell>MEET NAME</TableCell>
+                    <TableCell>ACTIONS</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {events.length > 0 ? (
+                    events.map((event) => (
+                        <TableRow key={event.eventId}>
+                        <TableCell>{event.eventTitle}</TableCell>
+                        <TableCell>{event.meetId?.meetName || "N/A"}</TableCell>
+                        <TableCell>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => handleViewEvent(event)}
+                          >
+                            View Event
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={3} align="center">
+                        No events available.
                       </TableCell>
                     </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={2} align="center">
-                      No registrations available.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </DialogContent>
-        </Dialog>
-      )}
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+      
+            {selectedEvent && (
+              <Dialog open={open} onClose={handleCloseEventDialog} maxWidth="md" fullWidth>
+                <DialogTitle align="center" ><strong>{selectedEvent.eventTitle}</strong></DialogTitle>
+                <DialogContent>
+                <img src={selectedEvent.imageBase64 ?` data:image/jpeg;base64,${selectedEvent.imageBase64} `: '/default-profile.jpg'} />
 
-      {athleteDetails && (
+                  <Typography variant="h6">Date: {selectedEvent.eventDate}</Typography>
+                  <Typography variant="h6">Location: {selectedEvent.location}</Typography>
+                  <Typography variant="h6">Category: {selectedEvent.category}</Typography>
+                  <Typography variant="h6">Description: {selectedEvent.eventDescription}</Typography>
+      
+                  {registrations.length > 0 && (
+                    <>
+                      <Typography variant="h6">Registrations:</Typography>
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Name</TableCell>
+                            <TableCell>Email</TableCell>
+                            <TableCell>Actions</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {registrations.map((reg) => (
+                            <TableRow key={reg.registrationId}>
+                              <TableCell>{reg.athlete.firstName} {reg.athlete.lastName}</TableCell>
+                              <TableCell>{reg.athlete.email}</TableCell>
+                              <TableCell>
+                                <Button
+                                  variant="outlined"
+                                  color="secondary"
+                                  onClick={() => handleViewAthleteProfile(reg.athleteId)}
+                                >
+                                  View Profile
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </>
+                  )}
+      
+                  {registrations.length === 0 && (
+                    <div>
+                      <Button
+                        variant="outlined"
+                        color="secondary"
+                        onClick={() => handleDeleteEvent(selectedEvent.eventId)}
+                      >
+                        Delete Event
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        onClick={() => handleEditEvent(selectedEvent)}
+                        style={{ marginLeft: '10px' }}
+                      >
+                        Edit Event
+                      </Button>
+                    </div>
+                  )}
+                </DialogContent>
+              </Dialog>
+            )}
+      
+            {editEventOpen && updatedEvent && (
+              <Dialog open={editEventOpen} onClose={handleCloseEditEventModal} maxWidth="sm" fullWidth>
+                <DialogTitle>Edit Event</DialogTitle>
+                <DialogContent>
+                  <TextField
+                    label="Event Title"
+                    fullWidth
+                    value={updatedEvent.eventTitle}
+                    onChange={(e) => setUpdatedEvent({ ...updatedEvent, eventTitle: e.target.value })}
+                    margin="normal"
+                  />
+                  <TextField
+                    label="Event Date"
+                    type="date"
+                    fullWidth
+                    value={updatedEvent.eventDate}
+                    onChange={(e) => setUpdatedEvent({ ...updatedEvent, eventDate: e.target.value })}
+                    margin="normal"
+                  />
+                  <TextField
+                    label="Location"
+                    fullWidth
+                    value={updatedEvent.location}
+                    onChange={(e) => setUpdatedEvent({ ...updatedEvent, location: e.target.value })}
+                    margin="normal"
+                  />
+                  <TextField
+                    label="Category"
+                    fullWidth
+                    value={updatedEvent.category}
+                    onChange={(e) => setUpdatedEvent({ ...updatedEvent, category: e.target.value })}
+                    margin="normal"
+                  />
+                  <TextField
+                    label="Event Description"
+                    fullWidth
+                    value={updatedEvent.eventDescription}
+                    onChange={(e) => setUpdatedEvent({ ...updatedEvent, eventDescription: e.target.value })}
+                    margin="normal"
+                  />
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleUpdateEvent}
+                    style={{ marginTop: '10px' }}
+                  >
+                    Update Event
+                  </Button>
+                </DialogContent>
+              </Dialog>
+            )}
+            {athleteDetails && (
         <Dialog open={profileModalOpen} onClose={handleCloseProfileModal} maxWidth="sm" fullWidth>
           <DialogTitle>Athlete Profile</DialogTitle>
           <DialogContent>
+          <img
+            src={athleteDetails.photoBase64 ? `data:image/jpeg;base64,${athleteDetails.photoBase64}` : '/default-profile.jpg'}
+            alt="Athlete"
+             />
             <Typography variant="h6">
               Name: {athleteDetails.firstName} {athleteDetails.lastName}
             </Typography>
@@ -1851,15 +2040,15 @@ const EventsTable = () => {
             <Typography variant="h6">Category: {athleteDetails.category}</Typography>
             <Typography variant="h6">Height: {athleteDetails.height} cm</Typography>
             <Typography variant="h6">Weight: {athleteDetails.weight} kg</Typography>
-          </DialogContent>
-        </Dialog>
-      )}
-    </>
-  );
-};
 
-
-
+            
+                </DialogContent>
+              </Dialog>
+            )}
+          </>
+        );
+      };
+    
     return (
         <div className="adminDashboardHome">
             <AppBar position="static" className="navbar">

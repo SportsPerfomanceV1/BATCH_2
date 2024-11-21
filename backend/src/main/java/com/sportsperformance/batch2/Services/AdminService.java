@@ -153,8 +153,8 @@ public class AdminService {
             athleteProfileDTO.setCategory(athlete.getCategory());
 
             // Convert the athlete photo (if applicable) to Base64
-            if (athlete.getPhotoUrl() != null) {
-                byte[] photoBytes = athlete.getPhotoUrl().getBytes(); // Assuming this returns a byte array
+            if (athlete.getPhoto() != null) {
+                byte[] photoBytes = athlete.getPhoto(); // Assuming this returns a byte array
                 athleteProfileDTO.setPhotoBase64(Base64.getEncoder().encodeToString(photoBytes));
             }
 
@@ -364,4 +364,44 @@ public class AdminService {
                 .map(this::mapToDTO) // Convert each Event entity to EventResponseDTO
                 .toList();           // Collect results as a List
     }
+
+
+    public Event updateEvent(Long eventId, CreateEventDTO eventDTO) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        // Update event fields
+        event.setEventTitle(eventDTO.getEventTitle());
+        event.setEventDate(eventDTO.getEventDate());
+        event.setLocation(eventDTO.getLocation());
+        event.setCategory(eventDTO.getCategory());
+        event.setEventDescription(eventDTO.getEventDescription());
+
+        // Update associated meet
+        if (eventDTO.getMeetId() != null) {
+            Meet meet = meetRepository.findById(eventDTO.getMeetId())
+                    .orElseThrow(() -> new RuntimeException("Meet not found"));
+            event.setMeetId(meet);
+        }
+
+        // Update image if provided
+        if (eventDTO.getImage() != null && !eventDTO.getImage().isEmpty()) {
+            try {
+                event.setImage(eventDTO.getImage().getBytes());
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to process image", e);
+            }
+        }
+
+        return eventRepository.save(event);
+    }
+
+    public void deleteEvent(Long eventId) {
+        if (!eventRepository.existsById(eventId)) {
+            throw new RuntimeException("Event not found");
+        }
+        eventRepository.deleteById(eventId);
+    }
+
+
 }

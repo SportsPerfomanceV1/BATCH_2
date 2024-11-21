@@ -79,7 +79,7 @@
 }
 
 .meetPopup {
-  width: 400px;
+  width: 100%;
 }
 
 .eventPopup {
@@ -115,7 +115,7 @@
   border: 2px dashed #ddd;
   border-radius: 8px;
   padding: 1rem;
-  width: 100%;
+  width: 93%;
   transition: all 0.3s ease;
 }
 
@@ -187,4 +187,158 @@ table {
 }
 .logout-link{
   margin: 5px;
+}
+
+/* Basic styling for the popup */
+.resultPopup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%; /* Adjusted width for better responsiveness on smaller screens */
+  max-width: 70vh; /* Set a max width for larger screens */
+  max-height: 80vh; /* Limit height to make it scrollable within the viewport */
+  background-color: #fff;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  border-radius: 8px;
+  z-index: 1000;
+  overflow-y: auto; /* Enables vertical scrolling within the form */
+  box-sizing: border-box;
+}
+
+/* Header styles */
+.resultPopup h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.resultPopup h3 {
+  font-size: 18px;
+  margin-bottom: 15px;
+  color: #555;
+}
+
+/* List of events */
+.resultPopup ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.resultPopup li {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.resultPopup li button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.resultPopup li button:hover {
+  background-color: #45a049;
+}
+
+/* Table for displaying event results */
+.resultPopup table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.resultPopup th, .resultPopup td {
+  padding: 12px 15px;
+  text-align: left;
+  border: 1px solid #ddd;
+  vertical-align: middle;
+}
+
+/* Table header styling */
+.resultPopup th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Table row styling */
+.resultPopup tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.resultPopup tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Image styling for athlete pictures */
+.resultPopup td img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+/* Input fields for scores and comments */
+.resultPopup input[type="number"],
+.resultPopup input[type="text"] {
+  padding: 8px;
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+/* Button styles for submit and cancel */
+.resultPopup button {
+  padding: 12px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+  width: 48%;
+  margin-right: 4%;
+}
+
+.resultPopup .submitButton {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.resultPopup .submitButton:hover {
+  background-color: #45a049;
+}
+
+.resultPopup .cancelButton {
+  background-color: #f44336;
+  color: white;
+}
+
+.resultPopup .cancelButton:hover {
+  background-color: #e53935;
+}
+
+/* Responsiveness */
+@media screen and (max-width: 768px) {
+  .resultPopup {
+      width: 95%;
+      max-width: none;
+  }
+
+  .resultPopup table th, .resultPopup table td {
+      font-size: 14px;
+      padding: 8px 10px;
+  }
+
+  .resultPopup button {
+      width: 100%;
+      margin: 5px 0;
+  }
 }

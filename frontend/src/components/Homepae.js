@@ -48,31 +48,9 @@ const HomePage = () => {
         </Toolbar>
       </AppBar>
 
-      <Box
-        sx={{
-          position: "relative",
-          height: "100vh",
-          overflow: "hidden",
-          "&::before": {
-            content: '""',
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundImage: `url('https://s11.gr/soccer11/diafora/files/1788/velocity-sports-performance-training-1350.700x400.jpg')`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            opacity: isFormActive ? 0.6 : 0.9,
-            transition: "opacity 0.5s ease",
-            zIndex: -1,
-          },
-        }}
-      >
+      <Box>
         {activeForm === "login" && <Login />}
         {activeForm === "register" && <Register />}
-        
       </Box>
     </div>
   );

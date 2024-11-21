@@ -13,6 +13,8 @@ function AthleteDashboard() {
   const [selectedTab, setSelectedTab] = useState('Overview');
   const [remark, setRemark] = useState('');
   const [selectedEvent, setSelectedEvent] = useState(null);
+
+  const [selectedEvent2, setSelectedEvent2] = useState(null);
   const [registeringEvent, setRegisteringEvent] = useState(null);
   const [updatedProfile, setUpdatedProfile] = useState({
     firstName: '',
@@ -101,12 +103,31 @@ function AthleteDashboard() {
   };
   const handleOpenRegisterPopup = (event) => setRegisteringEvent(event);
 
-  const handleViewEvent = (event) => setSelectedEvent(event);
+  const handleViewEvent1 = (event) => setSelectedEvent(event);
+
+  const handleViewEvent2 = async (eventId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`/athlete/events/${eventId}`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        }
+      });
+      const data = await response.json();
+      setSelectedEvent2(data);
+    } catch (error) {
+      console.error("Error loading my events:", error);
+    }
+
+  };
+  // const handleViewEvent2 = (event) => setSelectedEvent2(event);
 
 
   const handleCloseModal = () => {
     setEditingProfile(false); // Close the modal
     setSelectedEvent(null);   // Reset the selected event state
+    setSelectedEvent2(null);
     setRegisteringEvent(null); // Reset the registering event state
     setRemark(''); 
   };
@@ -330,14 +351,14 @@ function AthleteDashboard() {
             <h1 style={{textAlign:'center '}}>ALL EVENTS</h1>
             <div className="events-container">
               {events.map(event => (
-                <div key={event.id} className="event-card">
+                <div key={event.eventId} className="event-card">
                   <img 
                   src={event.imageBase64 ? `data:image/jpeg;base64,${event.imageBase64}` : '/default-profile.jpg'}
-                  alt={event.eventTitle} onClick={() => handleViewEvent(event)} />
+                  alt={event.eventTitle} onClick={() => handleViewEvent1(event)} />
                   <h3 style={{textAlign:'center'}}>{event.eventTitle}</h3>
                   <p>Meet: {event.meetId.meetName}</p>
                   <p>Category: {event.category}</p>
-                  <button class="button-19" onClick={() => handleViewEvent(event)}>View</button>
+                  <button class="button-19" onClick={() => handleViewEvent1(event)}>View</button>
                   <p></p>
                   <button class="button-19" onClick={() => handleOpenRegisterPopup(event)}>Register</button>
                 </div>
@@ -352,7 +373,7 @@ function AthleteDashboard() {
       <h2>{selectedEvent.eventTitle}</h2>
       <p>Meet: {selectedEvent.meetId.meetName}</p>
       <p>Category: {selectedEvent.category}</p>
-      <p>Description: {selectedEvent.description}</p>
+      <p>Description: {selectedEvent.eventDescription}</p>
       <p>Location: {selectedEvent.location}</p>
       <p>Event Date: {selectedEvent.eventDate}</p>
       <textarea placeholder="Remarks (optional)" value={remark} onChange={(e) => setRemark(e.target.value)}></textarea>
@@ -374,44 +395,63 @@ function AthleteDashboard() {
         )}
 
 {currentSection === 'myEvents' && (
-          <div className="my-events-section">
-            <h3>My Events</h3>
-            <div className="tabs">
-              {['Overview', 'Pending', 'Approved', 'Rejected'].map((tab) => (
-                <button
-                  key={tab}
-                  className={selectedTab === tab ? 'active' : ''}
-                  onClick={() => setSelectedTab(tab)}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
-            <table>
-  <thead>
-    <tr>
-      <th>Event Name</th>
-      <th>Meet Name</th>
-      <th>Registration Date</th>
-      <th>Status</th>
-    </tr>
-  </thead>
-  <tbody>
-    {filterMyEvents().map((regis) => (
-      <tr key={regis.id}>
-        <td>{regis.eventName}</td>
-        <td>{regis.meetName}</td>
-        <td>{regis.registrationDate}</td>
-        <td>{regis.status}</td>
-      </tr>
-    ))}
-  </tbody>
-</table>
+  <div className="my-events-section">
+    <h3>My Events</h3>
+    <div className="tabs">
+      {['Overview', 'Pending', 'Approved', 'Rejected'].map((tab) => (
+        <button
+          key={tab}
+          className={selectedTab === tab ? 'active' : ''}
+          onClick={() => setSelectedTab(tab)}
+        >
+          {tab}
+        </button>
+      ))}
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Event Name</th>
+          <th>Meet Name</th>
+          <th>Registration Date</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {filterMyEvents().map((regis) => (
+          <tr key={regis.registrationId}>
+            <td>{regis.eventName}</td>
+            <td>{regis.meetName}</td>
+            <td>{regis.registrationDate}</td>
+            <td>{regis.status}</td>
+            <td>
+              <button className="button-19" onClick={() => handleViewEvent2(regis.eventId)}>View</button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
 
-          </div>
-        )}
+{selectedEvent2 && (
+  <div className="modal">
+    <div className="modal-content">
+      <h2>{selectedEvent2.eventTitle}</h2>
+      <p>Status: {selectedEvent2.status}</p>
+      {/* <p>Meet: {selectedEvent2.meetId.meetName||'NA'}</p> */}
+      <p>Registration Date: {selectedEvent2.category}</p>
+      <p>Event Description: {selectedEvent2.eventDescription}</p>
+      <p>Event Date: {selectedEvent2.eventDate}</p>
+      <p>Location: {selectedEvent2.location}</p>
+      <button onClick={handleCloseModal}>Close</button>
+    </div>
+  </div>
+)}
 
-        {currentSection === 'coach' && (
+
+{currentSection === 'coach' && (
           <div className="coach-section">
             <h3>Coaches</h3>
             {athlete?.coach && (
