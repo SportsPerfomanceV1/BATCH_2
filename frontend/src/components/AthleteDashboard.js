@@ -9,6 +9,7 @@ function AthleteDashboard() {
   const navigate = useNavigate();
   const [athlete, setAthlete] = useState(null);
   const [events, setEvents] = useState([]);
+  const [coaches, setCoaches] = useState([]);
   const [myEvents, setMyEvents] = useState([]);
   const [currentSection, setCurrentSection] = useState('profile');
   const [editingProfile, setEditingProfile] = useState(false);
@@ -33,6 +34,7 @@ function AthleteDashboard() {
     loadAthleteProfile();
     loadAllEvents();
     loadMyEvents();
+    loadAllCoaches();
   }, []);
 
   const loadAthleteProfile = async () => {
@@ -85,6 +87,22 @@ function AthleteDashboard() {
       console.error("Error loading events:", error);
     }
   };
+  const loadAllCoaches = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch('/coach', {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        }
+      });
+      const data = await response.json();
+      console.log(data);
+      setCoaches(data);
+    } catch (error) {
+      console.error("Error loading events:", error);
+    }
+  };
 
   const loadMyEvents = async () => {
     try {
@@ -130,6 +148,7 @@ function AthleteDashboard() {
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
+   
     setUpdatedProfile({
       ...updatedProfile,
       [name]: value,
@@ -498,13 +517,13 @@ function AthleteDashboard() {
         )}
 
         {currentSection === 'coach' && (
-          <div className="coach-section">
-            <h3>Coaches</h3>
-            {athlete?.coach && (
-              <div className="coach-profile">
-                <p>Name: {athlete.coach}</p>
-              </div>
-            )}
+          <div className="transition-container">
+          <div className="events-section">
+            <h2 style={{textAlign:'center '}}>COACHES</h2>
+            <div className="events-container">
+             
+            </div>
+          </div>
           </div>
         )}
       </div>
