@@ -40,6 +40,7 @@
 /* Profile and sections */
 .profile-section, .events-section, .my-events-section, .coaches-section {
   margin: 1em;
+  margin-top: 0em;
   padding: 1em;
   border: 1px solid #fafafa;
   border-radius: 8px;
@@ -212,16 +213,16 @@ ul li {
 .events-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 10px;
   justify-content: center;
 }
 
 .event-card {
-  padding: 15px;
+  padding: 0px;
   background: #fff;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  width: 250px;
+  width: 240px;
   overflow: hidden;
 }
 
@@ -266,6 +267,7 @@ ul li {
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
   max-width: 1200px;
   margin: 40px auto;
+  margin-top: 10px;
   transition: transform 0.3s;
 }
 
@@ -525,7 +527,6 @@ label input:focus + span {
   width: 200px;
 }
 .resultPopup{
-  max-width: 800px;
   text-align: center;
 }
 
@@ -570,7 +571,7 @@ textarea:focus {
 
 .event-card {
   position: relative;
-  width: 250px;
+  width: 240px;
   padding: 20px;
   background-color: #f8f8f8;
   border-radius: 8px;
@@ -613,5 +614,25 @@ textarea:focus {
   }
   to {
     opacity: 1;
+  }
+}
+/* Centering and jump animation */
+.centered-jump {
+  display: flex; 
+  justify-content: center; /* Horizontally center */
+  align-items: center; /* Vertically center */
+  height: 7vh; /* Full viewport height to center vertically */
+  text-align: center; /* Align text within its box */
+  animation: slowJump 2s ease-in-out infinite; /* Apply animation */
+  margin-bottom: 20px;
+}
+
+/* Jump animation keyframes */
+@keyframes slowJump {
+  0%, 100% {
+    transform: translateY(0); /* Default position */
+  }
+  50% {
+    transform: translateY(-10px); /* Jump up */
   }
 }

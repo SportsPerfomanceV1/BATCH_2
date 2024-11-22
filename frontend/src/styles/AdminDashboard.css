@@ -196,8 +196,8 @@ table {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 100%; /* Adjusted width for better responsiveness on smaller screens */
-  max-width: 70vh; /* Set a max width for larger screens */
-  max-height: 80vh; /* Limit height to make it scrollable within the viewport */
+  max-width: 110vh; /* Set a max width for larger screens */
+  max-height: 90vh; /* Limit height to make it scrollable within the viewport */
   background-color: #fff;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
   padding: 20px;

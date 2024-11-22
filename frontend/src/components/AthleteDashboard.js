@@ -19,6 +19,7 @@ function AthleteDashboard() {
   const [remark, setRemark] = useState('');
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [registeringEvent, setRegisteringEvent] = useState(null);
+  const [selectedEvent2, setSelectedEvent2] = useState(null);
   const [updatedProfile, setUpdatedProfile] = useState({
     firstName: '',
     lastName: '',
@@ -119,6 +120,24 @@ function AthleteDashboard() {
       console.error("Error loading my events:", error);
     }
   };
+
+  const handleViewEvent2 = async (eventId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`/athlete/events/${eventId}`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        }
+      });
+      const data = await response.json();
+      setSelectedEvent2(data);
+    } catch (error) {
+      console.error("Error loading my events:", error);
+    }
+
+  };
+  
   const closeSuccessPopup = () => {
     setShowSuccessPopup(false);
   };
@@ -140,6 +159,9 @@ function AthleteDashboard() {
     setSelectedEvent(null);   // Reset the selected event state
     setRegisteringEvent(null); // Reset the registering event state
     setRemark(''); 
+  };
+  const handleCloseModal1 = () => {
+    setSelectedEvent2(null); 
   };
 
   const handleImageChange = (e) => {
@@ -278,9 +300,14 @@ function AthleteDashboard() {
       <div className="content">
         {currentSection === 'profile' && (
            <div className="transition-container">
+          <div className="centered-jump">
+            <p></p>
+            <h2> Profile</h2>
+          </div>
           <div className="profile-section">
             {athlete && (
               <>
+              
                 <img
                   // src={`${athlete.photoUrl || '/default-profile.jpg'}`}
                   src={athlete.photoBase64 ? `data:image/jpeg;base64,${athlete.photoBase64}` : '/default-profile.jpg'}
@@ -412,7 +439,9 @@ function AthleteDashboard() {
 {currentSection === 'events' && (
    <div className="transition-container">
           <div className="events-section">
-            <h2 style={{textAlign:'center '}}>ALL EVENTS</h2>
+          <div className="centered-jump">
+            <h2> Events</h2>
+          </div>
             <div className="events-container">
               {events.map(event => (
                 <div key={event.id} className="event-card">
@@ -478,48 +507,78 @@ function AthleteDashboard() {
     )}
 
 {currentSection === 'myEvents' && (
-   <div className="transition-container">
-          <div className="my-events-section">
-            <h2 style={{textAlign:'center'}}>MY EVENTS</h2>
-            <div className="tabs">
-              {['Overview', 'Pending', 'Approved', 'Rejected'].map((tab) => (
-                <button
-                  key={tab}
-                  className={selectedTab === tab ? 'active' : ''}
-                  onClick={() => setSelectedTab(tab)}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
-            <table>
-  <thead>
-    <tr>
-      <th>Event Name</th>
-      <th>Meet Name</th>
-      <th>Registration Date</th>
-      <th>Status</th>
-    </tr>
-  </thead>
-  <tbody>
-    {filterMyEvents().map((regis) => (
-      <tr key={regis.id}>
-        <td>{regis.eventName}</td>
-        <td>{regis.meetName}</td>
-        <td>{regis.registrationDate.split('T')[0]}</td>
-        <td>{regis.status}</td>
-      </tr>
-    ))}
-  </tbody>
-</table>
+  <div className="my-events-section">
+   <div className="centered-jump">
+  <h2>My Events</h2>
 </div>
-          </div>
-        )}
+
+
+    <div className="tabs">
+      {['Overview', 'Pending', 'Approved', 'Rejected'].map((tab) => (
+        <button
+          key={tab}
+          className={selectedTab === tab ? 'active' : ''}
+          onClick={() => setSelectedTab(tab)}
+        >
+          {tab}
+        </button>
+      ))}
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Event Name</th>
+          <th>Meet Name</th>
+          <th>Registration Date</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {filterMyEvents().map((regis) => (
+          <tr key={regis.registrationId}>
+            <td>{regis.eventName}</td>
+            <td>{regis.meetName}</td>
+            <td>{regis.registrationDate}</td>
+            <td>{regis.status}</td>
+            <td>
+              <button className="button-19" onClick={() => handleViewEvent2(regis.eventId)}>View</button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
+
+{selectedEvent2 && (
+  <div className="modal">
+    <div className="modal-content">
+      <h2>{selectedEvent2.eventTitle}</h2>
+      {/* <p>Meet: {selectedEvent2.meetId.meetName||'NA'}</p> */}
+      {selectedEvent2.imageBase64 && (
+        <img 
+          src={`data:image/jpeg;base64,${selectedEvent2.imageBase64}`} 
+          alt={selectedEvent2.eventTitle} 
+          style={{ width: "100%", height: "200px", marginBottom: "20px" }}
+        />
+      )}
+      <p><b>Registration Date: </b>{selectedEvent2.category}</p>
+      <p><b>Event Description: </b>{selectedEvent2.eventDescription}</p>
+      <p><b>Event Date: </b>{selectedEvent2.eventDate}</p>
+      <p><b>Location: </b>{selectedEvent2.location}</p>
+      <button onClick={handleCloseModal1} style={{marginLeft:'30%',marginTop:'20px',width:'155px'}}>Close</button>
+    </div>
+  </div>
+)}
+
 
         {currentSection === 'coach' && (
           <div className="transition-container">
           <div className="events-section">
-            <h2 style={{textAlign:'center '}}>COACHES</h2>
+          <div className="centered-jump">
+            <h2> Coaches</h2>
+          </div>
             <div className="events-container">
              
             </div>
