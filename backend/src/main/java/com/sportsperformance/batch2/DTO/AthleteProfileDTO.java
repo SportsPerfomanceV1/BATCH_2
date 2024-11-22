@@ -5,6 +5,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
+
 @Data
 public class AthleteProfileDTO {
 
@@ -13,13 +14,9 @@ public class AthleteProfileDTO {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date birthDate;
     private String gender;
-    private float height;
-    private float weight;
+    private String height;
+    private String weight;
     private String category;
-    private String email;
-    private String username;
+    private MultipartFile photoUrl;
 
-    private MultipartFile photoUrl; // For incoming file uploads
-    private String photoBase64;     // For outgoing Base64-encoded image
 }
-

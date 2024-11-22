@@ -2,8 +2,6 @@ package com.sportsperformance.batch2.Controllers;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sportsperformance.batch2.DTO.AthleteProfileDTO;
-import com.sportsperformance.batch2.DTO.EventResponseDTO;
-import com.sportsperformance.batch2.DTO.RegistrationDTO;
 import com.sportsperformance.batch2.DTO.RegistrationRequestDTO;
 import com.sportsperformance.batch2.Services.AthleteService;
 import com.sportsperformance.batch2.models.Athlete;
@@ -16,10 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Base64;
 import java.util.List;
-import java.util.NoSuchElementException;
-
 @JsonIgnoreProperties({"parentField"})
 @RestController
 @RequestMapping("/athlete")
@@ -45,39 +40,15 @@ public class AthleteController {
         }
     }
 
-    private AthleteProfileDTO mapToDTO(Athlete athlete) {
-        AthleteProfileDTO dto = new AthleteProfileDTO();
-        dto.setFirstName(athlete.getFirstName());
-        dto.setLastName(athlete.getLastName());
-        dto.setBirthDate(athlete.getBirthDate());
-        dto.setGender(athlete.getGender());
-        dto.setHeight(athlete.getHeight());
-        dto.setWeight(athlete.getWeight());
-        dto.setCategory(athlete.getCategory());
-
-        if (athlete.getPhoto() != null) {
-            // Encode the photo byte array to Base64
-            String base64Image = Base64.getEncoder().encodeToString(athlete.getPhoto());
-            dto.setPhotoBase64(base64Image);
-        } else {
-            dto.setPhotoBase64(null);
-        }
-
-        return dto;
-    }
-
-
-
     @GetMapping("/profile")
-    public ResponseEntity<AthleteProfileDTO> getAthleteProfile() {
+    public ResponseEntity<Athlete> getAthleteProfile() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
         try {
             Athlete athlete = athleteService.getAthleteProfile(username);
-            AthleteProfileDTO athleteProfileDTO = mapToDTO(athlete);
-            return ResponseEntity.ok(athleteProfileDTO);
+            return ResponseEntity.ok(athlete);  // Return athlete profile as response
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);  // If athlete not found
         }
     }
 
@@ -92,58 +63,30 @@ public class AthleteController {
         return ResponseEntity.ok("Registration successful");
     }
 
-//    @GetMapping("/events")
-//    public ResponseEntity<List<EventResponseDTO>> getAllEvents() {
-//        try {
-//            List<EventResponseDTO> events = athleteService.getAllEvents();
-//            return ResponseEntity.ok(events);
-//        } catch (Exception e) {
-//            return ResponseEntity.status(400).body(null);
-//        }
-//    }
-
     @GetMapping("/events")
-    public ResponseEntity<List<EventResponseDTO>> getAvailableEvents() {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = userDetails.getUsername();
+    public ResponseEntity<List<Event>> getAllEvents() {
         try {
-            List<EventResponseDTO> events = athleteService.getAvailableEvents(username);
+            List<Event> events = athleteService.getAllEvents();
             return ResponseEntity.ok(events);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.status(400).body(null);
         }
     }
 
-
     @GetMapping("/events/registered")
-    public ResponseEntity<List<RegistrationDTO>> getRegisteredEvents() {
+    public ResponseEntity<List<Registration>> getRegisteredEvents() {
         try {
             // Get the current logged-in athlete's username
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String username = userDetails.getUsername();
 
 //            List<Event> events = athleteService.getRegisteredEvents(username);
-            List<RegistrationDTO> registrations = athleteService.getRegisteredEvents(username);
+            List<Registration> registrations = athleteService.getRegisteredEvents(username);
             return ResponseEntity.ok(registrations);
         } catch (Exception e) {
             return ResponseEntity.status(400).body(null);
         }
     }
-
-
-    @DeleteMapping("/registration/{registrationId}")
-    public ResponseEntity<String> deleteRegistration(@PathVariable Long registrationId) {
-        try {
-            athleteService.deleteRegistrationById(registrationId);
-            return ResponseEntity.ok("Registration deleted successfully.");
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: Registration not found.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
-        }
-    }
-
-
 
 
 }
