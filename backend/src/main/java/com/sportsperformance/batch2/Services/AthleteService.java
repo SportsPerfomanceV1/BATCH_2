@@ -1,14 +1,13 @@
 package com.sportsperformance.batch2.Services;
 
-import com.sportsperformance.batch2.DTO.AthleteProfileDTO;
-import com.sportsperformance.batch2.DTO.RegistrationRequestDTO;
-import com.sportsperformance.batch2.Repositories.AthleteRepository;
-import com.sportsperformance.batch2.Repositories.EventRepository;
-import com.sportsperformance.batch2.Repositories.RegistrationRepository;
-import com.sportsperformance.batch2.models.Athlete;
-import com.sportsperformance.batch2.models.Registration;
-import com.sportsperformance.batch2.models.Event;
+import com.sportsperformance.batch2.DTO.*;
+import com.sportsperformance.batch2.Repositories.*;
+import com.sportsperformance.batch2.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -117,7 +116,183 @@ public class AthleteService {
                 .orElseThrow(() -> new Exception("Athlete not found"));
 
         List<Registration> registrations = registrationRepository.findByAthlete(athlete);
-        return new ArrayList<>(registrations);
+
+        // Map to DTOs
+        return registrations.stream()
+                .map(registration -> {
+                    // Convert Athlete to AthleteProfileDTO
+                    AthleteProfileDTO athleteProfile = new AthleteProfileDTO();
+                    athleteProfile.setFirstName(registration.getAthlete().getFirstName());
+                    athleteProfile.setLastName(registration.getAthlete().getLastName());
+                    athleteProfile.setBirthDate(registration.getAthlete().getBirthDate());
+                    athleteProfile.setGender(registration.getAthlete().getGender());
+                    athleteProfile.setHeight(registration.getAthlete().getHeight());
+                    athleteProfile.setWeight(registration.getAthlete().getWeight());
+                    athleteProfile.setCategory(registration.getAthlete().getCategory());
+                    athleteProfile.setPhotoBase64(Arrays.toString(registration.getAthlete().getPhoto()));
+                    athleteProfile.setEmail(registration.getAthlete().getEmail());
+                    athleteProfile.setUsername(registration.getAthlete().getUsername());
+
+
+                    // Return a RegistrationDTO with the AthleteProfileDTO included
+                    return new RegistrationDTO(
+                            registration.getRegistrationId(),
+                            registration.getEvent().getEventId(),
+                            registration.getAthlete().getAthleteId(),
+                            registration.getEvent().getEventTitle(),
+                            registration.getRegistrationDate(),
+                            registration.getStatus(),
+                            registration.getRemarks(),
+                            registration.getEvent().getMeetId().getMeetName(),
+                            athleteProfile // Pass AthleteProfileDTO here
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
+
+    private EventResponseDTO mapToDTO(Event event) {
+        EventResponseDTO dto = new EventResponseDTO();
+        dto.setEventTitle(event.getEventTitle());
+        dto.setMeetId(event.getMeetId());
+        dto.setCategory(event.getCategory());
+        dto.setEventId(event.getEventId());
+
+//        dto.setEventDescription(event.getEventDescription());
+        dto.setLocation(event.getLocation());
+        dto.setEventDate(event.getEventDate());
+        dto.setEventDescription(event.getEventDescription());
+
+        if (event.getImage() != null) {
+            dto.setImageBase64(Base64.getEncoder().encodeToString(event.getImage()));
+        }
+
+        return dto;
+    }
+//    @Autowired
+//    EventRepository eventRepository;
+    @GetMapping("/events/{id}")
+    public ResponseEntity<EventResponseDTO> getEvent(@PathVariable Long id) {
+        Optional<Event> eventOptional = eventRepository.findById(id);
+        if (eventOptional.isPresent()) {
+            EventResponseDTO dto = mapToDTO(eventOptional.get());
+            return ResponseEntity.ok(dto);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+    public void deleteRegistrationById(Long registrationId) {
+        if (!registrationRepository.existsById(registrationId)) {
+            throw new NoSuchElementException("Registration not found.");
+        }
+        registrationRepository.deleteById(registrationId);
+    }
+
+    @Autowired
+    private AssistanceRequestRepository assistanceRequestRepository;
+
+
+
+    @Autowired
+    private CoachRepository coachRepository;
+
+    // Fetch the logged-in user's username
+    private String getLoggedInUsername() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userDetails.getUsername();
+    }
+
+
+    public AssistanceRequestDTO createRequest(AssistanceRequestDTO dto) {
+        String username = getLoggedInUsername();
+
+        Athlete athlete = athleteRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Athlete not found with username: " + username));
+
+        Coach coach = coachRepository.findById((long) dto.getCoachId())
+                .orElseThrow(() -> new RuntimeException("Coach not found with ID: " + dto.getCoachId()));
+
+        AssistanceRequest request = new AssistanceRequest();
+        request.setAthlete(athlete);
+        request.setCoach(coach);
+        request.setStatus("Pending");
+        request.setRequestDate(new Date());
+        request.setRemarks(dto.getRemarks());
+
+        AssistanceRequest savedRequest = assistanceRequestRepository.save(request);
+
+        return mapToDTO(savedRequest);
+    }
+
+
+    private AssistanceRequestDTO mapToDTO(AssistanceRequest request) {
+        AssistanceRequestDTO dto = new AssistanceRequestDTO();
+        dto.setAssistanceRequestId(request.getAssistanceRequestId());
+        dto.setCoachId((Long) request.getCoach().getCoachId());
+        dto.setAthleteId((Long) request.getAthlete().getAthleteId()); // Set athleteId
+        dto.setStatus(request.getStatus());
+        dto.setRemarks(request.getRemarks());
+        dto.setRequestDate(request.getRequestDate());
+        return dto;
+    }
+
+    public List<AssistanceRequestDTO> getRequestsByLoggedInAthlete() {
+        String username = getLoggedInUsername();
+
+        Athlete athlete = athleteRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Athlete not found with username: " + username));
+
+        return assistanceRequestRepository.findByAthlete(athlete).stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+
+    @Autowired
+    private WeightPlanRepository weightPlanRepository;
+
+    @Autowired
+    private DailyDietRepository dailyDietRepository;
+
+    public List<DailyDietDTO> getDailyDietsByLoggedInAthlete(String username) {
+        Athlete athlete = athleteRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Athlete not found"));
+
+        return dailyDietRepository.findByAthleteAthleteIdOrderByDateDesc(athlete.getAthleteId()).stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<WeightPlanDTO> getWeightPlansByLoggedInAthlete(String username) {
+        Athlete athlete = athleteRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Athlete not found"));
+
+        return weightPlanRepository.findByAthleteAthleteId(athlete.getAthleteId()).stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private DailyDietDTO mapToDTO(DailyDiet dailyDiet) {
+        DailyDietDTO dto = new DailyDietDTO();
+        dto.setDietId(dailyDiet.getDietId());
+        dto.setAthleteId(dailyDiet.getAthlete().getAthleteId());
+        dto.setDate(dailyDiet.getDate());
+        dto.setCalories(dailyDiet.getCalories());
+        dto.setCurrentWeight(dailyDiet.getCurrentWeight());
+        dto.setWeightPlanId(dailyDiet.getWeightPlan() != null ? dailyDiet.getWeightPlan().getPlanId() : null);
+        return dto;
+    }
+
+    private WeightPlanDTO mapToDTO(WeightPlan weightPlan) {
+        WeightPlanDTO dto = new WeightPlanDTO();
+        dto.setPlanId(weightPlan.getPlanId());
+        dto.setAthleteId(weightPlan.getAthlete().getAthleteId());
+        dto.setStartWeight(weightPlan.getStartWeight());
+        dto.setTargetWeight(weightPlan.getTargetWeight());
+        dto.setPreference(weightPlan.getPreference());
+        dto.setDailyCalorieGoal(weightPlan.getDailyCalorieGoal());
+        return dto;
     }
 
 }

@@ -4,10 +4,8 @@ import com.sportsperformance.batch2.DTO.CreateEventDTO;
 
 import com.sportsperformance.batch2.DTO.MeetDTO;
 import com.sportsperformance.batch2.Services.AdminService;
-import com.sportsperformance.batch2.models.Athlete;
-import com.sportsperformance.batch2.models.Event;
-import com.sportsperformance.batch2.models.Meet;
-import com.sportsperformance.batch2.models.Registration;
+import com.sportsperformance.batch2.Services.CoachService;
+import com.sportsperformance.batch2.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -101,5 +99,42 @@ public class AdminController {
             return ResponseEntity.status(400).body(null);
         }
     }
+
+    @Autowired
+    private CoachService coachService;
+
+    // Get all coaches
+    @GetMapping
+    public ResponseEntity<List<CoachSummaryDTO>> getAllCoaches() {
+        return ResponseEntity.ok(coachService.getAllCoaches());
+    }
+
+    // Get a specific coach by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<CoachDTO> getCoachById(@PathVariable Long id) {
+        return ResponseEntity.ok(coachService.getCoachById(id));
+    }
+
+    // Get all achievements by coachId
+    @GetMapping("achievements/coach/{coachId}")
+    public ResponseEntity<List<AchievementDTO>> getAllAchievementsByCoachId(@PathVariable Long coachId) {
+        return ResponseEntity.ok(coachService.getAllAchievementsByCoachId(coachId));
+    }
+
+    @PutMapping("/updateevent/{eventId}")
+    public ResponseEntity<Event> editEvent(
+            @PathVariable Long eventId,
+            @ModelAttribute CreateEventDTO eventDTO) {
+        Event updatedEvent = adminService.updateEvent(eventId, eventDTO);
+        return ResponseEntity.ok(updatedEvent);
+    }
+
+    @DeleteMapping("/deleteevent/{eventId}")
+    public ResponseEntity<Void> deleteEvent(@PathVariable Long eventId) {
+        adminService.deleteEvent(eventId);
+        return ResponseEntity.noContent().build();
+    }
+
+
 
 }

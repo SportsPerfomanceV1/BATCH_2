@@ -11,7 +11,7 @@ public class DailyDiet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int dietId;
+    private Long dietId;
 
     @ManyToOne
     @JoinColumn(name = "athleteId", nullable = false)
@@ -25,5 +25,4 @@ public class DailyDiet {
     @JoinColumn(name = "weightPlanId")
     private WeightPlan weightPlan;
 
-    // Getters and setters...
 }

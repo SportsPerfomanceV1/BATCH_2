@@ -1,9 +1,11 @@
 package com.sportsperformance.batch2.Controllers;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.sportsperformance.batch2.DTO.AthleteProfileDTO;
-import com.sportsperformance.batch2.DTO.RegistrationRequestDTO;
+import com.sportsperformance.batch2.DTO.*;
+import com.sportsperformance.batch2.Repositories.EventRepository;
+import com.sportsperformance.batch2.Repositories.WeightPlanRepository;
 import com.sportsperformance.batch2.Services.AthleteService;
+import com.sportsperformance.batch2.Services.CoachService;
 import com.sportsperformance.batch2.models.Athlete;
 import com.sportsperformance.batch2.models.Event;
 import com.sportsperformance.batch2.models.Registration;
@@ -15,6 +17,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+
 @JsonIgnoreProperties({"parentField"})
 @RestController
 @RequestMapping("/athlete")
@@ -87,6 +92,93 @@ public class AthleteController {
             return ResponseEntity.status(400).body(null);
         }
     }
+
+
+    @DeleteMapping("/registration/{registrationId}")
+    public ResponseEntity<String> deleteRegistration(@PathVariable Long registrationId) {
+        try {
+            athleteService.deleteRegistrationById(registrationId);
+            return ResponseEntity.ok("Registration deleted successfully.");
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: Registration not found.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    }
+
+    @Autowired
+    private CoachService coachService;
+
+    // Get all coaches
+    @GetMapping
+    public ResponseEntity<List<CoachSummaryDTO>> getAllCoaches() {
+        return ResponseEntity.ok(coachService.getAllCoaches());
+    }
+
+    // Get a specific coach by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<CoachDTO> getCoachById(@PathVariable Long id) {
+        return ResponseEntity.ok(coachService.getCoachById(id));
+    }
+
+    // Get all achievements by coachId
+    @GetMapping("achievements/coach/{coachId}")
+    public ResponseEntity<List<AchievementDTO>> getAllAchievementsByCoachId(@PathVariable Long coachId) {
+        return ResponseEntity.ok(coachService.getAllAchievementsByCoachId(coachId));
+    }
+    @PostMapping("/createassistancereq")
+    public ResponseEntity<AssistanceRequestDTO> createRequest(@RequestBody AssistanceRequestDTO dto) {
+        return ResponseEntity.ok(athleteService.createRequest(dto));
+    }
+    @GetMapping("/getassistancereq/")
+    public ResponseEntity<List<AssistanceRequestDTO>> getRequestsByLoggedInAthlete() {
+        return ResponseEntity.ok(athleteService.getRequestsByLoggedInAthlete());
+    }
+
+;
+
+    @GetMapping("/getdailydiets")
+    public List<DailyDietDTO> getDailyDietsForLoggedInAthlete() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+        return athleteService.getDailyDietsByLoggedInAthlete(username);
+    }
+
+    @GetMapping("/getweightplan")
+    public List<WeightPlanDTO> getWeightPlansForLoggedInAthlete() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+        return athleteService.getWeightPlansByLoggedInAthlete(username);
+    }
+
+    private EventResponseDTO mapToDTO(Event event) {
+        EventResponseDTO dto = new EventResponseDTO();
+        dto.setEventTitle(event.getEventTitle());
+        dto.setCategory(event.getCategory());
+        dto.setLocation(event.getLocation());
+        dto.setEventDate(event.getEventDate());
+        dto.setEventDescription(event.getEventDescription());
+
+        if (event.getImage() != null) {
+            dto.setImageBase64(Base64.getEncoder().encodeToString(event.getImage()));
+        }
+
+        return dto;
+    }
+
+    @Autowired
+    EventRepository eventRepository;
+    @GetMapping("/events/{id}")
+    public ResponseEntity<EventResponseDTO> getEvent(@PathVariable Long id) {
+        Optional<Event> eventOptional = eventRepository.findById(id);
+        if (eventOptional.isPresent()) {
+            EventResponseDTO dto = mapToDTO(eventOptional.get());
+            return ResponseEntity.ok(dto);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
 
 
 }
