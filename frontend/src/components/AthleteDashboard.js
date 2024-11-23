@@ -418,15 +418,23 @@ function AthleteDashboard() {
                   />
                   <span>Coach</span>
                 </label>
-                <label>
-                  Profile Image:
-                  <input
-                    type="file"
-                    className='file-input'
-                    onChange={handleImageChange}
-                  />
-                </label>
-               
+                <input
+                  type="file"
+                  name="image"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  style={{
+                    marginTop: "1rem",
+                    padding: "10px",
+                    border: "2px dashed gray",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                    transition: "border-color 0.3s ease",
+                  }}
+                  onMouseEnter={(e) => (e.target.style.borderColor = "green")}
+                  onMouseLeave={(e) => (e.target.style.borderColor = "gray")}
+                />
+               <p></p>
                 <div className="modal-actions">
                   <button type="button" onClick={handleSaveProfile} className='btn2'>Save</button>
                   <button type="button" onClick={handleCloseModal} className='btn2'>Cancel</button>
@@ -507,6 +515,8 @@ function AthleteDashboard() {
     )}
 
 {currentSection === 'myEvents' && (
+  
+  <div className="transition-container">
   <div className="my-events-section">
    <div className="centered-jump">
   <h2>My Events</h2>
@@ -549,28 +559,100 @@ function AthleteDashboard() {
       </tbody>
     </table>
   </div>
+  </div>
 )}
 
 {selectedEvent2 && (
-  <div className="modal">
-    <div className="modal-content">
-      <h2>{selectedEvent2.eventTitle}</h2>
-      {/* <p>Meet: {selectedEvent2.meetId.meetName||'NA'}</p> */}
+  <div 
+    className="modal" 
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100vw",
+      height: "100vh",
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 1000,
+      padding: "20px",
+      boxSizing: "border-box",
+    }}
+  >
+    <div 
+      className="modal-content"
+      style={{
+        backgroundColor: "white",
+        borderRadius: "8px",
+        boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.2)",
+        overflow: "hidden",
+        maxWidth: "600px",
+        width: "100%",
+        height:"530px",
+        textAlign: "center",
+        transition: "transform 0.3s ease, box-shadow 0.3s ease",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = "scale(1.02)";
+        e.currentTarget.style.boxShadow = "0px 6px 20px rgba(0, 0, 0, 0.3)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = "scale(1)";
+        e.currentTarget.style.boxShadow = "0px 4px 15px rgba(0, 0, 0, 0.2)";
+      }}
+    >
+      <h2 style={{ margin: "10px 0", fontSize: "24px", fontWeight: "bold" }}>
+          {selectedEvent2.eventTitle}
+        </h2>
       {selectedEvent2.imageBase64 && (
-        <img 
-          src={`data:image/jpeg;base64,${selectedEvent2.imageBase64}`} 
-          alt={selectedEvent2.eventTitle} 
-          style={{ width: "100%", height: "200px", marginBottom: "20px" }}
+        <img
+          src={`data:image/jpeg;base64,${selectedEvent2.imageBase64}`}
+          alt={selectedEvent2.eventTitle}
+          style={{
+            width: "100%",
+            height: "200px",
+            objectFit: "cover",
+            borderTopLeftRadius: "8px",
+            borderTopRightRadius: "8px",
+          }}
         />
       )}
-      <p><b>Registration Date: </b>{selectedEvent2.category}</p>
-      <p><b>Event Description: </b>{selectedEvent2.eventDescription}</p>
-      <p><b>Event Date: </b>{selectedEvent2.eventDate}</p>
-      <p><b>Location: </b>{selectedEvent2.location}</p>
-      <button onClick={handleCloseModal1} style={{marginLeft:'30%',marginTop:'20px',width:'155px'}}>Close</button>
+      <div 
+        style={{
+          padding: "20px",
+          boxSizing: "border-box",
+          borderRadius: "0 0 8px 8px",
+          backgroundColor: "#f1eeee",
+        }}
+      >
+        
+        <p><b>Registration Date: </b>{selectedEvent2.category}</p>
+        <p><b>Event Description: </b>{selectedEvent2.eventDescription}</p>
+        <p><b>Event Date: </b>{selectedEvent2.eventDate}</p>
+        <p><b>Location: </b>{selectedEvent2.location}</p>
+        <button 
+          onClick={handleCloseModal1} 
+          style={{
+            marginTop: "20px",
+            padding: "10px 20px",
+            backgroundColor: "#007BFF",
+            color: "white",
+            border: "none",
+            borderRadius: "20px",
+            cursor: "pointer",
+            transition: "background-color 0.3s ease",
+          }}
+          onMouseEnter={(e) => e.target.style.backgroundColor = "#0056b3"}
+          onMouseLeave={(e) => e.target.style.backgroundColor = "#007BFF"}
+        >
+          Close
+        </button>
+      </div>
     </div>
   </div>
 )}
+
 
 
         {currentSection === 'coach' && (
