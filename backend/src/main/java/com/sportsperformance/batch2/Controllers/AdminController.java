@@ -233,13 +233,13 @@ public class AdminController {
     private CoachService coachService;
 
     // Get all coaches
-    @GetMapping
+    @GetMapping("/getallcoaches")
     public ResponseEntity<List<CoachSummaryDTO>> getAllCoaches() {
         return ResponseEntity.ok(coachService.getAllCoaches());
     }
 
     // Get a specific coach by ID
-    @GetMapping("/{id}")
+    @GetMapping("coach/{id}")
     public ResponseEntity<CoachDTO> getCoachById(@PathVariable Long id) {
         return ResponseEntity.ok(coachService.getCoachById(id));
     }

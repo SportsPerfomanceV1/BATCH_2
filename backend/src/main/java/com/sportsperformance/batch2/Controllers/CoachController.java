@@ -29,7 +29,7 @@ public class CoachController {
     private CoachService coachService;
 
     // Get all coaches
-    @GetMapping
+    @GetMapping("/getallcoach")
     public ResponseEntity<List<CoachSummaryDTO>> getAllCoaches() {
         return ResponseEntity.ok(coachService.getAllCoaches());
     }
@@ -40,15 +40,22 @@ public class CoachController {
         return ResponseEntity.ok(coachService.getCoachById(id));
     }
 
-    // Update coach profile
-    @PutMapping("/profile")
-    public ResponseEntity<CoachDTO> updateCoachProfile(
-            @RequestPart("coach") CoachDTO coachDTO,
-            @RequestPart(name = "image", required = false) MultipartFile imageFile) throws IOException {
+    @GetMapping("/profile")
+    public ResponseEntity<CoachDTO> getCoaachProfile() {
+        return ResponseEntity.ok(coachService.getCoachProfile());
+    }
 
-        if (imageFile != null) {
-            coachDTO.setImageFile(imageFile);
-        }
+
+
+
+    // Update coach profile
+    @PutMapping(value = "/profile", consumes = "multipart/form-data")
+    public ResponseEntity<CoachDTO> updateCoachProfile(
+            @ModelAttribute CoachDTO coachDTO) throws IOException {
+
+//        if (coachDTO.getImageFile() != null) {
+//            coachDTO.setImageFile(imageFile);
+//        }
         return ResponseEntity.ok(coachService.updateCoachProfileByUsername(coachDTO));
     }
 

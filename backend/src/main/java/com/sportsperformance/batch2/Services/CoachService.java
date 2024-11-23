@@ -49,6 +49,22 @@ public class CoachService {
         return dto;
     }
 
+    public CoachDTO getCoachProfile() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+
+        // Find the coach by username
+        Coach coach = coachRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Coach not found with username: " + username));
+
+        CoachDTO dto = new CoachDTO();
+        dto.setCoachId(coach.getCoachId());
+        dto.setFirstName(coach.getFirstName());
+        dto.setLastName(coach.getLastName());
+        dto.setImageBase64(ImageUtil.convertToBase64(coach.getImage()));
+        return dto;
+    }
+
     // Update coach profile by username
     public CoachDTO updateCoachProfileByUsername(CoachDTO coachDTO) throws IOException {
         // Fetch username from security context
@@ -71,7 +87,7 @@ public class CoachService {
 
         // Prepare response DTO
         CoachDTO updatedCoachDTO = new CoachDTO();
-        updatedCoachDTO.setCoachId(coach.getCoachId());
+//        updatedCoachDTO.setCoachId(coach.getCoachId());
         updatedCoachDTO.setFirstName(coach.getFirstName());
         updatedCoachDTO.setLastName(coach.getLastName());
         updatedCoachDTO.setImageBase64(coach.getImage() != null ?
