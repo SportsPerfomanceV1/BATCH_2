@@ -5,6 +5,7 @@ import axios from "axios";
 import { Tab, Tabs } from '@mui/material';
 import { Typography, AppBar, Table, Toolbar, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper , DialogTitle ,DialogContent, Dialog } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
+import CircularProgress from '@mui/material/CircularProgress';
 import LoginIcon from "@mui/icons-material/Login";
 import '../styles/AdminDashboard.css';
 // import "../styles/shortlist.css";
@@ -43,9 +44,10 @@ const ShortlistCandidatesModal = ({ onClose }) => {
     const [openEventDialog, setOpenEventDialog] = useState(false);
     const [profileModalOpen, setProfileModalOpen] = useState(false);
     const [athleteDetails, setAthleteDetails] = useState({});
+    const [loading,setLoading]=useState(false);
 
     useEffect(() => {
-        
+            setLoading(true);
             const token = localStorage.getItem("token"); // Fix: Use getItem for localStorage
             axios
                 .get('/admin/registrations/pending', {
@@ -55,10 +57,11 @@ const ShortlistCandidatesModal = ({ onClose }) => {
                 })
                 .then((response) => {
                     setRegistrations(response.data);
+                    setLoading(false);
                 })
                 .catch((error) => console.error('Error fetching pending registrations:', error));
         
-    });
+    },[]);
 
     const handleApprove = (registrationId) => {
         const token = localStorage.getItem("token"); // Fix: Use getItem for localStorage
@@ -73,7 +76,9 @@ const ShortlistCandidatesModal = ({ onClose }) => {
                 // Re-fetch the pending registrations after approving
                 setRegistrations(registrations.filter(reg => reg.registrationId !== registrationId));
             })
-            .catch((error) => console.error('Error approving registration:', error));
+            .catch((error) => {console.error('Error approving registration:', error);
+                setLoading(false);
+            });
     };
   
     const handleReject = (registrationId) => {
@@ -164,6 +169,7 @@ const ShortlistCandidatesModal = ({ onClose }) => {
                     <div className="" >
                         <button className="close-btn" onClick={onClose}>&times;</button>
                         <h2 style={{textAlign:'center'}} >Pending Registrations</h2>
+                        {loading? <CircularProgress style={{marginLeft:'50%',marginTop:'10px'}} />:(
                         <table style={{ width: "100vh", borderCollapse: "collapse" }}>
                             <thead>
                                 <tr style={{ backgroundColor: "#f4f4f4" }}>
@@ -195,7 +201,7 @@ const ShortlistCandidatesModal = ({ onClose }) => {
                                     </tr>
                                 ))}
                             </tbody>
-                        </table>
+                        </table>)}
                     </div>
                     <Dialog open={openEventDialog} onClose={handleCloseEventDialog} maxWidth="md" fullWidth>
       <DialogTitle style={{ backgroundColor: '#76ABAE', color: 'white', padding: '16px', fontFamily: 'Roboto, sans-serif', fontWeight: '500', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)' }} align="center">
@@ -417,9 +423,11 @@ const PublishResults = ({ onClose }) => {
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [athletes, setAthletes] = useState([]);
     const [results, setResults] = useState([]);
+    const [loading,setLoading]=useState(false);
 
     useEffect(() => {
         // Fetch events with pending results
+        setLoading(true);
         const token = localStorage.getItem("token"); // Or however you store/retrieve the token
 
         axios.get("/admin/events/pending-results", {
@@ -427,13 +435,16 @@ const PublishResults = ({ onClose }) => {
                 Authorization: `Bearer ${token}`
             }
         })
-            .then(response => setEvents(response.data))
-            .catch(error => console.error("Error fetching events:", error));
+            .then(response => {setEvents(response.data);
+                setLoading(false)})
+            .catch(error => {console.error("Error fetching events:", error);setLoading(false)});
+
     }, []);
 
    
     const handleEventClick = (eventId) => {
         setSelectedEvent(eventId);
+        setLoading(true);
         const token = localStorage.getItem("token");
         axios.get(`/admin/events/${eventId}/athletes`, {
             headers: {
@@ -447,8 +458,9 @@ const PublishResults = ({ onClose }) => {
                     score: athlete.score || "",
                     comment: athlete.comment || ""
                 })));
+             setLoading(false);   
             })
-            .catch(error => console.error("Error fetching athletes:", error));
+            .catch(error => {console.error("Error fetching events:", error);setLoading(false)});
     };
 
     const handleResultChange = (index, field, value) => {
@@ -490,6 +502,7 @@ const PublishResults = ({ onClose }) => {
         {!selectedEvent ? (
             <div>
             <h3>Events with Pending Results</h3>
+            {loading? <CircularProgress style={{marginTop:'10px'}} />:(
             <table className="eventTable">
                 <thead>
                     <tr>
@@ -511,7 +524,7 @@ const PublishResults = ({ onClose }) => {
                         </tr>
                     ))}
                 </tbody>
-            </table>
+            </table>)};
         </div>
         
         ) : (
@@ -874,6 +887,7 @@ const AdminDashboard = () => {
     const navigate=useNavigate();
     const [regVisible, setRegVisible] = useState(false);
     const [events, setEvents] = useState([])
+  
     const [activeTab, setActiveTab] = useState(0);
 
 
@@ -904,6 +918,7 @@ const AdminDashboard = () => {
         };
         const loadAllEvents = async () => {
             try {
+              
               const token = localStorage.getItem("token");
               const response = await fetch('admin/events', {
                 method: "GET",
@@ -916,6 +931,7 @@ const AdminDashboard = () => {
             } catch (error) {
               console.error("Error loading events:", error);
             }
+            
           };
         loadAllEvents();
         fetchMeets();
@@ -985,10 +1001,12 @@ const AdminDashboard = () => {
         const [profileModalOpen, setProfileModalOpen] = useState(false);
         const [editEventOpen, setEditEventOpen] = useState(false);
         const [updatedEvent, setUpdatedEvent] = useState(null);
+        const [loadEvents,setLoadEvents]=useState(false);
       
         useEffect(() => {
           const fetchEvents = async () => {
             try {
+                setLoadEvents(true);
               const token = localStorage.getItem("token");
               const response = await fetch("/admin/events", {
                 method: "GET",
@@ -999,6 +1017,8 @@ const AdminDashboard = () => {
               setEvents(data);
             } catch (error) {
               console.error("Error fetching events:", error);
+            } finally{
+                setLoadEvents(false);
             }
           };
           
@@ -1156,6 +1176,7 @@ const AdminDashboard = () => {
       
         return (
           <>
+          {loadEvents?(<CircularProgress style={{marginLeft:'50%' ,marginTop:'20px'}} />):(
             <TableContainer component={Paper}>
               <Table>
                 <TableHead>
@@ -1192,6 +1213,7 @@ const AdminDashboard = () => {
                 </TableBody>
               </Table>
             </TableContainer>
+        )}
       
             {selectedEvent && (
              <Dialog open={open} onClose={handleCloseEventDialog} maxWidth="md" fullWidth>
@@ -1601,17 +1623,3 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
