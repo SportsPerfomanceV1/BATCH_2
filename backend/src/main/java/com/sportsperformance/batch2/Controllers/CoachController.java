@@ -1,9 +1,6 @@
 package com.sportsperformance.batch2.Controllers;
 
-import com.sportsperformance.batch2.DTO.AchievementDTO;
-import com.sportsperformance.batch2.DTO.AssistanceRequestDTO;
-import com.sportsperformance.batch2.DTO.CoachDTO;
-import com.sportsperformance.batch2.DTO.CoachSummaryDTO;
+import com.sportsperformance.batch2.DTO.*;
 import com.sportsperformance.batch2.Repositories.AssistanceRequestRepository;
 import com.sportsperformance.batch2.Repositories.AthleteRepository;
 import com.sportsperformance.batch2.Repositories.WeightPlanRepository;
@@ -131,6 +128,44 @@ public class CoachController {
 
     @Autowired
     private WeightPlanRepository weightPlanRepository;
+
+    @PostMapping("/createplan")
+    public WeightPlanDTO createWeightPlan(@RequestBody WeightPlanDTO dto) {
+        return coachService.createWeightPlan(dto);
+    }
+
+    @PutMapping("updateplan/{planId}")
+    public WeightPlanDTO updateWeightPlan(@PathVariable Long planId, @RequestBody WeightPlanDTO dto) {
+        return coachService.updateWeightPlan(planId, dto);
+    }
+
+    @DeleteMapping("deleteplan/{planId}")
+    public void deleteWeightPlan(@PathVariable Long planId) {
+        coachService.deleteWeightPlan(planId);
+    }
+
+    @PostMapping("/creatediet")
+    public DailyDietDTO createDailyDiet(@RequestBody DailyDietDTO dto) {
+        return coachService.createDailyDiet(dto);
+    }
+
+    @DeleteMapping("deletediet/{dietId}")
+    public void deleteDailyDiet(@PathVariable Long dietId) {
+        coachService.deleteDailyDiet(dietId);
+    }
+
+
+    @GetMapping("weightplan/athlete/{athleteId}")
+    public List<WeightPlanDTO> getWeightPlans(@PathVariable Long athleteId) {
+        return coachService.getWeightPlansByAthlete(athleteId);
+    }
+
+    @GetMapping("diet/athlete/{athleteId}")
+    public List<DailyDietDTO> getDailyDiets(@PathVariable Long athleteId) {
+        return coachService.getDailyDietsByAthlete(athleteId);
+    }
+
+
 
 
 
