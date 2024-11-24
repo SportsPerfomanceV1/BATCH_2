@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.PrivateKey;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -233,10 +234,27 @@ public class CoachService {
         Coach coach = coachRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Coach not found with username: " + username));
 
+
+
         return assistanceRequestRepository.findByCoach(coach).stream()
                 .map(request -> {
                     AssistanceRequestDTO dto = mapToDTO(request);
-                    dto.setAthleteId((Long) request.getAthlete().getAthleteId()); // Include athleteId in the response
+                    AthleteProfileDTO athleteProfile = new AthleteProfileDTO();
+                    athleteProfile.setFirstName(request.getAthlete().getFirstName());
+                    athleteProfile.setLastName(request.getAthlete().getLastName());
+                    athleteProfile.setBirthDate(request.getAthlete().getBirthDate());
+                    athleteProfile.setGender(request.getAthlete().getGender());
+                    athleteProfile.setHeight(request.getAthlete().getHeight());
+                    athleteProfile.setWeight(request.getAthlete().getWeight());
+                    athleteProfile.setCategory(request.getAthlete().getCategory());
+                    athleteProfile.setPhotoBase64(Arrays.toString(request.getAthlete().getPhoto()));
+                    athleteProfile.setEmail(request.getAthlete().getEmail());
+                    athleteProfile.setUsername(request.getAthlete().getUsername());
+
+
+                    dto.setAthleteId((Long) request.getAthlete().getAthleteId());
+                    dto.setAthlete(athleteProfile);
+                    // Include athleteId in the response
                     return dto;
                 })
                 .collect(Collectors.toList());
