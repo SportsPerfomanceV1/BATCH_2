@@ -165,7 +165,7 @@ public class AthleteController {
         return ResponseEntity.ok(coachService.getAllAchievementsByCoachId(coachId));
     }
     @PostMapping("/createassistancereq")
-    public ResponseEntity<AssistanceRequestDTO> createRequest(@RequestBody AssistanceRequestDTO dto) {
+    public ResponseEntity<AssistanceRequestDTO> createRequest(@ModelAttribute AssistanceRequestDTO dto) {
         return ResponseEntity.ok(athleteService.createRequest(dto));
     }
     @GetMapping("/getassistancereq/")

@@ -915,7 +915,7 @@ const AdminDashboard = () => {
         const handleDeleteEvent = async (eventId) => {
           try {
             const token = localStorage.getItem("token");
-            const response = await fetch(`/admin/deleteevent/${eventId}`, {
+            const response = await fetch(`/admin/events/${eventId}`, {
               method: "DELETE",
               headers: { Authorization: `Bearer ${token}` },
             });
@@ -935,79 +935,36 @@ const AdminDashboard = () => {
         };
       
         const handleUpdateEvent = async () => {
-            try {
-              const token = localStorage.getItem("token");
-              const formData = new FormData();
-          
-              // Add updated fields to the FormData object
-              if (updatedEvent.eventTitle) {
-                formData.append("eventTitle", updatedEvent.eventTitle);
+            const formData = new FormData();
+            formData.append('eventTitle',updatedEvent.eventTitle);
+            formData.append('eventDate',updatedEvent.eventDate);
+            formData.append('location',updatedEvent.location);
+            formData.append('Category',updatedEvent.category);
+            formData.append('eventDescription',updatedEvent.eventDescription);
+          try {
+            const token = localStorage.getItem("token");
+            const response = await fetch('/admin/createevent', {
+              method: "POST",
+              body: formData,
+              headers: { 
+               
+                Authorization: `Bearer ${token}`,
               }
-              if (updatedEvent.eventDate) {
-                formData.append("eventDate", updatedEvent.eventDate);
-              
-              }
-              if (updatedEvent.location) {
-                formData.append("location", updatedEvent.location);
-              
-              }
-              if (updatedEvent.category) {
-                formData.append("category", updatedEvent.category);
-              
-              }
-              if (updatedEvent.eventDescription) {
-                formData.append("eventDescription", updatedEvent.eventDescription);
-              }
-              
-              
-              // Add image if it exists
-              if (updatedEvent.image) {
-                formData.append("image", updatedEvent.image);
-              }
-          
-            //   // Include `meetId` if available
-            //   if (updatedEvent.meetId) {
-            //     formData.append("meetId", updatedEvent.meetId);
-            //   }
-          
-              const response = await fetch(`/admin/updateevent/${updatedEvent.eventId}`, {
-                method: "PUT",
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-                body: formData,
-              });
-          
-              if (!response.ok) {
-                throw new Error("Failed to update event.");
-              }
-          
-              const updatedEventData = await response.json();
-          
-              // Update the event list locally
-              const updatedEvents = events.map((event) =>
-                event.eventId === updatedEventData.eventId ? updatedEventData : event
-              );
-              setEvents(updatedEvents);
-          
-              alert("Updated Event Details Successfully");
-              setEditEventOpen(false);
-              setUpdatedEvent(null);
-            } catch (error) {
-              console.error("Error updating event:", error);
+    
+            });
+            if (response.ok) {
+                alert("Updated Event Details Successfully");
             }
-          };
-          
-          // Attach file input change handler to store the image
-          const handleImageChange = (e) => {
-            const file = e.target.files[0];
-            if (file) {
-              setUpdatedEvent({ ...updatedEvent, image: file });
-            }
-          };
-          
-
-
+            const updatedEvents = events.map((event) =>
+              event.eventId === updatedEvent.eventId ? updatedEvent : event
+            );
+            setEvents(updatedEvents);
+            setEditEventOpen(false);
+            setUpdatedEvent(null);
+          } catch (error) {
+            console.error("Error updating event:", error);
+          }
+        };
       
         const handleCloseEventDialog = () => {
           setOpen(false);
@@ -1070,16 +1027,7 @@ const AdminDashboard = () => {
                 <DialogContent>
                 <img src={selectedEvent.imageBase64 ?` data:image/jpeg;base64,${selectedEvent.imageBase64} `: '/default-profile.jpg'} style={{paddingLeft:"24%", width:'400px' ,height:'220px'}}/>
 
-                <Typography variant="h6">
-  <b>Date: </b>
-  {selectedEvent.eventDate ? 
-    (() => {
-      const date = new Date(selectedEvent.eventDate);
-      date.setDate(date.getDate() + 1); // Add 1 day
-      return date.toISOString().split('T')[0]; // Format to YYYY-MM-DD
-    })() 
-    : 'N/A'}
-</Typography>
+                  <Typography variant="h6"><b>Date: </b>{selectedEvent.eventDate.split('T')[0]}</Typography>
                   <Typography variant="h6"><b>Location: </b>{selectedEvent.location}</Typography>
                   <Typography variant="h6"><b>Category: </b>{selectedEvent.category}</Typography>
                   <Typography variant="h6"><b>Description: </b>{selectedEvent.eventDescription}</Typography>
@@ -1179,17 +1127,10 @@ const AdminDashboard = () => {
                     onChange={(e) => setUpdatedEvent({ ...updatedEvent, eventDescription: e.target.value })}
                     margin="normal"
                   />
-                  <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  style={{ width: "100%", height: "200px", marginBottom: "20px" }}
-                />
-
                   <Button
                     variant="contained"
                     color="primary"
-                    onClick={() => handleUpdateEvent(selectedEvent.eventId)}
+                    onClick={handleUpdateEvent}
                     style={{ marginTop: '10px' }}
                   >
                     Update Event

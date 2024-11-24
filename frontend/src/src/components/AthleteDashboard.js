@@ -8,9 +8,8 @@ import '../styles/athlete.css';
 function AthleteDashboard() {
   const navigate = useNavigate();
   const [athlete, setAthlete] = useState(null);
-  const [remarks, setRemarks] = useState({});
-
   const [events, setEvents] = useState([]);
+  const [coaches, setCoaches] = useState([]);
   const [myEvents, setMyEvents] = useState([]);
   const [currentSection, setCurrentSection] = useState('profile');
   const [editingProfile, setEditingProfile] = useState(false);
@@ -21,8 +20,6 @@ function AthleteDashboard() {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [registeringEvent, setRegisteringEvent] = useState(null);
   const [selectedEvent2, setSelectedEvent2] = useState(null);
-  const [coaches, setCoaches] = useState([]);
-
   const [updatedProfile, setUpdatedProfile] = useState({
     firstName: '',
     lastName: '',
@@ -39,39 +36,7 @@ function AthleteDashboard() {
     loadAllEvents();
     loadMyEvents();
     loadAllCoaches();
-    fetchCoaches();
-
   }, []);
-
-  const handleRemarksChange = (e, coachId) => {
-    const newRemarks = { ...remarks };
-    newRemarks[coachId] = e.target.value;
-    setRemarks(newRemarks);
-  };
-
-  const fetchCoaches = async () => {
-    try {
-      const token = localStorage.getItem("token");
-
-      const response = await fetch('coach/getallcoaches',{
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        }
-      });
-       // Replace with your actual API endpoint
-      if (response.ok) {
-        const data = await response.json();
-        setCoaches(data);
-      } else {
-        console.error('Failed to fetch coaches');
-      }
-  
-    } catch (error) {
-      console.error('Error fetching coaches:', error);
-    }
-  };
-
 
   const loadAthleteProfile = async () => {
     try {
@@ -126,7 +91,7 @@ function AthleteDashboard() {
   const loadAllCoaches = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch('/athlete/getallcoaches', {
+      const response = await fetch('/coach', {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -246,39 +211,6 @@ function AthleteDashboard() {
     }
   };
 
-
-
-
-  const handleRequestAssistance = async (coachId) => {
-    try {
-      const token = localStorage.getItem('token');
-
-    const formData = new FormData();
-    formData.append('coachId', coachId);
-    formData.append('remarks', remarks[coachId] || '');  
-
-      const response = await fetch(`/athlete/createassistancereq`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,  
-        },
-        body: formData, 
-      });
-     if (response.ok) {
-        alert('Assistance request sent successfully!');
-        loadAthleteProfile();
-      } else {
-        const errorData = await response.json();
-        console.error('Error requesting assistance:', errorData.message);
-        alert('Failed to send assistance request. Please try again.');
-      }
-    } catch (error) {
-      console.error('Error requesting assistance:', error);
-      alert('An error occurred. Please try again.');
-    }
-  };
-
-
   const handleRegisterForEvent = async (eventId) => {
     try {
       const token = localStorage.getItem("token");
@@ -383,16 +315,8 @@ function AthleteDashboard() {
                 />
                 <div className="athlete-info">
                   <p>Name: {athlete.firstName} {athlete.lastName}</p>
-                 <p>
-                   Date of Birth: {athlete.birthDate ? 
-                  (() => {
-                  const date = new Date(athlete.birthDate);
-                  date.setDate(date.getDate() + 1); 
-                  return date.toISOString().split('T')[0]; 
-    })() 
-    : 'N/A'}
-</p>
-                  
+                  <p>Date of Birth: {athlete.birthDate ? athlete.birthDate.split('T')[0] : 'N/A'}
+                  </p>
                   <p>Gender: {athlete.gender}</p>
                   <p>Height: {athlete.height}</p>
                   <p>Weight: {athlete.weight}</p>
@@ -551,15 +475,7 @@ function AthleteDashboard() {
       <p>Category: {selectedEvent.category}</p>
       <p>Description: {selectedEvent.description}</p>
       <p>Location: {selectedEvent.location}</p>
-      <p>
-  Event Date: {selectedEvent.eventDate ? 
-    (() => {
-      const date = new Date(selectedEvent.eventDate);
-      date.setDate(date.getDate() + 1); // Add 1 day
-      return date.toISOString().split('T')[0]; // Format to YYYY-MM-DD
-    })() 
-    : 'N/A'}
-</p>
+      <p>Event Date: {selectedEvent.eventDate.split('T')[0]}</p>
       <textarea placeholder="Remarks (optional)" value={remark} onChange={(e) => setRemark(e.target.value)}></textarea>
       <p></p>
       
@@ -657,64 +573,18 @@ function AthleteDashboard() {
 )}
 
 
-{currentSection === 'coach' && (
-  <div className="coach-section">
-    <h3>All Coaches</h3>
-    {!athlete.coachId ? (
-      <div className="available-coaches">
-        {coaches.length > 0 ? (
-          coaches.map((coach) => (
-            <div className="coach-card" key={coach.coachId}>
-              <img
-                src={coach.imageBase64 ? `data:image/jpeg;base64,${coach.imageBase64}` : '/default-profile.jpg'}
-                alt="coach"
-              />
-              <p><strong>Name:</strong> {coach.firstName} {coach.lastName}</p>
-
-              {/* Remarks Field */}
-              <textarea
-                placeholder="Add remarks (optional)"
-                value={remarks[coach.coachId] || ''}
-                onChange={(e) => handleRemarksChange(e, coach.coachId)}
-              />
-              <button onClick={() => handleRequestAssistance(coach.coachId)}>
-                Request Assistance
-              </button>
+        {currentSection === 'coach' && (
+          <div className="transition-container">
+          <div className="events-section">
+          <div className="centered-jump">
+            <h2> Coaches</h2>
+          </div>
+            <div className="events-container">
+             
             </div>
-          ))
-        ) : (
-          <p>No coaches available at the moment.</p>
+          </div>
+          </div>
         )}
-      </div>
-    ) : athlete.requestPending ? (
-      <p>Your request is pending approval from the coach.</p>
-    ) : (
-      <div className="coach-details">
-        <h4>Coach Profile</h4>
-        <p><strong>Name:</strong> {athlete.coach.name}</p>
-        <p><strong>Achievements:</strong> {athlete.coach.achievements}</p>
-        <div>
-          <h4>Diet Plan</h4>
-          <p>{athlete.coach.dietPlan || 'No diet plan assigned yet.'}</p>
-        </div>
-        <div>
-          <h4>Weight Plan</h4>
-          <p>{athlete.coach.weightPlan || 'No weight plan assigned yet.'}</p>
-        </div>
-
-        {/* Remarks Field in Coach Profile (optional) */}
-        <div>
-          <h4>Remarks</h4>
-          <textarea
-            placeholder="Add remarks about your coach (optional)"
-            value={athlete.coachRemarks || ''}
-          />
-        </div>
-      </div>
-    )}
-  </div>
-)}
-
       </div>
     </div>
   );

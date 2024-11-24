@@ -6,7 +6,7 @@ import Register from "./components/Register";
 import AdminDashboard from "./components/AdminDashboard";
 import AthleteDashboard from "./components/AthleteDashboard";
 import CoachDashboard from "./components/CoachDashboard";
-import HomePage from "./components/Homepae";
+import HomePage from "./components/Homepage";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);

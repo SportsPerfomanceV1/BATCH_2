@@ -1,321 +1,238 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-
-function AthleteDashboard() {
+const CoachDashboard = () => {
   const navigate = useNavigate();
-  const [athlete, setAthlete] = useState(null);
+  const [currentSection, setCurrentSection] = useState("profile"); // Default section is Profile
+  const [coachProfile, setCoachProfile] = useState(null);
+  const [requests, setRequests] = useState([]);
+  const [acceptedAthletes, setAcceptedAthletes] = useState([]);
   const [events, setEvents] = useState([]);
-  const [myEvents, setMyEvents] = useState([]);
-  const [currentSection, setCurrentSection] = useState('profile');
+  const [selectedAthlete, setSelectedAthlete] = useState(null);
+  const [dietPlan, setDietPlan] = useState("");
+  const [weightPlan, setWeightPlan] = useState("");
+  const [athleteMessages, setAthleteMessages] = useState([]);
+  const [replyMessage, setReplyMessage] = useState("");
   const [editingProfile, setEditingProfile] = useState(false);
-  const [newImage, setNewImage] = useState(null);
   const [updatedProfile, setUpdatedProfile] = useState({
-    firstName: '',
-    lastName: '',
-    birthDate: '',
-    gender: '',
-    height: '',
-    weight: '',
-    category: '',
-    coach: '',
+    firstName: "",
+    lastName: "",
+    expertise: "",
   });
+  const [newImage, setNewImage] = useState(null);
+  const token = localStorage.getItem("token"); // Fetch token from localStorage
 
   useEffect(() => {
-    loadAthleteProfile();
-    loadAllEvents();
-    loadMyEvents();
+    // Load profile data on initial load
+    fetchCoachProfile();
+    fetchRequests();
+    fetchAcceptedAthletes();
+    fetchEvents();
   }, []);
 
-  const loadAthleteProfile = async () => {
+  // Fetch Coach Profile
+  const fetchCoachProfile = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch('/athlete/profile', {
+      const response = await fetch("/coach/profile", {
         method: "GET",
         headers: {
-          "Authorization": `Bearer ${token}`,
-        }
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
       const data = await response.json();
-      setAthlete(data);
+      setCoachProfile(data);
       setUpdatedProfile({
         firstName: data.firstName,
         lastName: data.lastName,
-        birthDate: data.birthDate,
-        gender: data.gender,
-        height: data.height,
-        weight: data.weight,
-        category: data.category,
-        coach: data.coach,
+        expertise: data.expertise || "",
       });
     } catch (error) {
-      console.error("Error loading athlete profile:", error);
+      console.error("Error fetching coach profile:", error);
     }
   };
 
-  const loadAllEvents = async () => {
+  // Fetch Assistance Requests
+  const fetchRequests = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch('athlete/events', {
+      const response = await fetch("/coach/getallassistancereq", {
         method: "GET",
         headers: {
-          "Authorization": `Bearer ${token}`,
-        }
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      setRequests(data);
+    } catch (error) {
+      console.error("Error fetching requests:", error);
+    }
+  };
+
+  // Fetch Accepted Athletes
+  const fetchAcceptedAthletes = async () => {
+    try {
+      const response = await fetch("/coach/accepted-athletes", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      setAcceptedAthletes(data);
+    } catch (error) {
+      console.error("Error fetching accepted athletes:", error);
+    }
+  };
+
+  // Fetch Events
+  const fetchEvents = async () => {
+    try {
+      const response = await fetch("/coach/events", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       const data = await response.json();
       setEvents(data);
     } catch (error) {
-      console.error("Error loading events:", error);
+      console.error("Error fetching events:", error);
     }
   };
 
-  const loadMyEvents = async () => {
+  // Accept Assistance Request
+  const handleAcceptRequest = async (requestId) => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch('/athlete/events/registered', {
-        method: "GET",
+      await fetch(`/coach/assistance/${requestId}/accept`, {
+        method: "PUT",
         headers: {
-          "Authorization": `Bearer ${token}`,
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
-      const data = await response.json();
-      setMyEvents(data);
+      fetchRequests();
+      fetchAcceptedAthletes();
     } catch (error) {
-      console.error("Error loading my events:", error);
+      console.error("Error accepting request:", error);
     }
   };
 
-  const handleLogout = () => {
-    navigate('/*'); // Redirect to login page
+  // Reject Assistance Request
+  const handleRejectRequest = async (requestId) => {
+    try {
+      await fetch(`/coach/assistance/${requestId}/reject`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      fetchRequests();
+    } catch (error) {
+      console.error("Error rejecting request:", error);
+    }
   };
 
-  const handleEditProfile = () => {
-    setEditingProfile(true);
-  };
-
-  const handleImageChange = (e) => {
-    setNewImage(e.target.files[0]); // Store the uploaded image
-  };
-
-  const handleProfileChange = (e) => {
-    const { name, value } = e.target;
-    setUpdatedProfile({
-      ...updatedProfile,
-      [name]: value,
-    });
-  };
-
+  // Save Profile
   const handleSaveProfile = async () => {
     const formData = new FormData();
-    formData.append('firstName', updatedProfile.firstName);
-    formData.append('lastName', updatedProfile.lastName);
-    formData.append('birthDate', updatedProfile.birthDate);
-    formData.append('gender', updatedProfile.gender);
-    formData.append('height', updatedProfile.height);
-    formData.append('weight', updatedProfile.weight);
-    formData.append('category', updatedProfile.category);
-    formData.append('coach', updatedProfile.coach);
-    if (newImage) formData.append('photoUrl', newImage);
+    formData.append("firstName", updatedProfile.firstName);
+    formData.append("lastName", updatedProfile.lastName);
+    // formData.append("expertise", updatedProfile.expertise);
+    if (newImage) formData.append("imageFile", newImage);
 
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch('/athlete/createProfile', {
-        method: 'POST',
+      const response = await fetch("/coach/profile", {
+        method: "PUT",
         body: formData,
-
         headers: {
-          "Authorization": `Bearer ${token}`,
-        }
-
+          Authorization: `Bearer ${token}`,
+        },
       });
-
       if (response.ok) {
+        alert("Profile updated successfully!");
         setEditingProfile(false);
-        loadAthleteProfile(); // Reload the profile data
+        fetchCoachProfile();
       } else {
-        console.error('Error saving profile:', response);
+        console.error("Error updating profile");
       }
     } catch (error) {
-      console.error('Error saving profile:', error);
-    }
-  };
-
-  const handleRegisterForEvent = async (eventId) => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(`/athlete/registerForEvent/${eventId}`, {
-        method: 'POST',
-
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        }
-
-      });
-
-      if (response.ok) {
-        loadMyEvents(); // Reload my events after registering
-      } else {
-        console.error('Error registering for event:', response);
-      }
-    } catch (error) {
-      console.error('Error registering for event:', error);
+      console.error("Error saving profile:", error);
     }
   };
 
   return (
-    <div className="athlete-dashboard" >
-      <header className="header">
-        <h1>COACH</h1>
-        <nav>
-          <a href="#" onClick={() => setCurrentSection('profile')}>Profile</a>
-          <a href="#" onClick={handleLogout}>Logout</a>
-        </nav>
-      </header>
+    <div className="coach-dashboard">
+      <nav>
+        <button onClick={() => setCurrentSection("profile")}>Profile</button>
+        <button onClick={() => setCurrentSection("requests")}>Requests</button>
+        <button onClick={() => setCurrentSection("athletes")}>Athletes</button>
+        <button onClick={() => setCurrentSection("events")}>Events</button>
+        <button onClick={() => navigate("/*")}>Logout</button>
+      </nav>
 
-      <div className="content">
-        {currentSection === 'profile' && (
-          <div className="profile-section">
-            {athlete && (
-              <>
-                <img
-                  src={`${athlete.photoUrl} || '/default-profile.jpg'}`}
-                  alt={`${athlete.firstName} ${athlete.lastName}`}
-                  className="profile-photo"
-                />
-                <div className="athlete-info">
-                  <h2>{athlete.firstName} {athlete.lastName}</h2>
-                  <p>Date of Birth: {athlete.birthDate}</p>
-                  <p>Gender: {athlete.gender}</p>
-                  <p>Height: {athlete.height}</p>
-                  <p>Weight: {athlete.weight}</p>
-                  <p>Category: {athlete.category}</p>
-                  <p>Coach: {athlete.coach || "N/A"}</p>
-                  <button onClick={handleEditProfile}>Edit Profile</button>
-                </div>
-              </>
-            )}
-          </div>
-        )}
+      {currentSection === "profile" && (
+        <div>
+          {coachProfile && (
+            <div>
+              <img
+                src={
+                  coachProfile.imageBase64
+                    ? `data:image/jpeg;base64,${coachProfile.imageBase64}`
+                    : "/default-profile.jpg"
+                }
+                alt="Coach"
+              />
+              <p>{coachProfile.firstName} {coachProfile.lastName}</p>
+              <p>{coachProfile.expertise}</p>
+              <button onClick={() => setEditingProfile(true)}>Edit Profile</button>
+            </div>
+          )}
+          {editingProfile && (
+            <div>
+              <input
+                type="text"
+                name="firstName"
+                value={updatedProfile.firstName}
+                onChange={(e) => setUpdatedProfile({ ...updatedProfile, firstName: e.target.value })}
+                placeholder="First Name"
+              />
+              <input
+                type="text"
+                name="lastName"
+                value={updatedProfile.lastName}
+                onChange={(e) => setUpdatedProfile({ ...updatedProfile, lastName: e.target.value })}
+                placeholder="Last Name"
+              />
+              <input
+                type="text"
+                name="expertise"
+                value={updatedProfile.expertise}
+                onChange={(e) => setUpdatedProfile({ ...updatedProfile, expertise: e.target.value })}
+                placeholder="Expertise"
+              />
+              <input type="file" onChange={(e) => setNewImage(e.target.files[0])} />
+              <button onClick={handleSaveProfile}>Save</button>
+              <button onClick={() => setEditingProfile(false)}>Cancel</button>
+            </div>
+          )}
+        </div>
+      )}
 
-        {editingProfile && currentSection === 'profile' && (
-          <div className="edit-profile-section">
-            <h3>Edit Profile</h3>
-            <form onSubmit={(e) => e.preventDefault()}>
-              <label>
-                First Name:
-                <input
-                  type="text"
-                  name="firstName"
-                  value={updatedProfile.firstName}
-                  onChange={handleProfileChange}
-                />
-              </label>
-              <label>
-                Last Name:
-                <input
-                  type="text"
-                  name="lastName"
-                  value={updatedProfile.lastName}
-                  onChange={handleProfileChange}
-                />
-              </label>
-              <label>
-                Date of Birth:
-                <input
-                  type="date"
-                  name="birthDate"
-                  value={updatedProfile.birthDate}
-                  onChange={handleProfileChange}
-                />
-              </label>
-              <label>
-                Gender:
-                <input
-                  type="text"
-                  name="gender"
-                  value={updatedProfile.gender}
-                  onChange={handleProfileChange}
-                />
-              </label>
-              <label>
-                Height:
-                <input
-                  type="text"
-                  name="height"
-                  value={updatedProfile.height}
-                  onChange={handleProfileChange}
-                />
-              </label>
-              <label>
-                Weight:
-                <input
-                  type="text"
-                  name="weight"
-                  value={updatedProfile.weight}
-                  onChange={handleProfileChange}
-                />
-              </label>
-              <label>
-                Category:
-                <input
-                  type="text"
-                  name="category"
-                  value={updatedProfile.category}
-                  onChange={handleProfileChange}
-                />
-              </label>
-              <label>
-                Coach:
-                <input
-                  type="text"
-                  name="coach"
-                  value={updatedProfile.coach}
-                  onChange={handleProfileChange}
-                />
-              </label>
-              <label>
-                Profile Image:
-                <input
-                  type="file"
-                  onChange={handleImageChange}
-                />
-              </label>
-              <button type="button" onClick={handleSaveProfile}>Save</button>
-            </form>
-          </div>
-        )}
+      {currentSection === "requests" && (
+        <div>
+          <h3>Assistance Requests</h3>
+          {requests.map((req) => (
+            <div key={req.id}>
+              <p>Athlete: {req.athleteName}</p>
+              <button onClick={() => handleAcceptRequest(req.id)}>Accept</button>
+              <button onClick={() => handleRejectRequest(req.id)}>Reject</button>
+            </div>
+          ))}
+        </div>
+      )}
 
-        {currentSection === 'events' && (
-          <div className="events-section">
-            <h3>All Events</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Event Name</th>
-                  <th>Description</th>
-                  <th>Date</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {events.map(event => (
-                  <tr key={event.eventId}>
-                    <td>{event.eventTitle}</td>
-                    <td>{event.eventDescription}</td>
-                    <td>{event.eventDate}</td>
-                    <td>
-                      <button onClick={() => handleRegisterForEvent(event.eventId)}>Register</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-      </div>
-      </div>
+      {/* Add sections for Athletes and Events similarly */}
+    </div>
   );
 };
 
-export default AthleteDashboard;
+export default CoachDashboard;
