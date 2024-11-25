@@ -25,6 +25,7 @@ public class Event {
 
     private String category;
     private String location;
+
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date eventDate;
 

@@ -4,6 +4,8 @@ import com.sportsperformance.batch2.DTO.*;
 import com.sportsperformance.batch2.Repositories.*;
 import com.sportsperformance.batch2.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -368,6 +370,97 @@ public class AthleteService {
         dto.setPreference(weightPlan.getPreference());
         dto.setDailyCalorieGoal(weightPlan.getDailyCalorieGoal());
         return dto;
+    }
+
+
+
+
+
+
+    // Result
+
+    @Autowired
+    EventResultRepository eventResultRepository;
+
+//    public List<EventResultDTO> getTopPerformanceByLoggedInAthlete(String username) {
+//        List<EventResult> results = eventResultRepository.findByAthleteUsernameOrderByEvent_EventDateDesc(username);
+//        return results.stream()
+//                .map(this::toEventResultDTO)
+//                .collect(Collectors.toList());
+//    }
+
+    public List<EventResultDTO> getTopPerformanceByLoggedInAthlete(String username) {
+        List<EventResult> results = eventResultRepository.findByAthleteUsernameOrderByEvent_EventDateDesc(username);
+        return results.stream()
+                .map(this::toEventResultDTO) // Include eventName and meetName mapping
+                .collect(Collectors.toList());
+    }
+
+
+    public List<EventResultDTO> getResultsByAthleteId(Long athleteId) {
+        List<EventResult> results = eventResultRepository.findByAthleteId(athleteId);
+        return results.stream()
+                .map(this::toEventResultDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<EventResultDTO> getResultsByEventId(Integer eventId) {
+        List<EventResult> results = eventResultRepository.findByEventId(eventId);
+        return results.stream()
+                .map(this::toEventResultDTO)
+                .collect(Collectors.toList());
+    }
+
+    public EventResultDTO getResultByAthleteIdAndEventId(Long athleteId, Integer eventId) {
+        EventResult result = eventResultRepository.findByAthleteIdAndEventId(athleteId, eventId)
+                .orElseThrow(() -> new RuntimeException("Result not found"));
+        return toEventResultDTO(result);
+    }
+
+    public List<EventResultDTO> getLeaderboardByEventId(Integer eventId) {
+        return getResultsByEventId(eventId);
+    }
+
+    private EventResultDTO toEventResultDTO(EventResult result) {
+        EventResultDTO dto = new EventResultDTO();
+        dto.setAthleteId(result.getAthlete().getAthleteId());
+        dto.setScore(result.getScore());
+        dto.setEventDate(result.getEvent().getEventDate());
+        dto.setComment(result.getComment());
+        dto.setEventName(result.getEvent().getEventTitle()); // Map event name
+        dto.setMeetName(result.getEvent().getMeetId().getMeetName());   // Map meet name
+        return dto;
+    }
+
+    public List<EventResultDTO> getTop5PerformancesByLoggedInAthlete(String username) {
+        Pageable top5 = PageRequest.of(0, 5); // Fetch only 5 results
+        List<EventResult> results = eventResultRepository.findTop5ByAthlete_UsernameOrderByScoreDesc(username, top5);
+        return results.stream()
+                .map(this::toEventResultDTO)
+                .collect(Collectors.toList());
+    }
+
+
+
+    public EventResultDTO getTopPerformanceByAthleteId(Long athleteId) {
+        List<EventResult> results = eventResultRepository.findTopPerformanceByAthleteId(athleteId);
+
+        if (results.isEmpty()) {
+            throw new RuntimeException("No performance found for the athlete with ID: " + athleteId);
+        }
+
+        // Fetch the top performance (highest score)
+        EventResult topPerformance = results.get(0);
+
+        return toEventResultDTO(topPerformance);
+    }
+
+    public List<EventResultDTO> getAllResultsByLoggedInAthlete(String username, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size); // Pagination parameters
+        List<EventResult> results = eventResultRepository.findAllByAthleteUsernameOrderByEventDateDesc(username, pageable);
+        return results.stream()
+                .map(this::toEventResultDTO)
+                .collect(Collectors.toList());
     }
 
 }

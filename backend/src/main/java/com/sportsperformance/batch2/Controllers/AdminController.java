@@ -9,6 +9,8 @@ import com.sportsperformance.batch2.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -264,6 +266,49 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
+
+    //Result display
+
+//    @GetMapping("athlete/top-performance")
+//    public ResponseEntity<List<EventResultDTO>> getTopPerformanceByLoggedInAthlete() {
+//        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        String username = userDetails.getUsername();
+//        List<EventResultDTO> results = adminService.getTopPerformanceByLoggedInAthlete(username);
+//        return ResponseEntity.ok(results);
+//    }
+
+    @GetMapping("result/by-athlete/{athleteId}")
+    public ResponseEntity<List<EventResultDTO>> getResultsByAthleteId(@PathVariable Long athleteId) {
+        List<EventResultDTO> results = adminService.getResultsByAthleteId(athleteId);
+        return ResponseEntity.ok(results);
+    }
+
+    @GetMapping("result/by-event/{eventId}")
+    public ResponseEntity<List<EventResultDTO>> getResultsByEventId(@PathVariable Integer eventId) {
+        List<EventResultDTO> results = adminService.getResultsByEventId(eventId);
+        return ResponseEntity.ok(results);
+    }
+
+    @GetMapping("results/{athleteId}/event/{eventId}")
+    public ResponseEntity<EventResultDTO> getResultByAthleteIdAndEventId(
+            @PathVariable Long athleteId,
+            @PathVariable Integer eventId) {
+        EventResultDTO result = adminService.getResultByAthleteIdAndEventId(athleteId, eventId);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("event/leaderboard/{eventId}")
+    public ResponseEntity<List<EventResultDTO>> getLeaderboardByEventId(@PathVariable Integer eventId) {
+        List<EventResultDTO> leaderboard = adminService.getLeaderboardByEventId(eventId);
+        return ResponseEntity.ok(leaderboard);
+    }
+
+
+    @GetMapping("/top-performance/by-athlete/{athleteId}")
+    public ResponseEntity<EventResultDTO> getTopPerformanceByAthleteId(@PathVariable Long athleteId) {
+        EventResultDTO topPerformance = adminService.getTopPerformanceByAthleteId(athleteId);
+        return ResponseEntity.ok(topPerformance);
+    }
 
 
 }

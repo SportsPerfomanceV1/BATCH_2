@@ -404,4 +404,68 @@ public class AdminService {
     }
 
 
+
+
+
+
+
+
+
+    // RESULT DISPLAY
+
+    public List<EventResultDTO> getTopPerformanceByLoggedInAthlete(String username) {
+        List<EventResult> results = eventResultRepository.findByAthleteUsernameOrderByEvent_EventDateDesc(username);
+        return results.stream()
+                .map(this::toEventResultDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<EventResultDTO> getResultsByAthleteId(Long athleteId) {
+        List<EventResult> results = eventResultRepository.findByAthleteId(athleteId);
+        return results.stream()
+                .map(this::toEventResultDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<EventResultDTO> getResultsByEventId(Integer eventId) {
+        List<EventResult> results = eventResultRepository.findByEventId(eventId);
+        return results.stream()
+                .map(this::toEventResultDTO)
+                .collect(Collectors.toList());
+    }
+
+    public EventResultDTO getResultByAthleteIdAndEventId(Long athleteId, Integer eventId) {
+        EventResult result = eventResultRepository.findByAthleteIdAndEventId(athleteId, eventId)
+                .orElseThrow(() -> new RuntimeException("Result not found"));
+        return toEventResultDTO(result);
+    }
+
+    public List<EventResultDTO> getLeaderboardByEventId(Integer eventId) {
+        return getResultsByEventId(eventId);
+    }
+
+    private EventResultDTO toEventResultDTO(EventResult result) {
+        EventResultDTO dto = new EventResultDTO();
+        dto.setAthleteId(result.getAthlete().getAthleteId());
+        dto.setScore(result.getScore());
+        dto.setComment(result.getComment());
+        return dto;
+    }
+
+
+    public EventResultDTO getTopPerformanceByAthleteId(Long athleteId) {
+        List<EventResult> results = eventResultRepository.findTopPerformanceByAthleteId(athleteId);
+
+        if (results.isEmpty()) {
+            throw new RuntimeException("No performance found for the athlete with ID: " + athleteId);
+        }
+
+        // Fetch the top performance (highest score)
+        EventResult topPerformance = results.get(0);
+
+        return toEventResultDTO(topPerformance);
+    }
+
+
+
 }

@@ -218,5 +218,58 @@ public class AthleteController {
     }
 
 
+    //Result display
+
+    @GetMapping("/top-performance")
+    public ResponseEntity<List<EventResultDTO>> getTopPerformanceByLoggedInAthlete() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+        List<EventResultDTO> results = athleteService.getTop5PerformancesByLoggedInAthlete(username);
+        return ResponseEntity.ok(results);
+    }
+
+    @GetMapping("result/by-athlete/{athleteId}")
+    public ResponseEntity<List<EventResultDTO>> getResultsByAthleteId(@PathVariable Long athleteId) {
+        List<EventResultDTO> results = athleteService.getResultsByAthleteId(athleteId);
+        return ResponseEntity.ok(results);
+    }
+
+    @GetMapping("result/by-event/{eventId}")
+    public ResponseEntity<List<EventResultDTO>> getResultsByEventId(@PathVariable Integer eventId) {
+        List<EventResultDTO> results = athleteService.getResultsByEventId(eventId);
+        return ResponseEntity.ok(results);
+    }
+
+    @GetMapping("results/{athleteId}/event/{eventId}")
+    public ResponseEntity<EventResultDTO> getResultByAthleteIdAndEventId(
+            @PathVariable Long athleteId,
+            @PathVariable Integer eventId) {
+        EventResultDTO result = athleteService.getResultByAthleteIdAndEventId(athleteId, eventId);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("event/leaderboard/{eventId}")
+    public ResponseEntity<List<EventResultDTO>> getLeaderboardByEventId(@PathVariable Integer eventId) {
+        List<EventResultDTO> leaderboard = athleteService.getLeaderboardByEventId(eventId);
+        return ResponseEntity.ok(leaderboard);
+    }
+
+
+    @GetMapping("/top-performance/by-athlete/{athleteId}")
+    public ResponseEntity<EventResultDTO> getTopPerformanceByAthleteId(@PathVariable Long athleteId) {
+        EventResultDTO topPerformance = athleteService.getTopPerformanceByAthleteId(athleteId);
+        return ResponseEntity.ok(topPerformance);
+    }
+
+
+    @GetMapping("/all-results")
+    public ResponseEntity<List<EventResultDTO>> getAllResultsByLoggedInAthlete(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+        List<EventResultDTO> results = athleteService.getAllResultsByLoggedInAthlete(username, page, size);
+        return ResponseEntity.ok(results);
+    }
 
 }
