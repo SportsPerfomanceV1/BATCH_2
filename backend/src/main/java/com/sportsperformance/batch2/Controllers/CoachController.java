@@ -156,8 +156,8 @@ public class CoachController {
 
 
     @GetMapping("weightplan/athlete/{athleteId}")
-    public List<WeightPlanDTO> getWeightPlans(@PathVariable Long athleteId) {
-        return coachService.getWeightPlansByAthlete(athleteId);
+    public WeightPlanDTO getWeightPlans(@PathVariable Long athleteId) {
+        return coachService.getWeightPlanByAthlete(athleteId);
     }
 
     @GetMapping("diet/athlete/{athleteId}")

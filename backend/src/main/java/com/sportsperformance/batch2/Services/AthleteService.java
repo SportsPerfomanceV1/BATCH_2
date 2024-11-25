@@ -41,6 +41,7 @@ public class AthleteService {
         athlete.setHeight(profileDTO.getHeight());
         athlete.setWeight(profileDTO.getWeight());
         athlete.setCategory(profileDTO.getCategory());
+//        athlete.setCoach(profileDTO.getCoachId());
 
         // Handle image file
         MultipartFile imageFile = profileDTO.getPhotoUrl();
@@ -332,23 +333,45 @@ public class AthleteService {
     @Autowired
     private DailyDietRepository dailyDietRepository;
 
-    public List<DailyDietDTO> getDailyDietsByLoggedInAthlete(String username) {
+//    public List<DailyDietDTO> getDailyDietsByLoggedInAthlete(String username) {
+//        Athlete athlete = athleteRepository.findByUsername(username)
+//                .orElseThrow(() -> new RuntimeException("Athlete not found"));
+//
+//        return dailyDietRepository.findByAthleteAthleteIdOrderByDateDesc(athlete.getAthleteId()).stream()
+//                .map(this::mapToDTO)
+//                .collect(Collectors.toList());
+//    }
+//
+//    public List<WeightPlanDTO> getWeightPlansByLoggedInAthlete(String username) {
+//        Athlete athlete = athleteRepository.findByUsername(username)
+//                .orElseThrow(() -> new RuntimeException("Athlete not found"));
+//
+//        return weightPlanRepository.findByAthleteAthleteId(athlete.getAthleteId()).stream()
+//                .map(this::mapToDTO)
+//                .collect(Collectors.toList());
+//    }
+public List<DailyDietDTO> getDailyDietsByLoggedInAthlete(String username) {
+    Athlete athlete = athleteRepository.findByUsername(username)
+            .orElseThrow(() -> new RuntimeException("Athlete not found"));
+
+    return dailyDietRepository.findByAthleteAthleteIdOrderByDateDesc(athlete.getAthleteId()).stream()
+            .map(this::mapToDTO)
+            .collect(Collectors.toList());
+}
+
+
+    public WeightPlanDTO getWeightPlanByLoggedInAthlete(String username) {
         Athlete athlete = athleteRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Athlete not found"));
 
-        return dailyDietRepository.findByAthleteAthleteIdOrderByDateDesc(athlete.getAthleteId()).stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+        WeightPlan weightPlan = athlete.getWeightPlan();
+        if (weightPlan == null) {
+            throw new RuntimeException("No WeightPlan found for the athlete");
+        }
+
+        return mapToDTO(weightPlan);
     }
 
-    public List<WeightPlanDTO> getWeightPlansByLoggedInAthlete(String username) {
-        Athlete athlete = athleteRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Athlete not found"));
-
-        return weightPlanRepository.findByAthleteAthleteId(athlete.getAthleteId()).stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
-    }
 
     private DailyDietDTO mapToDTO(DailyDiet dailyDiet) {
         DailyDietDTO dto = new DailyDietDTO();
@@ -462,5 +485,9 @@ public class AthleteService {
                 .map(this::toEventResultDTO)
                 .collect(Collectors.toList());
     }
+
+
+
+
 
 }

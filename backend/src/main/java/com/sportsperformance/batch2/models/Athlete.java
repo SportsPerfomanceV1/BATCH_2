@@ -51,9 +51,9 @@ public class Athlete extends BaseUser {
     @JsonIgnoreProperties("athlete")
     private List<AssistanceRequest> assistanceRequests;
 
-    @OneToMany(mappedBy = "athlete")
+    @OneToOne(mappedBy = "athlete")
     @JsonIgnoreProperties("athlete")
-    private List<WeightPlan> weightPlans;
+    private WeightPlan weightPlan;
 
 
     // Getters and Setters

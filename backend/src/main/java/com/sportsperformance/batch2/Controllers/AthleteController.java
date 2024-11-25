@@ -55,6 +55,7 @@ public class AthleteController {
         dto.setHeight(athlete.getHeight());
         dto.setWeight(athlete.getWeight());
         dto.setCategory(athlete.getCategory());
+        dto.setCoachId(athlete.getCoach());
 
         if (athlete.getPhoto() != null) {
             // Encode the photo byte array to Base64
@@ -148,6 +149,9 @@ public class AthleteController {
     private CoachService coachService;
 
     // Get all coaches
+
+    //earphone ki charging khtmmmmm
+
     @GetMapping("getallcoaches")
     public ResponseEntity<List<CoachSummaryDTO>> getAllCoaches() {
         return ResponseEntity.ok(coachService.getAllCoaches());
@@ -183,10 +187,10 @@ public class AthleteController {
     }
 
     @GetMapping("/getweightplan")
-    public List<WeightPlanDTO> getWeightPlansForLoggedInAthlete() {
+    public WeightPlanDTO getWeightPlanForLoggedInAthlete() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
-        return athleteService.getWeightPlansByLoggedInAthlete(username);
+        return athleteService.getWeightPlanByLoggedInAthlete(username);
     }
 
     private EventResponseDTO mapToDTO(Event event) {

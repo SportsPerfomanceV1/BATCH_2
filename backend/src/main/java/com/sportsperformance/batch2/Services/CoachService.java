@@ -46,6 +46,7 @@ public class CoachService {
         dto.setCoachId(coach.getCoachId());
         dto.setFirstName(coach.getFirstName());
         dto.setLastName(coach.getLastName());
+//        dto.setAchievements(achievementDTO);
         dto.setImageBase64(ImageUtil.convertToBase64(coach.getImage()));
         return dto;
     }
@@ -263,10 +264,113 @@ public class CoachService {
 
     @Autowired
     private WeightPlanRepository weightPlanRepository;
+//
+//    public WeightPlanDTO createWeightPlan(WeightPlanDTO dto) {
+//        Athlete athlete = athleteRepository.findById(dto.getAthleteId())
+//                .orElseThrow(() -> new RuntimeException("Athlete not found"));
+//
+//        WeightPlan weightPlan = new WeightPlan();
+//        weightPlan.setAthlete(athlete);
+//        weightPlan.setStartWeight(dto.getStartWeight());
+//        weightPlan.setTargetWeight(dto.getTargetWeight());
+//        weightPlan.setPreference(dto.getPreference());
+//        weightPlan.setDailyCalorieGoal(dto.getDailyCalorieGoal());
+//
+//        weightPlan = weightPlanRepository.save(weightPlan);
+//
+//        return mapToDTO(weightPlan);
+//    }
+//
+//    public List<WeightPlanDTO> getWeightPlansByAthlete(Long athleteId) {
+//        return weightPlanRepository.findByAthleteAthleteId(athleteId).stream()
+//                .map(this::mapToDTO)
+//                .collect(Collectors.toList());
+//    }
+//
+//    public WeightPlanDTO updateWeightPlan(Long planId, WeightPlanDTO dto) {
+//        WeightPlan weightPlan = weightPlanRepository.findById(planId)
+//                .orElseThrow(() -> new RuntimeException("WeightPlan not found"));
+//
+//        weightPlan.setStartWeight(dto.getStartWeight());
+//        weightPlan.setTargetWeight(dto.getTargetWeight());
+//        weightPlan.setPreference(dto.getPreference());
+//        weightPlan.setDailyCalorieGoal(dto.getDailyCalorieGoal());
+//
+//        weightPlan = weightPlanRepository.save(weightPlan);
+//
+//        return mapToDTO(weightPlan);
+//    }
+//
+//    public void deleteWeightPlan(Long planId) {
+//        weightPlanRepository.deleteById(planId);
+//    }
+
+    private WeightPlanDTO mapToDTO(WeightPlan weightPlan) {
+        WeightPlanDTO dto = new WeightPlanDTO();
+        dto.setPlanId(weightPlan.getPlanId());
+        dto.setAthleteId(weightPlan.getAthlete().getAthleteId());
+        dto.setStartWeight(weightPlan.getStartWeight());
+        dto.setTargetWeight(weightPlan.getTargetWeight());
+        dto.setPreference(weightPlan.getPreference());
+        dto.setDailyCalorieGoal(weightPlan.getDailyCalorieGoal());
+        return dto;
+    }
+
+    @Autowired
+    private DailyDietRepository dailyDietRepository;
+//
+//    public DailyDietDTO createDailyDiet(DailyDietDTO dto) {
+//        Athlete athlete = athleteRepository.findById(dto.getAthleteId())
+//                .orElseThrow(() -> new RuntimeException("Athlete not found"));
+//
+//        DailyDiet dailyDiet = new DailyDiet();
+//        dailyDiet.setAthlete(athlete);
+//        dailyDiet.setDate(dto.getDate());
+//        dailyDiet.setCalories(dto.getCalories());
+//        dailyDiet.setCurrentWeight(dto.getCurrentWeight());
+//
+//        if (dto.getWeightPlanId() != null) {
+//            WeightPlan weightPlan = weightPlanRepository.findById(dto.getWeightPlanId())
+//                    .orElseThrow(() -> new RuntimeException("WeightPlan not found"));
+//            dailyDiet.setWeightPlan(weightPlan);
+//        }
+//
+//        dailyDiet = dailyDietRepository.save(dailyDiet);
+//
+//        return mapToDTO(dailyDiet);
+//    }
+//
+//    public List<DailyDietDTO> getDailyDietsByAthlete(Long athleteId) {
+//        return dailyDietRepository.findByAthleteAthleteIdOrderByDateDesc(athleteId).stream()
+//                .map(this::mapToDTO)
+//                .collect(Collectors.toList());
+//    }
+//
+//    public void deleteDailyDiet(Long dietId) {
+//        dailyDietRepository.deleteById(dietId);
+//    }
+//
+    private DailyDietDTO mapToDTO(DailyDiet dailyDiet) {
+        DailyDietDTO dto = new DailyDietDTO();
+        dto.setDietId(dailyDiet.getDietId());
+        dto.setAthleteId(dailyDiet.getAthlete().getAthleteId());
+        dto.setDate(dailyDiet.getDate());
+        dto.setCalories(dailyDiet.getCalories());
+        dto.setCurrentWeight(dailyDiet.getCurrentWeight());
+        dto.setWeightPlanId(dailyDiet.getWeightPlan() != null ? dailyDiet.getWeightPlan().getPlanId() : null);
+        return dto;
+    }
+
+
 
     public WeightPlanDTO createWeightPlan(WeightPlanDTO dto) {
         Athlete athlete = athleteRepository.findById(dto.getAthleteId())
                 .orElseThrow(() -> new RuntimeException("Athlete not found"));
+
+        // Check if the athlete already has a weight plan, and either throw an error or update
+        if (athlete.getWeightPlan() != null) {
+            throw new RuntimeException("Athlete already has an existing weight plan.");
+        }
 
         WeightPlan weightPlan = new WeightPlan();
         weightPlan.setAthlete(athlete);
@@ -277,13 +381,23 @@ public class CoachService {
 
         weightPlan = weightPlanRepository.save(weightPlan);
 
+        // Set the weight plan in the athlete entity
+        athlete.setWeightPlan(weightPlan);
+        athleteRepository.save(athlete);
+
         return mapToDTO(weightPlan);
     }
 
-    public List<WeightPlanDTO> getWeightPlansByAthlete(Long athleteId) {
-        return weightPlanRepository.findByAthleteAthleteId(athleteId).stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+    public WeightPlanDTO getWeightPlanByAthlete(Long athleteId) {
+        Athlete athlete = athleteRepository.findById(athleteId)
+                .orElseThrow(() -> new RuntimeException("Athlete not found"));
+
+        WeightPlan weightPlan = athlete.getWeightPlan();
+        if (weightPlan == null) {
+            throw new RuntimeException("No weight plan found for the athlete");
+        }
+
+        return mapToDTO(weightPlan);
     }
 
     public WeightPlanDTO updateWeightPlan(Long planId, WeightPlanDTO dto) {
@@ -300,23 +414,11 @@ public class CoachService {
         return mapToDTO(weightPlan);
     }
 
+
     public void deleteWeightPlan(Long planId) {
         weightPlanRepository.deleteById(planId);
     }
 
-    private WeightPlanDTO mapToDTO(WeightPlan weightPlan) {
-        WeightPlanDTO dto = new WeightPlanDTO();
-        dto.setPlanId(weightPlan.getPlanId());
-        dto.setAthleteId(weightPlan.getAthlete().getAthleteId());
-        dto.setStartWeight(weightPlan.getStartWeight());
-        dto.setTargetWeight(weightPlan.getTargetWeight());
-        dto.setPreference(weightPlan.getPreference());
-        dto.setDailyCalorieGoal(weightPlan.getDailyCalorieGoal());
-        return dto;
-    }
-
-    @Autowired
-    private DailyDietRepository dailyDietRepository;
 
     public DailyDietDTO createDailyDiet(DailyDietDTO dto) {
         Athlete athlete = athleteRepository.findById(dto.getAthleteId())
@@ -328,10 +430,12 @@ public class CoachService {
         dailyDiet.setCalories(dto.getCalories());
         dailyDiet.setCurrentWeight(dto.getCurrentWeight());
 
-        if (dto.getWeightPlanId() != null) {
-            WeightPlan weightPlan = weightPlanRepository.findById(dto.getWeightPlanId())
-                    .orElseThrow(() -> new RuntimeException("WeightPlan not found"));
+        // Fetch the single WeightPlan from the athlete
+        WeightPlan weightPlan = athlete.getWeightPlan();
+        if (weightPlan != null) {
             dailyDiet.setWeightPlan(weightPlan);
+        } else {
+            throw new RuntimeException("No WeightPlan found for the Athlete");
         }
 
         dailyDiet = dailyDietRepository.save(dailyDiet);
@@ -339,25 +443,18 @@ public class CoachService {
         return mapToDTO(dailyDiet);
     }
 
+
     public List<DailyDietDTO> getDailyDietsByAthlete(Long athleteId) {
         return dailyDietRepository.findByAthleteAthleteIdOrderByDateDesc(athleteId).stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
 
+
     public void deleteDailyDiet(Long dietId) {
         dailyDietRepository.deleteById(dietId);
     }
 
-    private DailyDietDTO mapToDTO(DailyDiet dailyDiet) {
-        DailyDietDTO dto = new DailyDietDTO();
-        dto.setDietId(dailyDiet.getDietId());
-        dto.setAthleteId(dailyDiet.getAthlete().getAthleteId());
-        dto.setDate(dailyDiet.getDate());
-        dto.setCalories(dailyDiet.getCalories());
-        dto.setCurrentWeight(dailyDiet.getCurrentWeight());
-        dto.setWeightPlanId(dailyDiet.getWeightPlan() != null ? dailyDiet.getWeightPlan().getPlanId() : null);
-        return dto;
-    }
+
 
 }

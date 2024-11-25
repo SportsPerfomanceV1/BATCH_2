@@ -1,5 +1,6 @@
 package com.sportsperformance.batch2.DTO;
 
+import com.sportsperformance.batch2.models.Coach;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +19,8 @@ public class AthleteProfileDTO {
     private String category;
     private String email;
     private String username;
+
+    private Coach coachId;
 
     private MultipartFile photoUrl; // For incoming file uploads
     private String photoBase64;     // For outgoing Base64-encoded image
