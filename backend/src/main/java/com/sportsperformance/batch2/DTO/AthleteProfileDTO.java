@@ -1,5 +1,6 @@
 package com.sportsperformance.batch2.DTO;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sportsperformance.batch2.models.Coach;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -20,6 +21,7 @@ public class AthleteProfileDTO {
     private String email;
     private String username;
 
+    @JsonIgnoreProperties("athletes")
     private Coach coachId;
 
     private MultipartFile photoUrl; // For incoming file uploads

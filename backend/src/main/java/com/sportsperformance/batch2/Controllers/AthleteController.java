@@ -3,6 +3,8 @@ package com.sportsperformance.batch2.Controllers;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sportsperformance.batch2.DTO.*;
 import com.sportsperformance.batch2.Repositories.EventRepository;
+import com.sportsperformance.batch2.Repositories.EventResultRepository;
+import com.sportsperformance.batch2.Repositories.RegistrationRepository;
 import com.sportsperformance.batch2.Repositories.WeightPlanRepository;
 import com.sportsperformance.batch2.Services.AthleteService;
 import com.sportsperformance.batch2.Services.CoachService;
@@ -16,10 +18,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Base64;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @JsonIgnoreProperties({"parentField"})
 @RestController
@@ -199,6 +199,7 @@ public class AthleteController {
         dto.setCategory(event.getCategory());
         dto.setLocation(event.getLocation());
         dto.setEventDate(event.getEventDate());
+        dto.setMeetName(event.getMeetId().getMeetName());
         dto.setEventDescription(event.getEventDescription());
 
         if (event.getImage() != null) {
@@ -244,11 +245,10 @@ public class AthleteController {
         return ResponseEntity.ok(results);
     }
 
-    @GetMapping("results/{athleteId}/event/{eventId}")
+    @GetMapping("results/event/{eventId}")
     public ResponseEntity<EventResultDTO> getResultByAthleteIdAndEventId(
-            @PathVariable Long athleteId,
             @PathVariable Integer eventId) {
-        EventResultDTO result = athleteService.getResultByAthleteIdAndEventId(athleteId, eventId);
+        EventResultDTO result = athleteService.getResultByEventId(eventId);
         return ResponseEntity.ok(result);
     }
 
@@ -275,5 +275,30 @@ public class AthleteController {
         List<EventResultDTO> results = athleteService.getAllResultsByLoggedInAthlete(username, page, size);
         return ResponseEntity.ok(results);
     }
+
+    @GetMapping("events/no-results")
+    public ResponseEntity<List<EventResponseDTO>> getEventsWithoutResults() {
+        // Get the logged-in user's username
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+
+        // Fetch events without results for the logged-in user
+        List<EventResponseDTO> events = athleteService.getApprovedRegistrationsWithoutResults(username);
+        return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("events/with-results")
+    public ResponseEntity<List<EventResponseDTO>> getEventsWithResults() {
+        // Get the logged-in user's username
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+
+        // Fetch events with results for the logged-in user
+        List<EventResponseDTO> events = athleteService.getApprovedRegistrationsWithResults(username);
+        return ResponseEntity.ok(events);
+    }
+
+
+
 
 }

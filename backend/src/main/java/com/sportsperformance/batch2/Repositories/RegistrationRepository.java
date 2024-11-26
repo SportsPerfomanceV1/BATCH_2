@@ -20,6 +20,7 @@ public interface RegistrationRepository extends JpaRepository<Registration, Long
     @Query(value = "SELECT CAST(event_id AS UNSIGNED) FROM registration WHERE athlete_id = :athleteId", nativeQuery = true)
     List<Integer> findEventIdsByAthleteId(@Param("athleteId") Long athleteId);
 
+    List<Registration> findByAthlete_AthleteIdAndStatus(Long athleteId, String status);
 
 
     List<Registration> findByStatus(String status);

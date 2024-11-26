@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -249,16 +250,16 @@ public class AthleteService {
     }
 //    @Autowired
 //    EventRepository eventRepository;
-    @GetMapping("/events/{id}")
-    public ResponseEntity<EventResponseDTO> getEvent(@PathVariable Long id) {
-        Optional<Event> eventOptional = eventRepository.findById(id);
-        if (eventOptional.isPresent()) {
-            EventResponseDTO dto = mapToDTO(eventOptional.get());
-            return ResponseEntity.ok(dto);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-    }
+//    @GetMapping("/events/{id}")
+//    public ResponseEntity<EventResponseDTO> getEvent(@PathVariable Long id) {
+//        Optional<Event> eventOptional = eventRepository.findById(id);
+//        if (eventOptional.isPresent()) {
+//            EventResponseDTO dto = mapToDTO(eventOptional.get());
+//            return ResponseEntity.ok(dto);
+//        } else {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+//        }
+//    }
 
     public void deleteRegistrationById(Long registrationId) {
         if (!registrationRepository.existsById(registrationId)) {
@@ -434,14 +435,36 @@ public List<DailyDietDTO> getDailyDietsByLoggedInAthlete(String username) {
                 .collect(Collectors.toList());
     }
 
-    public EventResultDTO getResultByAthleteIdAndEventId(Long athleteId, Integer eventId) {
-        EventResult result = eventResultRepository.findByAthleteIdAndEventId(athleteId, eventId)
+//    public EventResultDTO getResultByAthleteIdAndEventId(Long athleteId, Integer eventId) {
+//        EventResult result = eventResultRepository.findByAthleteIdAndEventId(athleteId, eventId)
+//                .orElseThrow(() -> new RuntimeException("Result not found"));
+//        return toEventResultDTO(result);
+//    }
+
+    public EventResultDTO getResultByEventId(Integer eventId) {
+        // Get the current logged-in user (assuming the username is stored in the security context)
+        String username = getLoggedInUsername();  // Assuming username is used to identify the athlete
+
+        // Fetch the athlete using the username
+        Athlete athlete = athleteRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Athlete not found"));
+
+        // Fetch the result for the athlete and event
+        EventResult result = eventResultRepository.findByAthleteIdAndEventId(athlete.getAthleteId(), eventId)
                 .orElseThrow(() -> new RuntimeException("Result not found"));
+
         return toEventResultDTO(result);
     }
 
     public List<EventResultDTO> getLeaderboardByEventId(Integer eventId) {
-        return getResultsByEventId(eventId);
+        List<EventResultDTO> leaderboard = getResultsByEventId(eventId);
+
+        if (leaderboard == null || leaderboard.isEmpty()) {
+            // You can return an empty list if no leaderboard data is found
+            return Collections.emptyList();
+        }
+
+        return leaderboard;
     }
 
     private EventResultDTO toEventResultDTO(EventResult result) {
@@ -450,6 +473,7 @@ public List<DailyDietDTO> getDailyDietsByLoggedInAthlete(String username) {
         dto.setScore(result.getScore());
         dto.setEventDate(result.getEvent().getEventDate());
         dto.setComment(result.getComment());
+        dto.setAthleteName(result.getAthlete().getFirstName() + " " + result.getAthlete().getLastName());
         dto.setEventName(result.getEvent().getEventTitle()); // Map event name
         dto.setMeetName(result.getEvent().getMeetId().getMeetName());   // Map meet name
         return dto;
@@ -480,12 +504,88 @@ public List<DailyDietDTO> getDailyDietsByLoggedInAthlete(String username) {
 
     public List<EventResultDTO> getAllResultsByLoggedInAthlete(String username, int page, int size) {
         Pageable pageable = PageRequest.of(page, size); // Pagination parameters
+
         List<EventResult> results = eventResultRepository.findAllByAthleteUsernameOrderByEventDateDesc(username, pageable);
+        if (results.isEmpty()) {
+            throw new RuntimeException("No performance");
+        }
         return results.stream()
                 .map(this::toEventResultDTO)
                 .collect(Collectors.toList());
     }
 
+
+    public List<EventResponseDTO> getApprovedRegistrationsWithoutResults(String username) {
+        // Get the current date
+        Date currentDate = new Date();
+
+        // Fetch the athlete using the username
+        Athlete athlete = athleteRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Athlete not found"));
+
+        // Fetch events based on approved registrations, past date, and no result
+        List<Registration> approvedRegistrations = registrationRepository.findByAthlete_AthleteIdAndStatus(athlete.getAthleteId(), "Approved");
+
+        return approvedRegistrations.stream()
+                .filter(reg -> reg.getEvent().getEventDate().before(currentDate) &&
+                        eventResultRepository.findByEventAndAthlete(reg.getEvent(), reg.getAthlete()).isEmpty())
+                .map(reg -> {
+                    Event event = reg.getEvent();
+                    EventResponseDTO dto = new EventResponseDTO();
+                    dto.setEventTitle(event.getEventTitle());
+                    dto.setEventId(event.getEventId());
+                    dto.setCategory(event.getCategory());
+                    dto.setLocation(event.getLocation());
+                    dto.setEventDate(event.getEventDate());
+                    dto.setEventDescription(event.getEventDescription());
+                    dto.setMeetId(event.getMeetId());
+                    if (event.getImage() != null) {
+                        dto.setImageBase64(Base64.getEncoder().encodeToString(event.getImage()));
+                    } else {
+                        dto.setImageBase64(null); // Or set a default placeholder image if applicable
+                    }
+
+                    dto.setMeetName(event.getMeetId().getMeetName());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<EventResponseDTO> getApprovedRegistrationsWithResults(String username) {
+        // Get the current date
+        Date currentDate = new Date();
+
+        // Fetch the athlete using the username
+        Athlete athlete = athleteRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Athlete not found"));
+
+        // Fetch events based on approved registrations, past date, and published results
+        List<Registration> approvedRegistrations = registrationRepository.findByAthlete_AthleteIdAndStatus(athlete.getAthleteId(), "Approved");
+
+        return approvedRegistrations.stream()
+                .filter(reg -> reg.getEvent().getEventDate().before(currentDate) &&
+                        !eventResultRepository.findByEventAndAthlete(reg.getEvent(), reg.getAthlete()).isEmpty())
+                .map(reg -> {
+                    Event event = reg.getEvent();
+                    EventResponseDTO dto = new EventResponseDTO();
+                    dto.setEventTitle(event.getEventTitle());
+                    dto.setEventId(event.getEventId());
+                    dto.setCategory(event.getCategory());
+                    dto.setLocation(event.getLocation());
+                    dto.setEventDate(event.getEventDate());
+                    dto.setEventDescription(event.getEventDescription());
+                    dto.setMeetId(event.getMeetId());
+                    if (event.getImage() != null) {
+                        dto.setImageBase64(Base64.getEncoder().encodeToString(event.getImage()));
+                    } else {
+                        dto.setImageBase64(null); // Or set a default placeholder image if applicable
+                    }
+
+                    dto.setMeetName(event.getMeetId().getMeetName());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
 
 
 

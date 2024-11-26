@@ -16,5 +16,12 @@ public class EventResponseDTO {
     private String eventDescription;
     private Meet meetId;
     private String imageBase64; // Base64-encoded image
+    private String meetName;
+
+    private float score;
+    private String comment;
+
+
+
 }
 

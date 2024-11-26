@@ -1,5 +1,7 @@
 package com.sportsperformance.batch2.Repositories;
 
+import com.sportsperformance.batch2.models.Athlete;
+import com.sportsperformance.batch2.models.Event;
 import com.sportsperformance.batch2.models.EventResult;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -38,5 +40,8 @@ public interface EventResultRepository extends JpaRepository<EventResult, Intege
 
     @Query("SELECT er FROM EventResult er WHERE er.athlete.username = :username ORDER BY er.event.eventDate DESC")
     List<EventResult> findAllByAthleteUsernameOrderByEventDateDesc(@Param("username") String username, Pageable pageable);
+
+
+    List<EventResult> findByEventAndAthlete(Event event, Athlete athlete);
 
 }
