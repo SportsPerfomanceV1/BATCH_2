@@ -457,4 +457,34 @@ public class CoachService {
 
 
 
+    public List<AthleteProfileDTO> getAthletesForCoach() {
+        // Fetch the coach based on the logged-in username
+        Coach coach = coachRepository.findByUsername(getLoggedInUsername())
+                .orElseThrow(() -> new RuntimeException("Coach not found"));
+
+        // Fetch all assistance requests associated with this coach
+        List<AssistanceRequest> allRequests = assistanceRequestRepository.findByCoach(coach);
+
+        // Filter approved requests and map them to AthleteProfileDTO
+        return allRequests.stream()
+                .filter(request -> "Accepted".equals(request.getStatus())) // Filter for "Accepted" status
+                .map(request -> {
+                    var athlete = request.getAthlete(); // Get associated athlete
+                    AthleteProfileDTO dto = new AthleteProfileDTO();
+                    dto.setFirstName(athlete.getFirstName());
+                    dto.setLastName(athlete.getLastName());
+                    dto.setBirthDate(athlete.getBirthDate());
+                    dto.setGender(athlete.getGender());
+                    dto.setHeight(athlete.getHeight());
+                    dto.setWeight(athlete.getWeight());
+                    dto.setCategory(athlete.getCategory());
+                    dto.setEmail(athlete.getEmail());
+                    dto.setUsername(athlete.getUsername());
+                    dto.setPhotoBase64(athlete.getPhotoUrl()); // Convert photo if required
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+
 }

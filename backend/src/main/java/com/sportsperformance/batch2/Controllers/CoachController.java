@@ -4,6 +4,7 @@ import com.sportsperformance.batch2.DTO.*;
 import com.sportsperformance.batch2.Repositories.AssistanceRequestRepository;
 import com.sportsperformance.batch2.Repositories.AthleteRepository;
 import com.sportsperformance.batch2.Repositories.WeightPlanRepository;
+import com.sportsperformance.batch2.Services.AdminService;
 import com.sportsperformance.batch2.Services.CoachService;
 import com.sportsperformance.batch2.models.AssistanceRequest;
 import com.sportsperformance.batch2.models.Athlete;
@@ -130,7 +131,7 @@ public class CoachController {
     private WeightPlanRepository weightPlanRepository;
 
     @PostMapping("/createplan")
-    public WeightPlanDTO createWeightPlan(@RequestBody WeightPlanDTO dto) {
+    public WeightPlanDTO createWeightPlan(@ModelAttribute WeightPlanDTO dto) {
         return coachService.createWeightPlan(dto);
     }
 
@@ -165,8 +166,23 @@ public class CoachController {
         return coachService.getDailyDietsByAthlete(athleteId);
     }
 
+    @Autowired
+    AdminService adminService;
+
+    @GetMapping("/athlete/{athleteId}")
+    public ResponseEntity<AthleteProfileDTO> getAthlete(@PathVariable Long athleteId) {
+        try {
+            AthleteProfileDTO athlete = adminService.getAthleteById(athleteId);
+            return ResponseEntity.ok(athlete);
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(null);
+        }
+    }
 
 
-
+    @GetMapping("/athletes")
+    public List<AthleteProfileDTO> getAthletes() {
+        return coachService.getAthletesForCoach();
+    }
 
 }

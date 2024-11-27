@@ -10,4 +10,6 @@ import java.util.List;
 public interface AssistanceRequestRepository extends JpaRepository<AssistanceRequest, Long> {
     List<AssistanceRequest> findByAthlete(Athlete athlete);
     List<AssistanceRequest> findByCoach(Coach coach);
+//    List<AssistanceRequest> findByCoachIdAndStatus(Coach coach, String status);
+
 }
