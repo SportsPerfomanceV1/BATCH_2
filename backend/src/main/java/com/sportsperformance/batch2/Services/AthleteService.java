@@ -316,16 +316,25 @@ public class AthleteService {
         return dto;
     }
 
-    public List<AssistanceRequestDTO> getRequestsByLoggedInAthlete() {
+    public AssistanceRequestDTO getRequestsByLoggedInAthlete() {
         String username = getLoggedInUsername();
 
         Athlete athlete = athleteRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Athlete not found with username: " + username));
 
-        return assistanceRequestRepository.findByAthlete(athlete).stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+        // Find the AssistanceRequest by athlete and check for null
+        AssistanceRequest assistanceRequest = assistanceRequestRepository.findByAthlete(athlete);
+
+        // If no assistance request is found, throw an exception
+        if (assistanceRequest == null) {
+            throw new RuntimeException("No assistance request found for athlete: " + username);
+        }
+
+        // Map and return the single AssistanceRequestDTO
+        return mapToDTO(assistanceRequest);
     }
+
+
 
 
     @Autowired

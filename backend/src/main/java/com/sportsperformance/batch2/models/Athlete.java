@@ -47,9 +47,9 @@ public class Athlete extends BaseUser {
     @JsonIgnoreProperties("athlete")
     private List<DailyDiet> dailyDiets;
 
-    @OneToMany(mappedBy = "athlete")
+    @OneToOne(mappedBy = "athlete")
     @JsonIgnoreProperties("athlete")
-    private List<AssistanceRequest> assistanceRequests;
+    private AssistanceRequest assistanceRequests;
 
     @OneToOne(mappedBy = "athlete")
     @JsonIgnoreProperties("athlete")

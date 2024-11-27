@@ -15,7 +15,7 @@ public class AssistanceRequest {
 
 
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "athleteId", nullable = false)
     private Athlete athlete;
 

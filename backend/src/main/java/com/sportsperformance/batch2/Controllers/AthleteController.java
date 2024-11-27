@@ -173,7 +173,7 @@ public class AthleteController {
         return ResponseEntity.ok(athleteService.createRequest(dto));
     }
     @GetMapping("/getassistancereq/")
-    public ResponseEntity<List<AssistanceRequestDTO>> getRequestsByLoggedInAthlete() {
+    public ResponseEntity<AssistanceRequestDTO> getRequestsByLoggedInAthlete() {
         return ResponseEntity.ok(athleteService.getRequestsByLoggedInAthlete());
     }
 
