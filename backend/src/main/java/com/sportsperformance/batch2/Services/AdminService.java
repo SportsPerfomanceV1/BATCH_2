@@ -214,9 +214,14 @@ public class AdminService {
         return registrations.stream().map(reg -> {
             AthleteResultDTO dto = new AthleteResultDTO();
             dto.setAthleteId(reg.getAthlete().getAthleteId());
-            String name = reg.getAthlete().getFirstName() + reg.getAthlete().getLastName();
+            String name = reg.getAthlete().getFirstName() + " " + reg.getAthlete().getLastName();
             dto.setAthleteName(name);
-            dto.setAthletePicture(reg.getAthlete().getPhotoUrl());
+            dto.setAthletePicture(Arrays.toString(reg.getAthlete().getPhoto()));
+            if (reg.getAthlete().getPhoto() != null) {
+                byte[] photoBytes = reg.getAthlete().getPhoto(); // Assuming this returns a byte array
+                dto.setAthletePicture(Base64.getEncoder().encodeToString(photoBytes));
+            }
+
             reg.getEvent().getEventResults().stream()
                     .filter(result -> result.getAthlete().getAthleteId() == reg.getAthlete().getAthleteId())
                     .findFirst()
@@ -446,8 +451,10 @@ public class AdminService {
 
     private EventResultDTO toEventResultDTO(EventResult result) {
         EventResultDTO dto = new EventResultDTO();
+        dto.setAthleteName(result.getAthlete().getFirstName() + " " + result.getAthlete().getLastName());
         dto.setAthleteId(result.getAthlete().getAthleteId());
         dto.setScore(result.getScore());
+
         dto.setComment(result.getComment());
         return dto;
     }

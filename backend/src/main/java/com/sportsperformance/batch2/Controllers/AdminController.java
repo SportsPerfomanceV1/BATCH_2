@@ -2,8 +2,10 @@ package com.sportsperformance.batch2.Controllers;
 
 import com.sportsperformance.batch2.DTO.*;
 
+import com.sportsperformance.batch2.Repositories.AthleteRepository;
 import com.sportsperformance.batch2.Repositories.EventRepository;
 import com.sportsperformance.batch2.Services.AdminService;
+import com.sportsperformance.batch2.Services.AthleteService;
 import com.sportsperformance.batch2.Services.CoachService;
 import com.sportsperformance.batch2.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -303,10 +305,17 @@ public class AdminController {
         return ResponseEntity.ok(leaderboard);
     }
 
+    @Autowired
+    AthleteRepository athleteRepository;
+
+    @Autowired
+    AthleteService athleteService;
 
     @GetMapping("/top-performance/by-athlete/{athleteId}")
-    public ResponseEntity<EventResultDTO> getTopPerformanceByAthleteId(@PathVariable Long athleteId) {
-        EventResultDTO topPerformance = adminService.getTopPerformanceByAthleteId(athleteId);
+    public ResponseEntity<List<EventResultDTO>> getTopPerformanceByAthleteId(@PathVariable Long athleteId) {
+        Athlete ath = athleteRepository.findById(athleteId).get();
+        String username = ath.getUsername();
+        List<EventResultDTO> topPerformance = athleteService.getTop5PerformancesByLoggedInAthlete(username);
         return ResponseEntity.ok(topPerformance);
     }
 

@@ -364,12 +364,13 @@ public class CoachService {
 
 
     public WeightPlanDTO createWeightPlan(WeightPlanDTO dto) {
-        Athlete athlete = athleteRepository.findById(dto.getAthleteId())
+        Athlete athlete = athleteRepository.findById((Long)dto.getAthleteId())
                 .orElseThrow(() -> new RuntimeException("Athlete not found"));
 
         // Check if the athlete already has a weight plan, and either throw an error or update
         if (athlete.getWeightPlan() != null) {
-            throw new RuntimeException("Athlete already has an existing weight plan.");
+            updateWeightPlan(athlete.getWeightPlan().getPlanId(), dto);
+            throw new RuntimeException("Athlete already has an existing weight plan, updated now.");
         }
 
         WeightPlan weightPlan = new WeightPlan();

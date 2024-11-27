@@ -318,6 +318,7 @@ public class AthleteService {
 
     public AssistanceRequestDTO getRequestsByLoggedInAthlete() {
         String username = getLoggedInUsername();
+        System.out.println(username);
 
         Athlete athlete = athleteRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Athlete not found with username: " + username));
