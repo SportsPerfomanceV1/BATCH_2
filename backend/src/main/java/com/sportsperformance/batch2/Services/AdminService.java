@@ -104,6 +104,8 @@ public class AdminService {
                     athleteProfile.setFirstName(registration.getAthlete().getFirstName());
                     athleteProfile.setLastName(registration.getAthlete().getLastName());
                     athleteProfile.setBirthDate(registration.getAthlete().getBirthDate());
+
+                    athleteProfile.setAthleteId(registration.getAthlete().getAthleteId());
                     athleteProfile.setGender(registration.getAthlete().getGender());
                     athleteProfile.setHeight(registration.getAthlete().getHeight());
                     athleteProfile.setWeight(registration.getAthlete().getWeight());
@@ -148,6 +150,8 @@ public class AdminService {
             athleteProfileDTO.setLastName(athlete.getLastName());
             athleteProfileDTO.setBirthDate(athlete.getBirthDate());
             athleteProfileDTO.setGender(athlete.getGender());
+
+            athleteProfileDTO.setAthleteId(athlete.getAthleteId());
             athleteProfileDTO.setHeight(athlete.getHeight());
             athleteProfileDTO.setWeight(athlete.getWeight());
             athleteProfileDTO.setCategory(athlete.getCategory());
@@ -212,6 +216,7 @@ public class AdminService {
     public List<AthleteResultDTO> getAthletesForEvent(Long eventId) {
         List<Registration> registrations = registrationRepository.findByEvent_EventIdAndStatus(eventId, "Approved");
         return registrations.stream().map(reg -> {
+
             AthleteResultDTO dto = new AthleteResultDTO();
             dto.setAthleteId(reg.getAthlete().getAthleteId());
             String name = reg.getAthlete().getFirstName() + " " + reg.getAthlete().getLastName();
@@ -310,6 +315,8 @@ public class AdminService {
                     athleteProfile.setLastName(registration.getAthlete().getLastName());
                     athleteProfile.setBirthDate(registration.getAthlete().getBirthDate());
                     athleteProfile.setGender(registration.getAthlete().getGender());
+
+                    athleteProfile.setAthleteId(registration.getAthlete().getAthleteId());
                     athleteProfile.setHeight(registration.getAthlete().getHeight());
                     athleteProfile.setWeight(registration.getAthlete().getWeight());
                     athleteProfile.setCategory(registration.getAthlete().getCategory());

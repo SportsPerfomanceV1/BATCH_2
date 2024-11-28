@@ -205,6 +205,8 @@ public class AthleteService {
                     athleteProfile.setLastName(registration.getAthlete().getLastName());
                     athleteProfile.setBirthDate(registration.getAthlete().getBirthDate());
                     athleteProfile.setGender(registration.getAthlete().getGender());
+
+                    athleteProfile.setAthleteId(registration.getAthlete().getAthleteId());
                     athleteProfile.setHeight(registration.getAthlete().getHeight());
                     athleteProfile.setWeight(registration.getAthlete().getWeight());
                     athleteProfile.setCategory(registration.getAthlete().getCategory());

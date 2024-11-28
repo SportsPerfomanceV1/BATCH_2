@@ -245,6 +245,7 @@ public class CoachService {
                     athleteProfile.setLastName(request.getAthlete().getLastName());
                     athleteProfile.setBirthDate(request.getAthlete().getBirthDate());
                     athleteProfile.setGender(request.getAthlete().getGender());
+                    athleteProfile.setAthleteId(request.getAthlete().getAthleteId());
                     athleteProfile.setHeight(request.getAthlete().getHeight());
                     athleteProfile.setWeight(request.getAthlete().getWeight());
                     athleteProfile.setCategory(request.getAthlete().getCategory());
@@ -369,7 +370,7 @@ public class CoachService {
 
         // Check if the athlete already has a weight plan, and either throw an error or update
         if (athlete.getWeightPlan() != null) {
-            updateWeightPlan(athlete.getWeightPlan().getPlanId(), dto);
+//            updateWeightPlan(athlete.getWeightPlan().getPlanId(), dto);
             throw new RuntimeException("Athlete already has an existing weight plan, updated now.");
         }
 
@@ -380,7 +381,7 @@ public class CoachService {
         weightPlan.setPreference(dto.getPreference());
         weightPlan.setDailyCalorieGoal(dto.getDailyCalorieGoal());
 
-        weightPlan = weightPlanRepository.save(weightPlan);
+        weightPlanRepository.save(weightPlan);
 
         // Set the weight plan in the athlete entity
         athlete.setWeightPlan(weightPlan);
@@ -476,6 +477,7 @@ public class CoachService {
                     dto.setLastName(athlete.getLastName());
                     dto.setBirthDate(athlete.getBirthDate());
                     dto.setGender(athlete.getGender());
+                    dto.setAthleteId(athlete.getAthleteId());
                     dto.setHeight(athlete.getHeight());
                     dto.setWeight(athlete.getWeight());
                     dto.setCategory(athlete.getCategory());

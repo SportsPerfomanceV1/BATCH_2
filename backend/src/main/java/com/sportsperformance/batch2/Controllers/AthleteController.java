@@ -59,8 +59,10 @@ public class AthleteController {
 
         if (athlete.getPhoto() != null) {
             // Encode the photo byte array to Base64
-            String base64Image = Base64.getEncoder().encodeToString(athlete.getPhoto());
-            dto.setPhotoBase64(base64Image);
+            byte[] photoBytes = athlete.getPhoto(); // Assuming this returns a byte array
+            dto.setPhotoBase64(Base64.getEncoder().encodeToString(photoBytes));
+//            String base64Image = Base64.getEncoder().encodeToString(athlete.getPhoto());
+//            dto.setPhotoBase64(base64Image);
         } else {
             dto.setPhotoBase64(null);
         }

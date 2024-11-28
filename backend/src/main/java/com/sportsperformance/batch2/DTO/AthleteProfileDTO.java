@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Date;
 @Data
 public class AthleteProfileDTO {
-
+    private Long athleteId;
     private String firstName;
     private String lastName;
     @DateTimeFormat(pattern = "yyyy-MM-dd")

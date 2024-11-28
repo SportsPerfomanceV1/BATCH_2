@@ -22,9 +22,7 @@ button:hover {
 
 h2 {
   text-align: center;
-}
-
-.page-enter {
+}.page-enter {
   opacity: 0;
   transform: translateX(100%);
 }

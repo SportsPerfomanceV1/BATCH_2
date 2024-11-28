@@ -1,0 +1,47 @@
+.coach-dashboard {
+    font-family: Arial, sans-serif;
+    color: #333;
+  }
+  
+  .dashboard-header {
+    background-color: #f8f9fa;
+    text-align: center;
+    border-bottom: 2px solid #ddd;
+  }
+  
+  .dashboard-header h1 {
+    margin: 0;
+  }
+  
+  .dashboard-header nav {
+    margin-top: 1rem;
+  }
+  
+  .dashboard-header button {
+    font-size: 1rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+  
+  .dashboard-header button:hover {
+    background-color: #007bff;
+    color: #fff;
+  }
+  
+  .profile-section,
+  .achievements-section,
+  .assistance-requests-section,
+  .athletes-section {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+  }
+  
+  .profile-section h3,
+  .achievements-section h3,
+  .assistance-requests-section h3,
+  .athletes-section h3 {
+    margin-bottom: 1rem;
+  }
+  
