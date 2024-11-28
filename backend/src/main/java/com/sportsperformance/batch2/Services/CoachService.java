@@ -357,7 +357,12 @@ public class CoachService {
         dto.setAthleteId(dailyDiet.getAthlete().getAthleteId());
         dto.setDate(dailyDiet.getDate());
         dto.setCalories(dailyDiet.getCalories());
-        dto.setCurrentWeight(dailyDiet.getCurrentWeight());
+//        dto.setCurrentWeight(dailyDiet.getCurrentWeight());
+        dto.setFat(dailyDiet.getFat());
+        dto.setFibre(dailyDiet.getFibre());
+        dto.setCarbohydrate(dailyDiet.getCarbohydrate());
+        dto.setProtein(dailyDiet.getProtein());
+        dto.setWater(dailyDiet.getWater());
         dto.setWeightPlanId(dailyDiet.getWeightPlan() != null ? dailyDiet.getWeightPlan().getPlanId() : null);
         return dto;
     }
@@ -381,7 +386,7 @@ public class CoachService {
         weightPlan.setPreference(dto.getPreference());
         weightPlan.setDailyCalorieGoal(dto.getDailyCalorieGoal());
 
-        weightPlanRepository.save(weightPlan);
+        weightPlan = weightPlanRepository.save(weightPlan);
 
         // Set the weight plan in the athlete entity
         athlete.setWeightPlan(weightPlan);
@@ -402,18 +407,27 @@ public class CoachService {
         return mapToDTO(weightPlan);
     }
 
-    public WeightPlanDTO updateWeightPlan(Long planId, WeightPlanDTO dto) {
-        WeightPlan weightPlan = weightPlanRepository.findById(planId)
-                .orElseThrow(() -> new RuntimeException("WeightPlan not found"));
+    public WeightPlanDTO updateWeightPlan(Long athleteId, WeightPlanDTO dto) {
+        Athlete athlete = athleteRepository.findById(athleteId)
+                .orElseThrow(() -> new RuntimeException("Athlete not found"));
+        athlete.getWeightPlan().setStartWeight(dto.getStartWeight());
+        athlete.getWeightPlan().setTargetWeight(dto.getTargetWeight());
+        athlete.getWeightPlan().setPreference(dto.getPreference());
+        athlete.getWeightPlan().setDailyCalorieGoal(dto.getDailyCalorieGoal());
+        athleteRepository.save(athlete);
+        weightPlanRepository.save(athlete.getWeightPlan());
 
-        weightPlan.setStartWeight(dto.getStartWeight());
-        weightPlan.setTargetWeight(dto.getTargetWeight());
-        weightPlan.setPreference(dto.getPreference());
-        weightPlan.setDailyCalorieGoal(dto.getDailyCalorieGoal());
 
-        weightPlan = weightPlanRepository.save(weightPlan);
+//        WeightPlan weightPlan = athlete.getWeightPlan();
+//
+//        weightPlan.setStartWeight(dto.getStartWeight());
+//        weightPlan.setTargetWeight(dto.getTargetWeight());
+//        weightPlan.setPreference(dto.getPreference());
+//        weightPlan.setDailyCalorieGoal(dto.getDailyCalorieGoal());
 
-        return mapToDTO(weightPlan);
+//        weightPlan = weightPlanRepository.save(weightPlan);
+
+        return mapToDTO(athlete.getWeightPlan());
     }
 
 
@@ -430,7 +444,12 @@ public class CoachService {
         dailyDiet.setAthlete(athlete);
         dailyDiet.setDate(dto.getDate());
         dailyDiet.setCalories(dto.getCalories());
-        dailyDiet.setCurrentWeight(dto.getCurrentWeight());
+//        dailyDiet.setCurrentWeight(dto.getCurrentWeight());
+        dailyDiet.setProtein(dto.getProtein());
+        dailyDiet.setFat(dto.getFat());
+        dailyDiet.setCarbohydrate(dto.getCarbohydrate());
+        dailyDiet.setFibre(dto.getFibre());
+        dailyDiet.setWater(dto.getWater());
 
         // Fetch the single WeightPlan from the athlete
         WeightPlan weightPlan = athlete.getWeightPlan();

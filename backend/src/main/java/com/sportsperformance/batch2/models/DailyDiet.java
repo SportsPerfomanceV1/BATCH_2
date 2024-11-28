@@ -19,10 +19,12 @@ public class DailyDiet {
 
     private Date date;
     private float calories;
-    private float currentWeight;
+//    private float currentWeight;
 
     @ManyToOne
     @JoinColumn(name = "weightPlanId")
     private WeightPlan weightPlan;
 
+    private float protein;
+    private float carbohydrate, fat, fibre, water;
 }

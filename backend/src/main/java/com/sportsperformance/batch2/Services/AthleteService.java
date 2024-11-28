@@ -367,9 +367,14 @@ public List<DailyDietDTO> getDailyDietsByLoggedInAthlete(String username) {
     Athlete athlete = athleteRepository.findByUsername(username)
             .orElseThrow(() -> new RuntimeException("Athlete not found"));
 
-    return dailyDietRepository.findByAthleteAthleteIdOrderByDateDesc(athlete.getAthleteId()).stream()
+    List<DailyDietDTO> dailyDietDTOs = dailyDietRepository.findByAthleteAthleteIdOrderByDateDesc(athlete.getAthleteId()).stream()
             .map(this::mapToDTO)
             .collect(Collectors.toList());
+
+    // Reverse the list
+    Collections.reverse(dailyDietDTOs);
+
+    return dailyDietDTOs;
 }
 
 
@@ -392,7 +397,11 @@ public List<DailyDietDTO> getDailyDietsByLoggedInAthlete(String username) {
         dto.setAthleteId(dailyDiet.getAthlete().getAthleteId());
         dto.setDate(dailyDiet.getDate());
         dto.setCalories(dailyDiet.getCalories());
-        dto.setCurrentWeight(dailyDiet.getCurrentWeight());
+        dto.setFat(dailyDiet.getFat());
+        dto.setFibre(dailyDiet.getFibre());
+        dto.setCarbohydrate(dailyDiet.getCarbohydrate());
+        dto.setProtein(dailyDiet.getProtein());
+        dto.setWater(dailyDiet.getWater());
         dto.setWeightPlanId(dailyDiet.getWeightPlan() != null ? dailyDiet.getWeightPlan().getPlanId() : null);
         return dto;
     }

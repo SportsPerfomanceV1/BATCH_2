@@ -131,13 +131,13 @@ public class CoachController {
     private WeightPlanRepository weightPlanRepository;
 
     @PostMapping("/createplan")
-    public WeightPlanDTO createWeightPlan(@ModelAttribute WeightPlanDTO dto) {
+    public WeightPlanDTO createWeightPlan(@RequestBody WeightPlanDTO dto) {
         return coachService.createWeightPlan(dto);
     }
 
-    @PutMapping("updateplan/{planId}")
-    public WeightPlanDTO updateWeightPlan(@PathVariable Long planId, @RequestBody WeightPlanDTO dto) {
-        return coachService.updateWeightPlan(planId, dto);
+    @PutMapping("updateplan/{athleteId}")
+    public WeightPlanDTO updateWeightPlan(@PathVariable Long athleteId, @RequestBody WeightPlanDTO dto) {
+        return coachService.updateWeightPlan(athleteId, dto);
     }
 
     @DeleteMapping("deleteplan/{planId}")
