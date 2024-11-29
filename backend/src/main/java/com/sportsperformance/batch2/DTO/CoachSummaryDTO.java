@@ -7,5 +7,7 @@ public class CoachSummaryDTO {
     private Long coachId;
     private String firstName;
     private String lastName;
-    private String imageBase64; // Include image as Base64 for summary
+    private String imageBase64;
+    private String email, expertise;
+
 }

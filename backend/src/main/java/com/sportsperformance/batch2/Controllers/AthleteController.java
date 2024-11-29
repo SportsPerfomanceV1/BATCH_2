@@ -1,5 +1,4 @@
 package com.sportsperformance.batch2.Controllers;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sportsperformance.batch2.DTO.*;
 import com.sportsperformance.batch2.Repositories.EventRepository;
@@ -17,35 +16,26 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.*;
 import java.util.stream.Collectors;
-
 @JsonIgnoreProperties({"parentField"})
 @RestController
 @RequestMapping("/athlete")
 public class AthleteController {
     @Autowired
     private AthleteService athleteService;
-
-
     @PostMapping(value = "/createProfile", consumes = "multipart/form-data")
     public ResponseEntity<String> createProfile(
             @ModelAttribute AthleteProfileDTO profileDTO) {
-
-        // Extract the username from the Authentication object in the SecurityContext
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
-
         try {
-
             athleteService.createOrUpdateProfile(username, profileDTO);
             return ResponseEntity.ok("Profile created/updated successfully.");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error creating/updating profile: " + e.getMessage());
         }
     }
-
     private AthleteProfileDTO mapToDTO(Athlete athlete) {
         AthleteProfileDTO dto = new AthleteProfileDTO();
         dto.setFirstName(athlete.getFirstName());
@@ -56,22 +46,14 @@ public class AthleteController {
         dto.setWeight(athlete.getWeight());
         dto.setCategory(athlete.getCategory());
         dto.setCoachId(athlete.getCoach());
-
         if (athlete.getPhoto() != null) {
-            // Encode the photo byte array to Base64
-            byte[] photoBytes = athlete.getPhoto(); // Assuming this returns a byte array
+            byte[] photoBytes = athlete.getPhoto();
             dto.setPhotoBase64(Base64.getEncoder().encodeToString(photoBytes));
-//            String base64Image = Base64.getEncoder().encodeToString(athlete.getPhoto());
-//            dto.setPhotoBase64(base64Image);
         } else {
             dto.setPhotoBase64(null);
         }
-
         return dto;
     }
-
-
-
     @GetMapping("/profile")
     public ResponseEntity<AthleteProfileDTO> getAthleteProfile() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -84,28 +66,13 @@ public class AthleteController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
-
     @PostMapping("/registerForEvent/{eventId}")
     public ResponseEntity<String> registerForEvent(@PathVariable Long eventId, @RequestBody RegistrationRequestDTO requestDTO) throws Exception {
-        // Extract the username from the Authentication object in the SecurityContext
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
-        // Extract username from the JWT token
-
         athleteService.registerForEvent(username, requestDTO, eventId);
         return ResponseEntity.ok("Registration successful");
     }
-
-//    @GetMapping("/events")
-//    public ResponseEntity<List<EventResponseDTO>> getAllEvents() {
-//        try {
-//            List<EventResponseDTO> events = athleteService.getAllEvents();
-//            return ResponseEntity.ok(events);
-//        } catch (Exception e) {
-//            return ResponseEntity.status(400).body(null);
-//        }
-//    }
-
     @GetMapping("/events")
     public ResponseEntity<List<EventResponseDTO>> getAvailableEvents() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -117,24 +84,17 @@ public class AthleteController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
-
-
     @GetMapping("/events/registered")
     public ResponseEntity<List<RegistrationDTO>> getRegisteredEvents() {
         try {
-            // Get the current logged-in athlete's username
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String username = userDetails.getUsername();
-
-//            List<Event> events = athleteService.getRegisteredEvents(username);
             List<RegistrationDTO> registrations = athleteService.getRegisteredEvents(username);
             return ResponseEntity.ok(registrations);
         } catch (Exception e) {
             return ResponseEntity.status(400).body(null);
         }
     }
-
-
     @DeleteMapping("/registration/{registrationId}")
     public ResponseEntity<String> deleteRegistration(@PathVariable Long registrationId) {
         try {
@@ -146,26 +106,16 @@ public class AthleteController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
         }
     }
-
     @Autowired
     private CoachService coachService;
-
-    // Get all coaches
-
-    //earphone ki charging khtmmmmm
-
     @GetMapping("getallcoaches")
     public ResponseEntity<List<CoachSummaryDTO>> getAllCoaches() {
         return ResponseEntity.ok(coachService.getAllCoaches());
     }
-
-    // Get a specific coach by ID
     @GetMapping("coach/{id}")
     public ResponseEntity<CoachDTO> getCoachById(@PathVariable Long id) {
         return ResponseEntity.ok(coachService.getCoachById(id));
     }
-
-    // Get all achievements by coachId
     @GetMapping("achievements/coach/{coachId}")
     public ResponseEntity<List<AchievementDTO>> getAllAchievementsByCoachId(@PathVariable Long coachId) {
         return ResponseEntity.ok(coachService.getAllAchievementsByCoachId(coachId));
@@ -178,23 +128,19 @@ public class AthleteController {
     public ResponseEntity<AssistanceRequestDTO> getRequestsByLoggedInAthlete() {
         return ResponseEntity.ok(athleteService.getRequestsByLoggedInAthlete());
     }
-
-;
-
+    ;
     @GetMapping("/getdailydiets")
     public List<DailyDietDTO> getDailyDietsForLoggedInAthlete() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
         return athleteService.getDailyDietsByLoggedInAthlete(username);
     }
-
     @GetMapping("/getweightplan")
     public WeightPlanDTO getWeightPlanForLoggedInAthlete() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
         return athleteService.getWeightPlanByLoggedInAthlete(username);
     }
-
     private EventResponseDTO mapToDTO(Event event) {
         EventResponseDTO dto = new EventResponseDTO();
         dto.setEventTitle(event.getEventTitle());
@@ -203,14 +149,11 @@ public class AthleteController {
         dto.setEventDate(event.getEventDate());
         dto.setMeetName(event.getMeetId().getMeetName());
         dto.setEventDescription(event.getEventDescription());
-
         if (event.getImage() != null) {
             dto.setImageBase64(Base64.getEncoder().encodeToString(event.getImage()));
         }
-
         return dto;
     }
-
     @Autowired
     EventRepository eventRepository;
     @GetMapping("/events/{id}")
@@ -223,10 +166,6 @@ public class AthleteController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
-
-
-    //Result display
-
     @GetMapping("/top-performance")
     public ResponseEntity<List<EventResultDTO>> getTopPerformanceByLoggedInAthlete() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -234,40 +173,32 @@ public class AthleteController {
         List<EventResultDTO> results = athleteService.getTop5PerformancesByLoggedInAthlete(username);
         return ResponseEntity.ok(results);
     }
-
     @GetMapping("result/by-athlete/{athleteId}")
     public ResponseEntity<List<EventResultDTO>> getResultsByAthleteId(@PathVariable Long athleteId) {
         List<EventResultDTO> results = athleteService.getResultsByAthleteId(athleteId);
         return ResponseEntity.ok(results);
     }
-
     @GetMapping("result/by-event/{eventId}")
     public ResponseEntity<List<EventResultDTO>> getResultsByEventId(@PathVariable Integer eventId) {
         List<EventResultDTO> results = athleteService.getResultsByEventId(eventId);
         return ResponseEntity.ok(results);
     }
-
     @GetMapping("results/event/{eventId}")
     public ResponseEntity<EventResultDTO> getResultByAthleteIdAndEventId(
             @PathVariable Integer eventId) {
         EventResultDTO result = athleteService.getResultByEventId(eventId);
         return ResponseEntity.ok(result);
     }
-
     @GetMapping("event/leaderboard/{eventId}")
     public ResponseEntity<List<EventResultDTO>> getLeaderboardByEventId(@PathVariable Integer eventId) {
         List<EventResultDTO> leaderboard = athleteService.getLeaderboardByEventId(eventId);
         return ResponseEntity.ok(leaderboard);
     }
-
-
     @GetMapping("/top-performance/by-athlete/{athleteId}")
     public ResponseEntity<EventResultDTO> getTopPerformanceByAthleteId(@PathVariable Long athleteId) {
         EventResultDTO topPerformance = athleteService.getTopPerformanceByAthleteId(athleteId);
         return ResponseEntity.ok(topPerformance);
     }
-
-
     @GetMapping("/all-results")
     public ResponseEntity<List<EventResultDTO>> getAllResultsByLoggedInAthlete(
             @RequestParam(defaultValue = "0") int page,
@@ -277,30 +208,18 @@ public class AthleteController {
         List<EventResultDTO> results = athleteService.getAllResultsByLoggedInAthlete(username, page, size);
         return ResponseEntity.ok(results);
     }
-
     @GetMapping("events/no-results")
     public ResponseEntity<List<EventResponseDTO>> getEventsWithoutResults() {
-        // Get the logged-in user's username
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
-
-        // Fetch events without results for the logged-in user
         List<EventResponseDTO> events = athleteService.getApprovedRegistrationsWithoutResults(username);
         return ResponseEntity.ok(events);
     }
-
     @GetMapping("events/with-results")
     public ResponseEntity<List<EventResponseDTO>> getEventsWithResults() {
-        // Get the logged-in user's username
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
-
-        // Fetch events with results for the logged-in user
         List<EventResponseDTO> events = athleteService.getApprovedRegistrationsWithResults(username);
         return ResponseEntity.ok(events);
     }
-
-
-
-
 }

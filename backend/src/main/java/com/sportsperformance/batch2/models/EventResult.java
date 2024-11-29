@@ -22,11 +22,9 @@ public class EventResult {
     @ManyToOne
     @JoinColumn(name = "athleteId", nullable = false)
     @JsonIgnoreProperties("eventResults")
-//    @JsonBackReference
     private Athlete athlete;
 
     private float score;
     private String comment;
 
-    // Getters and setters...
 }

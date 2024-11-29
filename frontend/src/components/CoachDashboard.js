@@ -2667,7 +2667,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import "../styles/coach.css"; // Import CSS file
 import axios from "axios";
-import { Typography, AppBar, Table, Toolbar, DialogTitle, DialogContent, Dialog, Box } from "@mui/material";
+import { Typography, AppBar, Table, Toolbar, DialogTitle, DialogContent, Dialog, Box,Card,CardContent } from "@mui/material";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import LoginIcon from "@mui/icons-material/Login";
 
@@ -2709,7 +2709,7 @@ const CoachDashboard = ({
   const [weightPlan, setWeightPlan] = useState(null);
   const [selectedAthlete, setSelectedAthlete] = useState(null); // Stores the selected athlete details
   const [profileModalOpen, setProfileModalOpen] = useState(false); // Tracks modal visibility
-
+  const [coachDietPlan, setCoachDietPlan] = useState([]);
 
   // Modal visibility states
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
@@ -2813,7 +2813,7 @@ const CoachDashboard = ({
       console.error("Error fetching athlete profile:", error);
     }
   };
-
+  const token = localStorage.getItem("token");
   // Fetch weight plan
   const fetchWeightPlan = async (athleteId) => {
     try {
@@ -2821,6 +2821,20 @@ const CoachDashboard = ({
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setWeightPlan(response.data);
+
+      axios.get(`/coach/diet/athlete/${athleteId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+        .then(dietPlanResponse => {
+          setCoachDietPlan(dietPlanResponse.data);
+        })
+        .catch(error => {
+          console.error('Error fetching coach diet plans:', error);
+        });
+
+
       // setShowWeightPlanModal(true);
     } catch (error) {
       console.error("Error fetching weight plan:", error);
@@ -2915,12 +2929,16 @@ const CoachDashboard = ({
   const handleViewDetails = (athleteId) => {
     console.log("viewdetial", athleteId, typeof (athleteId))
     // setSelectedAthlete(athlete);
+    const athlete = athletes.find(a => a.athleteId === athleteId);
     fetchAthleteProfile(athleteId)
     // setProfileModalOpen(true);
+    setSelectedAthlete(athlete);
+  setProfileModalOpen(true);
   };
 
   const handleCloseProfileModal = () => {
     setProfileModalOpen(false);
+    setSelectedAthlete(null);
   };
 
 
@@ -2931,6 +2949,7 @@ const CoachDashboard = ({
 
 
   const [showModal2, setShowModal2] = useState(false);
+
   const [formData2, setFormData2] = useState({
     startWeight: "",
     targetWeight: "",
@@ -2942,40 +2961,136 @@ const CoachDashboard = ({
     const { name, value } = e.target;
     setFormData2({ ...formData2, [name]: value });
   };
+  const [isEdit, setIsEdit] = useState(false);
 
   const handleSubmit = async (athleteId) => {
     // e.preventDefault();
     const token = localStorage.getItem("token");
+    if (!isEdit) {
+      try {
+        await axios.post(
+          `/coach/createplan`,
+          {
+            athleteId: parseFloat(athleteId),
+            startWeight: parseFloat(formData2.startWeight),
+            targetWeight: parseFloat(formData2.targetWeight),
+            preference: formData2.preference,
+            dailyCalorieGoal: parseInt(formData2.dailyCalorieGoal, 10),
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        alert("Weight plan created successfully!");
+        setShowModal2(false);
+        setFormData2({
+          startWeight: "",
+          targetWeight: "",
+          preference: "",
+          dailyCalorieGoal: "",
+        });
+      } catch (error) {
+        console.error("Error creating weight plan:", error);
+        alert("Failed to create weight plan.");
+      }
 
+    } else {
+      try {
+        await axios.put(
+          `/coach/updateplan/${athleteId}`,
+          {
+            // athleteId: parseFloat(athleteId),
+            startWeight: parseFloat(formData2.startWeight),
+            targetWeight: parseFloat(formData2.targetWeight),
+            preference: formData2.preference,
+            dailyCalorieGoal: parseInt(formData2.dailyCalorieGoal, 10),
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        alert("Weight plan updated successfully!");
+        setShowModal2(false);
+        setFormData2({
+          startWeight: "",
+          targetWeight: "",
+          preference: "",
+          dailyCalorieGoal: "",
+        });
+      } catch (error) {
+        console.error("Error creating weight plan:", error);
+        alert("Failed to update weight plan.");
+      }
+    }
+
+  }
+
+  const setView2 = () => {
+    setShowModal2(true);
+    setIsEdit(true);
+  }
+  const setView3 = () => {
+    setShowModal2(true);
+    setIsEdit(false);
+  }
+
+  const [isVisible, setIsVisible] = useState(false);
+  const [formData3, setFormData3] = useState({
+    // athleteId: "",
+    calories: "",
+    // currentWeight: "",
+    // weightPlanId: "",
+    proteinIntake: "",
+    carbohydrateIntake: "",
+    fatIntake: "",
+    fibreIntake: "",
+    waterIntake: ""
+  });
+
+  // Automatically set today's date
+  const today = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
+
+  const handleChange3 = (e) => {
+    setFormData3({
+      ...formData3,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit3 = async (athleteId) => {
     try {
-      await axios.post(
-        `/coach/createplan/`,
+      const token = localStorage.getItem("token"); // Get the token from localStorage
+      const response = await axios.post(
+        "/coach/creatediet",
         {
-          athleteId: parseFloat(athleteId),
-          startWeight: parseFloat(formData2.startWeight),
-          targetWeight: parseFloat(formData2.targetWeight),
-          preference: formData2.preference,
-          dailyCalorieGoal: parseInt(formData2.dailyCalorieGoal, 10),
+          athleteId: athleteId,
+          // currentWeight: formData3.currentWeight,
+          calories: formData3.calories,
+          date: today,
+          protein: formData3.proteinIntake,
+          carbohydrate: formData3.carbohydrateIntake,
+          fat: formData3.fatIntake,
+          fibre: formData3.fibreIntake,
+          water: formData3.waterIntake
         },
+        // { ...formData3, athleteId: {athleteId} , date: today }, // Include today's date
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      alert("Weight plan created successfully!");
-      setShowModal2(false);
-      setFormData2({
-        startWeight: "",
-        targetWeight: "",
-        preference: "",
-        dailyCalorieGoal: "",
-      });
+      alert("Diet plan created successfully!");
+      setIsVisible(false); // Close the modal on success
     } catch (error) {
-      console.error("Error creating weight plan:", error);
-      alert("Failed to create weight plan.");
+      console.error("Error creating diet plan:", error);
+      alert("Failed to create diet plan.");
     }
-  }
+  };
 
 
 
@@ -3512,21 +3627,22 @@ const CoachDashboard = ({
                           >
                             View Profile
                           </Button>
-                          <Button
+                       {/*   <Button
                             variant="secondary"
-                            onClick={() => fetchWeightPlan(athlete.id)}
+                            onClick={() => fetchWeightPlan(athlete.athleteId)}
                           >
                             View Weight Plan
-                          </Button>
+                          </Button>   */}
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </Table>
 
-                {selectedAthlete && (
-                  <Dialog
-                    open={profileModalOpen}
+                {/* {selectedAthlete && (
+                  <Dialog  
+                   open={profileModalOpen}
+                 // open={open}
                     onClose={handleCloseProfileModal}
                     maxWidth="sm"
                     fullWidth
@@ -3571,16 +3687,30 @@ const CoachDashboard = ({
                       </Button>
                     </DialogContent>
                   </Dialog>
-                )}
+                )} */}
               </div>
             </div>
             <div id="athleteProfile">
               {currentAthleteProfile && (
+                <Dialog  
+                open={profileModalOpen}
+              // open={open}
+                 onClose={handleCloseProfileModal}
+                 maxWidth="sm"
+                 fullWidth
+                 classes={{ paper: 'athlete-profile-modal' }}
+               >
+                 <DialogTitle style={{ textAlign: "center" }}>Athlete Profile</DialogTitle>
+                 <DialogContent
+                   style={{
+                     justifyContent: "center",
+                     textAlign: "center",
+                   }}
+                 >
                 <div>
-                  <br></br>
-                  <b><h1 style={{ fontSize: '36px', color: 'white', textAlign: 'center' }}>{currentAthleteProfile.firstName}</h1></b>
-                  <br></br>
-                  <img
+                  <strong><h1 style={{color: 'white', textAlign: 'center' }}>{currentAthleteProfile.firstName}</h1></strong>
+                 
+                  {/* <img
                     src={
                       currentAthleteProfile.photoBase64
                         ? `data:image/jpeg;base64,${currentAthleteProfile.photoBase64}`
@@ -3596,7 +3726,41 @@ const CoachDashboard = ({
                   <Typography variant="h6">Height: {currentAthleteProfile.height} </Typography>
                   <Typography variant="h6">Weight: {currentAthleteProfile.weight} </Typography>
 
-                  <Typography variant="h6">Category: {currentAthleteProfile.category}</Typography>
+                  <Typography variant="h6">Category: {currentAthleteProfile.category}</Typography> */}
+                   <Card className="w-full max-w-4xl mx-auto">
+      <CardContent className="flex items-center space-x-6 p-6">
+        {/* Image Section */}
+        <div className="flex-shrink-0 w-1/3">
+          <img 
+            src={currentAthleteProfile.photoBase64 
+              ? `data:image/jpeg;base64,${currentAthleteProfile.photoBase64}` 
+              : "/default-profile.jpg"
+            }
+            alt="Athlete" 
+            className="w-full h-[220px] object-cover rounded-lg"
+          />
+        </div>
+        
+        {/* Details Section */}
+        <div className="flex-grow">
+          <Typography variant="h6" gutterBottom>
+            Name: {currentAthleteProfile.firstName} {currentAthleteProfile.lastName}
+          </Typography>
+          <Typography variant="h6" gutterBottom>
+            Gender: {currentAthleteProfile.gender}
+          </Typography>
+          <Typography variant="h6" gutterBottom>
+            Height: {currentAthleteProfile.height}
+          </Typography>
+          <Typography variant="h6" gutterBottom>
+            Weight: {currentAthleteProfile.weight}
+          </Typography>
+          <Typography variant="h6">
+            Category: {currentAthleteProfile.category}
+          </Typography>
+        </div>
+      </CardContent>
+    </Card>
 
                   <h4 style={styles2.sectionTitle}>Weight Plan</h4>
 
@@ -3625,27 +3789,342 @@ const CoachDashboard = ({
                         </>
 
                       </div>
+                      <button
+                        onClick={() => setView2()}
+                        style={{
+                          padding: "10px 20px",
+                          backgroundColor: "#007BFF",
+                          color: "#fff",
+                          border: "none",
+                          borderRadius: "4px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Update Weight Plan
+                      </button>
+
+                      <h4 style={styles2.sectionTitle}>Diet Plan</h4>
+                  <div>
+                    {/* Button to open the modal */}
+                    <button
+                      onClick={() => setIsVisible(true)}
+                      style={{
+                        padding: "10px 20px",
+                        backgroundColor: "#4CAF50",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "5px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Create Diet Plan
+                    </button>
+
+                    {/* Modal  */}
+                    {isVisible && (
+                      <div
+                        style={{
+                         position: "fixed",
+                         top: "50%",
+                         left: "50%",
+                        
+
+                         transform: "translate(-50%, -50%)",
+                         zIndex: 1000,
+                         backgroundColor: "#fff",
+                         padding: "20px",
+                          borderRadius: "8px",
+                          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.3)",
+                         width: "400px",
+
+                        
+                        }} 
+                      >
+                        <h2 style={{ marginBottom: "20px", color: "#333" }}>Create Daily Diet Plan</h2>
+                        <form
+                          onSubmit={(e) => {
+                            e.preventDefault();
+                            handleSubmit3(currentAthleteProfile.athleteId);
+                          }}
+                        >
+                          {/* <div style={{ marginBottom: "10px" }}>
+                            <label>Athlete ID:</label>
+                            <input
+                              type="number"
+                              name="athleteId"
+                              value={formData3.athleteId}
+                              onChange={handleChange3}
+                              style={{
+                                width: "100%",
+                                padding: "8px",
+                                marginTop: "5px",
+                                borderRadius: "5px",
+                                border: "1px solid #ccc",
+                              }}
+                            />
+                          </div> */}
+                          <div style={{ marginBottom: "10px" }}>
+                            <label>Calories:</label>
+                            <input
+                              type="number"
+                              name="calories"
+                              step="0.01"
+                              value={formData3.calories}
+                              onChange={handleChange3}
+                              style={{
+                                width: "100%",
+                                padding: "8px",
+                                marginTop: "5px",
+                                borderRadius: "5px",
+                                border: "1px solid #ccc",
+                              }}
+                            />
+                          </div>
+                          {/* <div style={{ marginBottom: "10px" }}>
+                            <label>Current Weight (kg):</label>
+                            <input
+                              type="number"
+                              name="currentWeight"
+                              step="0.01"
+                              value={formData3.currentWeight}
+                              onChange={handleChange3}
+                              style={{
+                                width: "100%",
+                                padding: "8px",
+                                marginTop: "5px",
+                                borderRadius: "5px",
+                                border: "1px solid #ccc",
+                              }}
+                            />
+                          </div> */}
+                          {/* <div style={{ marginBottom: "10px" }}>
+                            <label>Weight Plan ID:</label>
+                            <input
+                              type="number"
+                              name="weightPlanId"
+                              value={formData3.weightPlanId}
+                              onChange={handleChange3}
+                              style={{
+                                width: "100%",
+                                padding: "8px",
+                                marginTop: "5px",
+                                borderRadius: "5px",
+                                border: "1px solid #ccc",
+                              }}
+                            />
+                          </div> */}
+                          <div style={{ marginBottom: "10px" }}>
+                            <label>Protein Intake (grams):</label>
+                            <input
+                              type="number"
+                              name="proteinIntake"
+                              step="0.01"
+                              value={formData3.proteinIntake}
+                              onChange={handleChange3}
+                              style={{
+                                width: "100%",
+                                padding: "8px",
+                                marginTop: "5px",
+                                borderRadius: "5px",
+                                border: "1px solid #ccc",
+                              }}
+                            />
+                          </div>
+                          <div style={{ marginBottom: "10px" }}>
+                            <label>Carbohydrate Intake (grams):</label>
+                            <input
+                              type="number"
+                              name="carbohydrateIntake"
+                              step="0.01"
+                              value={formData3.carbohydrateIntake}
+                              onChange={handleChange3}
+                              style={{
+                                width: "100%",
+                                padding: "8px",
+                                marginTop: "5px",
+                                borderRadius: "5px",
+                                border: "1px solid #ccc",
+                              }}
+                            />
+                          </div>
+                          <div style={{ marginBottom: "10px" }}>
+                            <label>Fat Intake (grams):</label>
+                            <input
+                              type="number"
+                              name="fatIntake"
+                              step="0.01"
+                              value={formData3.fatIntake}
+                              onChange={handleChange3}
+                              style={{
+                                width: "100%",
+                                padding: "8px",
+                                marginTop: "5px",
+                                borderRadius: "5px",
+                                border: "1px solid #ccc",
+                              }}
+                            />
+                          </div>
+                          <div style={{ marginBottom: "10px" }}>
+                            <label>Fibre Intake (grams):</label>
+                            <input
+                              type="number"
+                              name="fibreIntake"
+                              step="0.01"
+                              value={formData3.fibreIntake}
+                              onChange={handleChange3}
+                              style={{
+                                width: "100%",
+                                padding: "8px",
+                                marginTop: "5px",
+                                borderRadius: "5px",
+                                border: "1px solid #ccc",
+                              }}
+                            />
+                          </div>
+                          <div style={{ marginBottom: "10px" }}>
+                            <label>Water Intake (Litre):</label>
+                            <input
+                              type="number"
+                              name="waterIntake"
+                              step="0.01"
+                              value={formData3.waterIntake}
+                              onChange={handleChange3}
+                              style={{
+                                width: "100%",
+                                padding: "8px",
+                                marginTop: "5px",
+                                borderRadius: "5px",
+                                border: "1px solid #ccc",
+                              }}
+                            />
+                          </div>
+                          <div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
+                            <button
+                              type="submit"
+                              style={{
+                                padding: "10px 20px",
+                                backgroundColor: "#4CAF50",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "5px",
+                                width:'170px',
+                                cursor: "pointer",
+                              }}
+                            >
+                              Submit
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setIsVisible(false)}
+                              style={{
+                                padding: "10px 20px",
+                                backgroundColor: "#f44336",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "5px",
+                                cursor: "pointer",
+                                width:'170px',
+                              }}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+                    )}
+
+                    {/* Background overlay */}
+                    {isVisible && (
+                      <div
+                        onClick={() => setIsVisible(false)}
+                        style={{
+                          position: "fixed",
+                          top: 0,
+                          left: 0,
+                          width: "100%",
+                          height: "100%",
+                          backgroundColor: "rgba(0, 0, 0, 0.5)",
+                          zIndex: 999,
+                        }}
+                      ></div>
+                    )}
+                  </div>
+
 
 
                     </>
                   ) : (
-                    <p style={styles2.emptyText}>No weight plan available</p>
+                    <>
+                      <p style={styles2.emptyText}>No weight plan available</p>
+                      <button
+                        onClick={() => setView3()}
+                        style={{
+                          padding: "10px 20px",
+                          backgroundColor: "#007BFF",
+                          color: "#fff",
+                          border: "none",
+                          borderRadius: "4px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Create Weight Plan
+                      </button>
+                    </>
+                  )}
+
+               
+
+                  {weightPlan && coachDietPlan && (
+                    <>
+
+                      {/* Diet Plan Section */}
+                      <div style={styles2.section}>
+
+                        {coachDietPlan?.length > 0 ? (
+                          <ul style={styles2.dietList}>
+                            {coachDietPlan.map((diet, index) => (
+                              <li key={index} style={styles2.dietItem}>
+                                <p>
+                                  <strong>Date:</strong> {new Date(diet.date).toLocaleDateString()}
+                                </p>
+                                <p>
+                                  <strong>Calories:</strong> {diet.calories} kcal
+                                </p>
+                                {/* <p>
+                                  <strong>Current Weight:</strong> {diet.currentWeight} kg
+                                </p> */}
+                                <p>
+                                  <strong>Protein Intake:</strong> {diet.protein} grams
+                                </p>
+                                <p>
+                                  <strong>Carbohydrate Intake:</strong> {diet.carbohydrate} grams
+                                </p>
+                                <p>
+                                  <strong>Fat Intake:</strong> {diet.fat} grams
+                                </p>
+                                <p>
+                                  <strong>Fibre Intake:</strong> {diet.fibre} grams
+                                </p>
+                                <p>
+                                  <strong>Water Intake:</strong> {diet.water} Litre
+                                </p>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p style={styles2.emptyText}>No diet plan available</p>
+                        )}
+                      </div>
+
+
+
+                    </>
+
+
                   )}
 
                   <div>
-                    <button
-                      onClick={() => setShowModal2(true)}
-                      style={{
-                        padding: "10px 20px",
-                        backgroundColor: "#007BFF",
-                        color: "#fff",
-                        border: "none",
-                        borderRadius: "4px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      Create Weight Plan
-                    </button>
+
 
                     {showModal2 && (
                       <div
@@ -3663,9 +4142,9 @@ const CoachDashboard = ({
                         }}
                       >
                         <h2 style={{ marginBottom: "20px", textAlign: "center" }}>
-                          Create Weight Plan
+                          Weight Plan
                         </h2>
-                        <form onSubmit={()=>handleSubmit(currentAthleteProfile.athleteId)}>
+                        <form onSubmit={() => handleSubmit(currentAthleteProfile.athleteId)}>
                           <div style={{ marginBottom: "15px" }}>
                             <label style={{ display: "block", marginBottom: "5px" }}>
                               Start Weight
@@ -3791,7 +4270,10 @@ const CoachDashboard = ({
 
 
                 </div>
-              )}
+              
+              
+              </DialogContent>
+              </Dialog>)}
             </div>
 
 

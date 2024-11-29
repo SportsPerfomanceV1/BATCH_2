@@ -11,9 +11,8 @@ public class DailyDietDTO {
     private Long athleteId;
     private Date date;
     private float calories;
-//    private float currentWeight;
     private float protein;
     private float carbohydrate, fat, fibre, water;
 
-    private Long weightPlanId; // Link to a weight plan if exists
+    private Long weightPlanId;
 }

@@ -100,7 +100,7 @@ const ShortlistCandidatesModal = ({ onClose }) => {
       .catch((error) => console.error('Error rejecting registration:', error));
   };
 
-  
+
   const [eventResults, setEventResults] = useState([]);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -118,7 +118,7 @@ const ShortlistCandidatesModal = ({ onClose }) => {
         setSelectedEvent(response.data);
         setOpenEventDialog(true);
 
-    
+
         const fetchEventResults = async (eventId) => {
           try {
             const token = localStorage.getItem("token");
@@ -128,18 +128,18 @@ const ShortlistCandidatesModal = ({ onClose }) => {
                 Authorization: `Bearer ${token}`,
               },
             });
-    
+
             if (response.data.length < resultsPerPage) {
               setHasMore(false);
             }
-    
+
             setEventResults((prevResults) => [...prevResults, ...response.data]);
           } catch (err) {
             setError(err.response?.data?.error || "NO DATA YET");
           }
         };
-    
-     
+
+
         fetchEventResults(eventId)
 
 
@@ -177,7 +177,7 @@ const ShortlistCandidatesModal = ({ onClose }) => {
         };
 
         fetchTopPerformances();
-        
+
 
         setProfileModalOpen(true);
       })
@@ -292,44 +292,44 @@ const ShortlistCandidatesModal = ({ onClose }) => {
             </div>
           </DialogContent>
           <div style={dashboardStyles}>
-                <div style={cardStyles}>
-                  <h2 style={{ textAlign: "center", marginBottom: "20px", color: "#333", fontSize: "24px" }}>Result</h2>
-                  {error ? (
-                    <div className="error-message" style={{ color: "red", textAlign: "center" }}>{error}</div>
-                  ) : (
-                    <table style={tableStyles}>
-                      <thead>
-                        <tr style={headerRowStyles}>
-                          <th>Athlete Name</th>
-                          <th>Score</th>
-                          <th>Comment</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {eventResults.map((result, index) => (
-                          <tr key={index} style={rowStyles}>
-                            <td>{result.athleteName}</td>
-                            <td>{result.score}</td>
-                            <td>{result.comment}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  )}
-                  {hasMore && !error && (
-                    <button onClick={loadMore2} style={buttonStyles}>
-                      Load More
-                    </button>
-                  )}
-                  {!hasMore && !error && (
-                    <p style={noMoreStyles}>No more results to display.</p>
-                  )}
-                </div>
-                {/* Existing elements below */}
-                <div>
-                  {/* Add other admin dashboard components here */}
-                </div>
-              </div>
+            <div style={cardStyles}>
+              <h2 style={{ textAlign: "center", marginBottom: "20px", color: "#333", fontSize: "24px" }}>Result</h2>
+              {error ? (
+                <div className="error-message" style={{ color: "red", textAlign: "center" }}>{error}</div>
+              ) : (
+                <table style={tableStyles}>
+                  <thead>
+                    <tr style={headerRowStyles}>
+                      <th>Athlete Name</th>
+                      <th>Score</th>
+                      <th>Comment</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {eventResults.map((result, index) => (
+                      <tr key={index} style={rowStyles}>
+                        <td>{result.athleteName}</td>
+                        <td>{result.score}</td>
+                        <td>{result.comment}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+              {hasMore && !error && (
+                <button onClick={loadMore2} style={buttonStyles}>
+                  Load More
+                </button>
+              )}
+              {!hasMore && !error && (
+                <p style={noMoreStyles}>No more results to display.</p>
+              )}
+            </div>
+            {/* Existing elements below */}
+            <div>
+              {/* Add other admin dashboard components here */}
+            </div>
+          </div>
 
         </Dialog>
         <Dialog open={profileModalOpen} onClose={handleCloseProfileModal} maxWidth="md" fullWidth>
@@ -454,42 +454,42 @@ const ShortlistCandidatesModal = ({ onClose }) => {
                   Close
                 </Button>
               </div>
-              
+
             </div>
-            
+
           </DialogContent>
           <Typography>
-                  <div className="top-performance-card" style={{margin: "1%", padding: "30px", border: "1px solid #ddd", borderRadius: "8px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)" }}>
-                    <h2 style={{ textAlign: "center", marginBottom: "20px", color: "#333", fontSize: "24px" }}>Top 5 Performances</h2>
-                    {error ? (
-                      <div className="error-message" style={{ color: "red", textAlign: "center" }}>{error}</div>
-                    ) : topPerformances.length > 0 ? (
-                      <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
-                        <thead>
-                          <tr style={{ backgroundColor: "#f4f4f4", borderBottom: "2px solid #ddd" }}>
-                            <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Event Name</th>
-                            <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Meet Name</th>
-                            <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Score</th>
-                            <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Comment</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {topPerformances.slice(0, 5).map((performance, index) => (
-                            <tr key={index} style={{ borderBottom: "1px solid #ddd" }}>
-                              <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>{performance.eventName}</td>
-                              <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>{performance.meetName}</td>
-                              <td style={{ padding: "10px", borderBottom: "1px solid #eee", textAlign: "center" }}>{performance.score}</td>
-                              <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>{performance.comment}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    ) : (
-                      <p style={{ textAlign: "center", color: "#666" }}>No top performances found.</p>
-                    )}
-                  </div>
+            <div className="top-performance-card" style={{ margin: "1%", padding: "30px", border: "1px solid #ddd", borderRadius: "8px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)" }}>
+              <h2 style={{ textAlign: "center", marginBottom: "20px", color: "#333", fontSize: "24px" }}>Top 5 Performances</h2>
+              {error ? (
+                <div className="error-message" style={{ color: "red", textAlign: "center" }}>{error}</div>
+              ) : topPerformances.length > 0 ? (
+                <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
+                  <thead>
+                    <tr style={{ backgroundColor: "#f4f4f4", borderBottom: "2px solid #ddd" }}>
+                      <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Event Name</th>
+                      <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Meet Name</th>
+                      <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Score</th>
+                      <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Comment</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {topPerformances.slice(0, 5).map((performance, index) => (
+                      <tr key={index} style={{ borderBottom: "1px solid #ddd" }}>
+                        <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>{performance.eventName}</td>
+                        <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>{performance.meetName}</td>
+                        <td style={{ padding: "10px", borderBottom: "1px solid #eee", textAlign: "center" }}>{performance.score}</td>
+                        <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>{performance.comment}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <p style={{ textAlign: "center", color: "#666" }}>No top performances found.</p>
+              )}
+            </div>
 
-                </Typography>
+          </Typography>
         </Dialog>
 
       </div>
@@ -613,6 +613,7 @@ const PublishResults = ({ onClose }) => {
     })
       .then(() => {
         alert("Results published successfully!");
+        window.location.reload();
         setSelectedEvent(null);
         setAthletes([]);
         setResults([]);
@@ -764,9 +765,11 @@ const Meet = ({ onClose }) => {
       // const result = await response.text();
       if (response.ok) {
         alert("Meet Created Successfully")
+        window.location.reload();
         onClose();
       } else {
         alert("Kindly login as admin again")
+        // window.location.reload();
       }
 
 
@@ -901,9 +904,11 @@ const Event = ({ onClose }) => {
 
       if (response.ok) {
         alert("Event Created Successfully");
+        window.location.reload();
         onClose();
       } else {
         alert(response.status);
+        window.location.reload();
       }
     } catch (error) {
       console.error("Error creating event:", error);
@@ -1237,8 +1242,9 @@ const AdminDashboard = () => {
         if (response.data.length < resultsPerPage) {
           setHasMore(false);
         }
+        setEventResults(response.data)
 
-        setEventResults((prevResults) => [...prevResults, ...response.data]);
+        // setEventResults((prevResults) => [...prevResults, ...response.data]);
       } catch (err) {
         setError(err.response?.data?.error || "NO DATA YET");
       }
@@ -1261,7 +1267,7 @@ const AdminDashboard = () => {
     const handleDeleteEvent = async (eventId) => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch(`/admin/events/${eventId}`, {
+        const response = await fetch(`/admin/deleteevent/${eventId}`, {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -1284,38 +1290,45 @@ const AdminDashboard = () => {
       try {
         const token = localStorage.getItem("token");
         const formData = new FormData();
-
+    
         // Add updated fields to the FormData object
         if (updatedEvent.eventTitle) {
           formData.append("eventTitle", updatedEvent.eventTitle);
         }
+        const formatDateForDisplayAndForm = (dateString) => {
+          if (!dateString) return '';
+          const utcDate = new Date(dateString); // Parse the UTC date string
+          
+          // Adjust for the local timezone offset
+          const localDate = new Date(utcDate.getTime() + new Date().getTimezoneOffset() * -60000);
+          
+          // Format to 'YYYY-MM-DD'
+          return localDate.toISOString().split('T')[0];
+        };
+        // Format the event date to avoid timezone issues
         if (updatedEvent.eventDate) {
-          formData.append("eventDate", updatedEvent.eventDate);
-
+          // const eventDate = new Date(updatedEvent.eventDate);
+          // const formattedDate = eventDate.toISOString().split("T")[0]; // Ensure UTC date in 'YYYY-MM-DD'
+          formData.append("eventDate", formatDateForDisplayAndForm(updatedEvent.eventDate));
         }
+    
         if (updatedEvent.location) {
           formData.append("location", updatedEvent.location);
-
         }
+    
         if (updatedEvent.category) {
           formData.append("category", updatedEvent.category);
-
         }
+    
         if (updatedEvent.eventDescription) {
           formData.append("eventDescription", updatedEvent.eventDescription);
         }
-
-
+    
         // Add image if it exists
         if (updatedEvent.image) {
           formData.append("image", updatedEvent.image);
         }
-
-        //   // Include `meetId` if available
-        //   if (updatedEvent.meetId) {
-        //     formData.append("meetId", updatedEvent.meetId);
-        //   }
-
+    
         const response = await fetch(`/admin/updateevent/${updatedEvent.eventId}`, {
           method: "PUT",
           headers: {
@@ -1323,27 +1336,28 @@ const AdminDashboard = () => {
           },
           body: formData,
         });
-
+    
         if (!response.ok) {
           throw new Error("Failed to update event.");
         }
-
+    
         const updatedEventData = await response.json();
-
+    
         // Update the event list locally
         const updatedEvents = events.map((event) =>
           event.eventId === updatedEventData.eventId ? updatedEventData : event
         );
         setEvents(updatedEvents);
-
+    
         alert("Updated Event Details Successfully");
+        window.location.reload();
         setEditEventOpen(false);
         setUpdatedEvent(null);
       } catch (error) {
         console.error("Error updating event:", error);
       }
     };
-
+    
     const handleImageChange = (e) => {
       const file = e.target.files[0];
       if (file) {
@@ -1366,6 +1380,18 @@ const AdminDashboard = () => {
       setEditEventOpen(false);
       setUpdatedEvent(null);
 
+    };
+
+    // Helper function to format date for display
+    const formatDateForDisplay = (dateString) => {
+      if (!dateString) return '';
+      const utcDate = new Date(dateString); // Parse the UTC date string
+      
+      // Adjust for the local timezone offset
+      const localDate = new Date(utcDate.getTime() + new Date().getTimezoneOffset() * -60000);
+      
+      // Format to 'YYYY-MM-DD'
+      return localDate.toISOString().split('T')[0];
     };
 
     return (
@@ -1465,7 +1491,8 @@ const AdminDashboard = () => {
                     variant="h6"
                     style={{ marginBottom: '12px', fontSize: '16px', fontWeight: 'bold', color: '#333' }}
                   >
-                    <b>Date:</b> {selectedEvent.eventDate.split('T')[0]}
+                    <b>Date:</b>
+                    {new Date(new Date(selectedEvent.eventDate).setDate(new Date(selectedEvent.eventDate).getDate() + 1)).toISOString().split('T')[0]}
                   </Typography>
                   <Typography
                     variant="h6"
@@ -1602,57 +1629,59 @@ const AdminDashboard = () => {
 
 
 
-        {editEventOpen && updatedEvent && (
-          <Dialog open={editEventOpen} onClose={handleCloseEditEventModal} maxWidth="sm" fullWidth>
-            <DialogTitle>Edit Event</DialogTitle>
-            <DialogContent>
-              <TextField
-                label="Event Title"
-                fullWidth
-                value={updatedEvent.eventTitle}
-                onChange={(e) => setUpdatedEvent({ ...updatedEvent, eventTitle: e.target.value })}
-                margin="normal"
-              />
-              <TextField
-                label="Event Date"
-                type="date"
-                fullWidth
-                value={updatedEvent.eventDate}
-                onChange={(e) => setUpdatedEvent({ ...updatedEvent, eventDate: e.target.value })}
-                margin="normal"
-              />
-              <TextField
-                label="Location"
-                fullWidth
-                value={updatedEvent.location}
-                onChange={(e) => setUpdatedEvent({ ...updatedEvent, location: e.target.value })}
-                margin="normal"
-              />
-              <TextField
-                label="Category"
-                fullWidth
-                value={updatedEvent.category}
-                onChange={(e) => setUpdatedEvent({ ...updatedEvent, category: e.target.value })}
-                margin="normal"
-              />
-              <TextField
-                label="Event Description"
-                fullWidth
-                value={updatedEvent.eventDescription}
-                onChange={(e) => setUpdatedEvent({ ...updatedEvent, eventDescription: e.target.value })}
-                margin="normal"
-              />
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleUpdateEvent}
-                style={{ marginTop: '10px' }}
-              >
-                Update Event
-              </Button>
-            </DialogContent>
-          </Dialog>
-        )}
+{editEventOpen && updatedEvent && (
+  <Dialog open={editEventOpen} onClose={handleCloseEditEventModal} maxWidth="sm" fullWidth>
+    <DialogTitle>Edit Event</DialogTitle>
+    <DialogContent>
+      <TextField
+        label="Event Title"
+        fullWidth
+        value={updatedEvent.eventTitle} // Make sure the updatedEvent is being used here
+        onChange={(e) => setUpdatedEvent({ ...updatedEvent, eventTitle: e.target.value })}
+        margin="normal"
+      />
+      <TextField
+        label="Event Date"
+        type="date"
+        fullWidth
+        value={formatDateForDisplay(updatedEvent.eventDate)} // Ensure the eventDate is formatted correctly
+        onChange={(e) => setUpdatedEvent({ ...updatedEvent, eventDate: e.target.value })}
+        margin="normal"
+      />
+      <TextField
+        label="Location"
+        fullWidth
+        value={updatedEvent.location}
+        onChange={(e) => setUpdatedEvent({ ...updatedEvent, location: e.target.value })}
+        margin="normal"
+      />
+      <TextField
+        label="Category"
+        fullWidth
+        value={updatedEvent.category}
+        onChange={(e) => setUpdatedEvent({ ...updatedEvent, category: e.target.value })}
+        margin="normal"
+      />
+      <TextField
+        label="Event Description"
+        fullWidth
+        value={updatedEvent.eventDescription}
+        onChange={(e) => setUpdatedEvent({ ...updatedEvent, eventDescription: e.target.value })}
+        margin="normal"
+      />
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleUpdateEvent}
+        style={{ marginTop: '10px' }}
+      >
+        Update Event
+      </Button>
+    </DialogContent>
+  </Dialog>
+)}
+
+
         {athleteDetails && (
           <Dialog open={profileModalOpen} onClose={handleCloseProfileModal} maxWidth="md" fullWidth>
             <DialogTitle
@@ -1758,7 +1787,7 @@ const AdminDashboard = () => {
 
 
                 </Typography>
-                
+
 
                 <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '20px' }}>
                   <Button
@@ -1782,37 +1811,37 @@ const AdminDashboard = () => {
               </div>
             </DialogContent>
             <Typography>
-                  <div className="top-performance-card" style={{ margin: "1%", padding: "30px", border: "1px solid #ddd", borderRadius: "8px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)" }}>
-                    <h2 style={{ textAlign: "center", marginBottom: "20px", color: "#333", fontSize: "24px" }}>Top 5 Performances</h2>
-                    {error ? (
-                      <div className="error-message" style={{ color: "red", textAlign: "center" }}>{error}</div>
-                    ) : topPerformances.length > 0 ? (
-                      <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
-                        <thead>
-                          <tr style={{ backgroundColor: "#f4f4f4", borderBottom: "2px solid #ddd" }}>
-                            <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Event Name</th>
-                            <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Meet Name</th>
-                            <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Score</th>
-                            <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Comment</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {topPerformances.slice(0, 5).map((performance, index) => (
-                            <tr key={index} style={{ borderBottom: "1px solid #ddd" }}>
-                              <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>{performance.eventName}</td>
-                              <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>{performance.meetName}</td>
-                              <td style={{ padding: "10px", borderBottom: "1px solid #eee", textAlign: "center" }}>{performance.score}</td>
-                              <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>{performance.comment}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    ) : (
-                      <p style={{ textAlign: "center", color: "#666" }}>No top performances found.</p>
-                    )}
-                  </div>
+              <div className="top-performance-card" style={{ margin: "1%", padding: "30px", border: "1px solid #ddd", borderRadius: "8px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)" }}>
+                <h2 style={{ textAlign: "center", marginBottom: "20px", color: "#333", fontSize: "24px" }}>Top 5 Performances</h2>
+                {error ? (
+                  <div className="error-message" style={{ color: "red", textAlign: "center" }}>{error}</div>
+                ) : topPerformances.length > 0 ? (
+                  <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
+                    <thead>
+                      <tr style={{ backgroundColor: "#f4f4f4", borderBottom: "2px solid #ddd" }}>
+                        <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Event Name</th>
+                        <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Meet Name</th>
+                        <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Score</th>
+                        <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Comment</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {topPerformances.slice(0, 5).map((performance, index) => (
+                        <tr key={index} style={{ borderBottom: "1px solid #ddd" }}>
+                          <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>{performance.eventName}</td>
+                          <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>{performance.meetName}</td>
+                          <td style={{ padding: "10px", borderBottom: "1px solid #eee", textAlign: "center" }}>{performance.score}</td>
+                          <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>{performance.comment}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p style={{ textAlign: "center", color: "#666" }}>No top performances found.</p>
+                )}
+              </div>
 
-                </Typography>
+            </Typography>
           </Dialog>
 
         )}
@@ -1828,7 +1857,7 @@ const AdminDashboard = () => {
             Admin Dashboard
           </Typography>
           <Box className="navbar-actions">
-            <Link to="" className="logout-link">
+            {/* <Link to="" className="logout-link">
               <Button >
                 Athlete
               </Button>
@@ -1836,8 +1865,8 @@ const AdminDashboard = () => {
             <Link to="" className="logout-link">
               <Button >
                 Coach
-              </Button>
-            </Link>
+              </Button> 
+            </Link> */}
             <Link to="/*" className="logout-link">
               <Button
                 onClick={handleLogout}

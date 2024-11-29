@@ -33,4 +33,5 @@ public class Coach extends BaseUser {
     @Column(name = "image", columnDefinition = "BLOB")
     private byte[] image;
 
+    private String email, expertise;
 }

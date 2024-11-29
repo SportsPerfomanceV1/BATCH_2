@@ -13,5 +13,5 @@ public class WeightPlanDTO {
     private float targetWeight;
     private String preference;
     private int dailyCalorieGoal;
-    private List<DailyDietDTO> dailyDiets; // Include related daily diets if needed
+    private List<DailyDietDTO> dailyDiets;
 }

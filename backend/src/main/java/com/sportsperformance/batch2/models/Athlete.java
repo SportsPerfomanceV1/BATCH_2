@@ -35,7 +35,6 @@ public class Athlete extends BaseUser {
     @Column(name = "photo", columnDefinition = "BLOB")
     private byte[] photo;
     @JsonIgnoreProperties({"athlete", "eventResults"})
-//    @JsonManagedReference
     @OneToMany(mappedBy = "athlete")
     private List<EventResult> eventResults;
 

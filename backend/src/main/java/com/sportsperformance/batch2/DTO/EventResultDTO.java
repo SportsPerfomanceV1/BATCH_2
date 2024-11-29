@@ -11,7 +11,7 @@ public class EventResultDTO {
     private String photoBase64;
     private float score;
     private String comment;
-    private String eventName; // New field for event name
-    private String meetName;  // New field for meet name
+    private String eventName;
+    private String meetName;
     private Date eventDate;
 }
