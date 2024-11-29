@@ -46,6 +46,9 @@ public class UserService {
                 if (athleteRepository.findByEmail(userDTO.getEmail()).isPresent()) {
                     throw new IllegalArgumentException("Email already exists");
                 }
+                if (athleteRepository.findByUsername(userDTO.getUsername()).isPresent()) {
+                    throw new IllegalArgumentException("Username already exists");
+                }
                 Athlete athlete = new Athlete();
                 athlete.setUsername(userDTO.getUsername());
                 athlete.setEmail(userDTO.getEmail());
@@ -56,6 +59,9 @@ public class UserService {
             case "coach":
                 if (coachRepository.findByEmail(userDTO.getEmail()).isPresent()) {
                     throw new IllegalArgumentException("Email already exists");
+                }
+                if (coachRepository.findByUsername(userDTO.getUsername()).isPresent()) {
+                    throw new IllegalArgumentException("Username already exists");
                 }
                 Coach coach = new Coach();
                 coach.setUsername(userDTO.getUsername());
