@@ -32,7 +32,7 @@ public class Athlete extends BaseUser {
     private String category;
     private String photoUrl;
     @Lob
-    @Column(name = "photo", columnDefinition = "BLOB")
+    @Column(name = "photo", columnDefinition = "LONGBLOB")
     private byte[] photo;
     @JsonIgnoreProperties({"athlete", "eventResults"})
     @OneToMany(mappedBy = "athlete")

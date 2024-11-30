@@ -128,4 +128,9 @@ public class CoachController {
     public List<AthleteProfileDTO> getAthletes() {
         return coachService.getAthletesForCoach();
     }
+    @GetMapping("/result/by-athlete/{athleteId}")
+    public ResponseEntity<List<EventResultDTO>> getResultsByAthleteId(@PathVariable Long athleteId) {
+        List<EventResultDTO> results = adminService.getResultsByAthleteId(athleteId);
+        return ResponseEntity.ok(results);
+    }
 }

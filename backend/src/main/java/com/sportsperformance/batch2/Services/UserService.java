@@ -41,6 +41,19 @@ public class UserService {
         }
     }
     public void registerUser(UserDTO userDTO) {
+        // Validate the password
+        validatePassword(userDTO.getPassword());
+        // Validate email
+        validateEmail(userDTO.getEmail());
+
+        // Validate username
+        validateUsername(userDTO.getUsername());
+
+        // Check if confirmPassword matches password
+        if (!userDTO.getPassword().equals(userDTO.getConfirmPassword())) {
+            throw new IllegalArgumentException("Password and Confirm Password do not match.");
+        }
+
         switch (userDTO.getRole().toLowerCase()) {
             case "athlete":
                 if (athleteRepository.findByEmail(userDTO.getEmail()).isPresent()) {
@@ -76,6 +89,39 @@ public class UserService {
                 throw new IllegalArgumentException("Invalid role: " + userDTO.getRole());
         }
     }
+    // Helper method to validate email
+    private void validateEmail(String email) {
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
+        if (!email.matches(emailRegex)) {
+            throw new IllegalArgumentException("Invalid email format.");
+        }
+    }
+
+    // Helper method to validate username
+    private void validateUsername(String username) {
+        if (username.length() < 3 || username.length() > 20) {
+            throw new IllegalArgumentException("Username must be between 3 and 20 characters.");
+        }
+        if (!username.matches("^[A-Za-z0-9._-]+$")) {
+            throw new IllegalArgumentException("Username can only contain letters, numbers, dots, underscores, and hyphens.");
+        }
+    }
+    // Helper method to validate password
+    private void validatePassword(String password) {
+        if (password.length() < 8 || password.length() > 20) {
+            throw new IllegalArgumentException("Password must be between 8 and 20 characters.");
+        }
+        if (!password.matches(".*[A-Z].*")) {
+            throw new IllegalArgumentException("Password must contain at least one uppercase letter.");
+        }
+        if (!password.matches(".*\\d.*")) {
+            throw new IllegalArgumentException("Password must contain at least one number.");
+        }
+        if (!password.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
+            throw new IllegalArgumentException("Password must contain at least one special character.");
+        }
+    }
+
     public BaseUser findByEmailOrUsername(String identifier) {
         System.out.println("check3");
         Optional<BaseUser> athleteByUsername = athleteRepository.findByUsername(identifier).map(user -> (BaseUser) user);

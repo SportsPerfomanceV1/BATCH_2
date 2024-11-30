@@ -30,7 +30,7 @@ public class Coach extends BaseUser {
     private List<AssistanceRequest> assistanceRequests;
 
     @Lob
-    @Column(name = "image", columnDefinition = "BLOB")
+    @Column(name = "image", columnDefinition = "LONGBLOB")
     private byte[] image;
 
     private String email, expertise;

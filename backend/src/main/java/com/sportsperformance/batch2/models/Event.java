@@ -33,7 +33,7 @@ public class Event {
 //    private String imageUrl;
 
     @Lob
-    @Column(name = "image", columnDefinition = "BLOB")
+    @Column(name = "image", columnDefinition = "LONGBLOB")
     private byte[] image; // Store the image as a BLOB
 
 

@@ -22,7 +22,7 @@ public class AuthController {
     private JwtUtil jwtUtil;
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody UserDTO userDTO) {
-        System.out.println("check perfect");
+
         try {
             userService.registerUser(userDTO);
             return ResponseEntity.ok("User registered successfully");
@@ -33,9 +33,9 @@ public class AuthController {
     @PostMapping("/authenticate")
     public ResponseEntity<String> authenticate(@RequestBody LoginDTO loginDTO) {
         BaseUser user = userService.findByEmailOrUsername(loginDTO.getUsernameEmail());
-        System.out.println("check0");
+
         if (user != null && userService.checkPassword(loginDTO.getPassword(), user.getPassword())) {
-            System.out.println("check1");
+
             if(user instanceof Athlete){
                 String token = jwtUtil.generateToken(user.getUsername(), "ATHLETE");
                 Map<String, String> response = new HashMap<>();

@@ -311,6 +311,9 @@ public class AdminService {
         dto.setAthleteId(result.getAthlete().getAthleteId());
         dto.setScore(result.getScore());
         dto.setComment(result.getComment());
+        dto.setEventName(result.getEvent().getEventTitle());
+        dto.setEventDate(result.getEvent().getEventDate());
+        dto.setMeetName(result.getEvent().getMeetId().getMeetName());
         return dto;
     }
     public EventResultDTO getTopPerformanceByAthleteId(Long athleteId) {
