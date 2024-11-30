@@ -33,48 +33,42 @@ public class AuthController {
     @PostMapping("/authenticate")
     public ResponseEntity<String> authenticate(@RequestBody LoginDTO loginDTO) {
         BaseUser user = userService.findByEmailOrUsername(loginDTO.getUsernameEmail());
-
-        if (user != null && userService.checkPassword(loginDTO.getPassword(), user.getPassword())) {
-
-            if(user instanceof Athlete){
-                String token = jwtUtil.generateToken(user.getUsername(), "ATHLETE");
-                Map<String, String> response = new HashMap<>();
-                response.put("token", token);
-                response.put("role", "ATHLETE");
-                try {
-                    ObjectMapper mapper = new ObjectMapper();
-                    String jsonResponse = mapper.writeValueAsString(response);
-                    return ResponseEntity.ok(jsonResponse);
-                } catch (Exception e) {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error generating response");
-                }
-            } else if(user instanceof Coach){
-                String token = jwtUtil.generateToken(user.getUsername(), "COACH");
-                Map<String, String> response = new HashMap<>();
-                response.put("token", token);
-                response.put("role", "COACH");
-                try {
-                    ObjectMapper mapper = new ObjectMapper();
-                    String jsonResponse = mapper.writeValueAsString(response);
-                    return ResponseEntity.ok(jsonResponse);
-                } catch (Exception e) {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error generating response");
-                }
-            } else{
-                String token = jwtUtil.generateToken(user.getUsername(), "ADMIN");
-                Map<String, String> response = new HashMap<>();
-                response.put("token", token);
-                response.put("role", "ADMIN");
-                try {
-                    ObjectMapper mapper = new ObjectMapper();
-                    String jsonResponse = mapper.writeValueAsString(response);
-                    return ResponseEntity.ok(jsonResponse);
-                } catch (Exception e) {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error generating response");
-                }
+        try {
+            if (user == null) {
+                return ResponseEntity.status(400).body("User not found");
             }
-        } else {
-            return ResponseEntity.status(401).body("Invalid credentials");
+
+            if (userService.checkPassword(loginDTO.getPassword(), user.getPassword())) {
+                // Successful login, return token and role
+                String token = jwtUtil.generateToken(user.getUsername(), getRole(user));
+                Map<String, String> response = new HashMap<>();
+                response.put("token", token);
+                response.put("role", getRole(user));
+
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    String jsonResponse = mapper.writeValueAsString(response);
+                    return ResponseEntity.ok(jsonResponse);
+                } catch (Exception e) {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error generating response");
+                }
+            } else {
+                return ResponseEntity.status(400).body("Wrong password");
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400).body("Invalid Credentials");
         }
     }
+
+    private String getRole(BaseUser user) {
+        if (user instanceof Athlete) {
+            return "ATHLETE";
+        } else if (user instanceof Coach) {
+            return "COACH";
+        } else {
+            return "ADMIN";
+        }
+    }
+
+
 }
