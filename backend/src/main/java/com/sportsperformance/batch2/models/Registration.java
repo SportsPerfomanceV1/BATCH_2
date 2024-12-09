@@ -28,5 +28,4 @@ public class Registration {
     private String status; //Pending, Approved, Rejected
     private String remarks;
 
-    // Getters and setters...
 }

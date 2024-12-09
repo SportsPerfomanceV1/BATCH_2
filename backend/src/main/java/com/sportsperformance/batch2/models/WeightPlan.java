@@ -13,7 +13,7 @@ public class WeightPlan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long planId;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "athleteId", nullable = false)
     private Athlete athlete;
 

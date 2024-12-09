@@ -1,6 +1,7 @@
 package com.sportsperformance.batch2.models;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -19,6 +20,7 @@ public class Coach extends BaseUser {
     private String lastName;
 
     @OneToMany(mappedBy = "coach")
+    @JsonIgnoreProperties("coach")
     private List<Athlete> athletes;
 
     @OneToMany(mappedBy = "coach")
@@ -28,7 +30,8 @@ public class Coach extends BaseUser {
     private List<AssistanceRequest> assistanceRequests;
 
     @Lob
-    @Column(name = "image", columnDefinition = "BLOB")
+    @Column(name = "image", columnDefinition = "LONGBLOB")
     private byte[] image;
 
+    private String email, expertise;
 }

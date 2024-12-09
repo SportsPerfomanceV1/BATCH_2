@@ -1,5 +1,4 @@
 package com.sportsperformance.batch2.Services;
-
 import com.sportsperformance.batch2.models.Admin;
 import com.sportsperformance.batch2.models.Athlete;
 import com.sportsperformance.batch2.models.BaseUser;
@@ -10,9 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
 import java.util.Collections;
-
 @Service
 public class UserDetailService implements UserDetailsService {
     @Autowired
@@ -34,7 +31,5 @@ public class UserDetailService implements UserDetailsService {
                     Collections.singleton(new SimpleGrantedAuthority("ADMIN")));
         }
         throw new UsernameNotFoundException("User not found");
-//        return null;
     }
-
 }

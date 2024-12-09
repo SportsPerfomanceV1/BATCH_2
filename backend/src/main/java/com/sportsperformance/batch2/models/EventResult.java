@@ -24,5 +24,4 @@ public class EventResult {
 
     private float score;
 
-    // Getters and setters...
 }

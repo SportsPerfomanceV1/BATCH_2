@@ -25,11 +25,16 @@ public class Event {
 
     private String category;
     private String location;
+
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date eventDate;
 
     private String eventDescription;
-    private String imageUrl;
+//    private String imageUrl;
+
+    @Lob
+    @Column(name = "image", columnDefinition = "LONGBLOB")
+    private byte[] image; // Store the image as a BLOB
 
 
 

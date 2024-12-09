@@ -1,5 +1,4 @@
 package com.sportsperformance.batch2.Security;
-
 import com.sportsperformance.batch2.filter.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -12,22 +11,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
-
-    private final JwtRequestFilter jwtRequestFilter; // Injected via constructor
-
+    private final JwtRequestFilter jwtRequestFilter;
     public SecurityConfig(JwtRequestFilter jwtRequestFilter) {
-        this.jwtRequestFilter = jwtRequestFilter; // Constructor injection
+        this.jwtRequestFilter = jwtRequestFilter;
     }
-
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // Configure HTTP security
         http
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
@@ -38,22 +30,14 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Stateless session management
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
-
-        // Disabling CSRF protection if it's a stateless API
         http.csrf(AbstractHttpConfigurer::disable);
-
-        // Adding JWT filter
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-
-        return http.build(); // Build the SecurityFilterChain
+        return http.build();
     }
-
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Password encoder bean
+        return new BCryptPasswordEncoder();
     }
 }
-
-

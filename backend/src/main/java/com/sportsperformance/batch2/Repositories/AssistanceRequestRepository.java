@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface AssistanceRequestRepository extends JpaRepository<AssistanceRequest, Long> {
-    List<AssistanceRequest> findByAthlete(Athlete athlete);
+    AssistanceRequest findByAthlete(Athlete athlete);
     List<AssistanceRequest> findByCoach(Coach coach);
+//    List<AssistanceRequest> findByCoachIdAndStatus(Coach coach, String status);
+
 }

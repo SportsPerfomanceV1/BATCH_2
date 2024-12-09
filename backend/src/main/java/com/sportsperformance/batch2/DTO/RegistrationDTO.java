@@ -14,10 +14,6 @@ public class RegistrationDTO {
     private String status;
     private String remarks;
     private String meetName;
-//    private String athleteName;
-//    private String athleteUsername;
-//    private String athleteEmail;
-
     private AthleteProfileDTO athlete;
 
     public RegistrationDTO(int registrationId, int eventId, Long athleteId, String eventName, Date registrationDate, String status, String remarks, String meetName, AthleteProfileDTO athlete) {

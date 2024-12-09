@@ -1,6 +1,7 @@
 package com.sportsperformance.batch2.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -19,6 +20,7 @@ public class Athlete extends BaseUser {
 
     @ManyToOne
     @JoinColumn(name = "coachId", insertable = false, updatable = false)
+    @JsonIgnoreProperties("athletes")
     private Coach coach;
 
     private String firstName;
@@ -29,8 +31,10 @@ public class Athlete extends BaseUser {
     private float weight;
     private String category;
     private String photoUrl;
-
-    @JsonIgnoreProperties("athlete")
+    @Lob
+    @Column(name = "photo", columnDefinition = "LONGBLOB")
+    private byte[] photo;
+    @JsonIgnoreProperties({"athlete", "eventResults"})
     @OneToMany(mappedBy = "athlete")
     private List<EventResult> eventResults;
 
@@ -42,13 +46,13 @@ public class Athlete extends BaseUser {
     @JsonIgnoreProperties("athlete")
     private List<DailyDiet> dailyDiets;
 
-    @OneToMany(mappedBy = "athlete")
+    @OneToOne(mappedBy = "athlete")
     @JsonIgnoreProperties("athlete")
-    private List<AssistanceRequest> assistanceRequests;
+    private AssistanceRequest assistanceRequests;
 
-    @OneToMany(mappedBy = "athlete")
+    @OneToOne(mappedBy = "athlete")
     @JsonIgnoreProperties("athlete")
-    private List<WeightPlan> weightPlans;
+    private WeightPlan weightPlan;
 
 
     // Getters and Setters

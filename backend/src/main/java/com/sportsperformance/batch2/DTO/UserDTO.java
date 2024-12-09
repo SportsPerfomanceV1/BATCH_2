@@ -7,6 +7,6 @@ public class UserDTO {
     private String username;
     private String email;
     private String password;
-    private String role; // This will be 'athlete', 'coach', or 'admin'
-
+    private String confirmPassword;
+    private String role;
 }
