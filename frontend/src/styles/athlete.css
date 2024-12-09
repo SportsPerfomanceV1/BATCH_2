@@ -38,13 +38,14 @@
 }
 
 /* Profile and sections */
-.profile-section, .events-section, .my-events-section, .coaches-section {
+.profile-section,  .my-events-section, .coaches-section {
   margin: 1em;
   margin-top: 0em;
   padding: 1em;
   border: 1px solid #fafafa;
   border-radius: 8px;
   background-color: #f8f8f8;
+  
 }
 
 /* Button styles */
@@ -108,7 +109,7 @@ ul li {
 .modal-content {
   background-color: white;
   padding: 10px;
-  width: 450px;
+  width: 500px;
   max-width: 100%;
   height: 95%;
   border-radius: 15px;
@@ -157,8 +158,8 @@ ul li {
 .my-events-section {
   padding: 20px;
   background-color: #f1ecec;
-  border-radius: 8px;
-  max-width: 800px;
+  border-radius: 2px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -250,10 +251,9 @@ ul li {
 
 /* General styles */
 
-.events-section,.my-events-section{
+.events-section{
   margin-top: 20px;
   max-width: 100%;
-  background-color: #eae6e6;
   padding-left: 25px;
   padding-right: 25px;
 }
@@ -275,15 +275,7 @@ ul li {
   transform: scale(1.03);
 }
 
-.profile-photo {
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-  border: 5px solid #f1ece3;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  margin-right: 60px;
-  margin-left: 30px;
-}
+
 
 .athlete-info {
   color: white;
@@ -378,9 +370,8 @@ button:hover {
 
 .button-19:after {
   background-clip: padding-box;
-  background-color: #1CB0F6;
   border: solid transparent;
-  border-radius: 16px;
+  border-radius: 2px;
   border-width: 0 0 4px;
   bottom: -4px;
   content: "";
@@ -423,13 +414,13 @@ button:hover {
 }
 
 .profile-photo {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
+  width: 300px;
+  height:290px;
+  border-radius: 5%;
   object-fit: cover;
   border: 4px solid #ffffff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 15px;
+  margin-right: 15px;
 }
 
 .athlete-info p {
@@ -466,11 +457,7 @@ button:active {
     font-size: 14px;
   }
 
-  .profile-photo {
-    width: 120px;
-    height: 120px;
-  }
-
+ 
   button {
     padding: 8px 16px;
   }
@@ -489,7 +476,7 @@ button:active {
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 12px 8px;
-  font-size: 16px;
+  font-size: 18px;
   transition: border 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -511,7 +498,7 @@ button:active {
   top: 12px;
   background: white;
   padding: 0 4px;
-  font-size: 16px;
+  font-size: 18px;
   transition: 0.3s ease all;
   pointer-events: none; /* Prevent label selection */
   color: #757575;
@@ -560,13 +547,6 @@ textarea:focus {
 
 .transition-container {
   animation: swipeLeft 0.5s ease forwards;
-}
-
-.events-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  justify-content: center;
 }
 
 .event-card {
@@ -635,4 +615,165 @@ textarea:focus {
   50% {
     transform: translateY(-10px); /* Jump up */
   }
+}
+.events-section{
+  margin: 1em;
+  margin-top: 0em;
+  padding: 1em;
+  border: 1px solid #fafafa;
+  border-radius: 8px;
+  background-color: #edecec;
+}
+/* Center container */
+.tabs-container {
+  display: flex;
+  justify-content: center; /* Center the tabs horizontally */
+  align-items: center;
+  gap: 3px; /* Space between tabs */
+  border-bottom: 2px solid #e0e0e0; /* Line separating the tabs */
+  padding-bottom: 8px; /* Space between tabs and the separating line */
+  width: 100%;
+}
+
+/* Tab button styles */
+.tab-button {
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 0; /* Adjust vertical padding */
+  color: #666; /* Default text color */
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  position: relative; /* To position the underline */
+  transition: color 0.3s ease; /* Smooth transition for hover */
+  width: 200px;
+}
+
+/* Add underline on hover */
+.tab-button::after {
+  content: "";
+  position: absolute;
+  bottom: -8px; /* Distance from text to underline */
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #1a73e8; /* Blue underline */
+  transition: width 0.3s ease; /* Smooth underline effect */
+  border-radius: 0;
+}
+
+/* Hover effect */
+.tab-button:hover::after {
+  width: 100%; /* Full width underline on hover */
+}
+
+.tab-button:hover {
+  color: #f4f6f8; /* Text color on hover */
+}
+
+/* Active state for selected tab */
+.tab-button.active {
+  color: #1a73e8; /* Active tab text color */
+}
+
+.tab-button.active::after {
+  width: 100%; /* Full underline for the active tab */
+}
+
+/* Container for tabs */
+.tabs1 {
+  display: flex;
+  justify-content: center; /* Center align the buttons */
+  gap: 20px; /* Space between buttons */
+  margin: 20px 0; /* Add space around the tab group */
+}
+
+/* Default button styles */
+.tab1-button {
+  font-size: 16px;
+  font-weight: bold;
+  color: white; /* White text */
+  background-color: black; /* Black background */
+  padding: 12px 20px; /* Add padding for size */
+  border: none; /* Remove borders */
+  border-radius: 6px; /* Rounded corners */
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Smooth hover transition */
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+  width:400px;
+}
+
+/* Active button styles */
+.tab1-button.active {
+  background-color: #007bff; /* Blue background */
+  color: white; /* White text */
+}
+
+/* Hover effect */
+.tab1-button:hover {
+  background-color: #007bff; /* Change background to blue */
+  color: white; /* Text remains white */
+}
+.athlete-dashboard{
+  background: linear-gradient( rgb(2, 0, 97) 15%, rgb(24, 23, 24) 158.5%, rgb(24, 23, 24) 158.5%,rgb(5, 5, 5) 158.5%);
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+  background-color:rgb(217, 217, 244);
+}
+.button-19{
+  background: linear-gradient(to right, #3b82f6, #9333ea); /* from-blue-500 to-purple-600 */
+  padding: 0.5rem 1rem; /* px-4 py-2 */
+  border-radius: 9999px; /* rounded-full */
+  color: #ffffff; /* text-white */
+  font-weight: 500; /* font-medium */
+  transition: transform 0.2s, box-shadow 0.2s; /* transition for hover effects */
+}
+
+.button-19:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* hover:shadow-lg */
+  transform: scale(1.05); /* hover:scale-105 */
+}
+/* Container for the file upload */
+.container {
+  position: relative;
+  padding: 20px;
+}
+
+/* Loader overlay to center the loader */
+.loader-overlay {
+  position: fixed; /* Fixed position to cover the entire screen */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.3); /* Slight overlay to darken background */
+  z-index: 9999; /* Ensure it's above other content */
+}
+
+/* Simple CSS spinner */
+.loader {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid green;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 2s linear infinite;
+}
+
+/* Keyframes for the spinner animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Style for the text (optional) */
+.loader-overlay p {
+  color: white;
+  margin-top: 10px;
+  font-size: 1.2rem;
 }

@@ -8,9 +8,102 @@ import { Link, useNavigate } from "react-router-dom";
 import CircularProgress from "react-spinners/ClipLoader";
 import LoginIcon from "@mui/icons-material/Login";
 import '../styles/AdminDashboard.css';
-// import "../styles/shortlist.css";
+import Statistics from "./Statistics"; // Import the Statistics component
 
-// Styled Components
+
+
+const Popup1 = ({ message, type, onClose }) => {
+  return (
+    <div className="popup1-overlay">
+      <div className={`popup1-box ${type}`}>
+        <button className="close-btn" onClick={onClose}>
+          ×
+        </button>
+        <div className="popup1-icon">
+          <span>✔</span>
+        </div>
+        <div className="popup1-content">
+          <h3>{message}</h3>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+const Popup = ({ message, type, onClose }) => {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div
+        className={`
+          relative 
+          bg-white 
+          rounded-lg 
+          shadow-xl 
+          p-6 
+          max-w-sm 
+          w-full 
+          mx-4
+          flex 
+          flex-col 
+          items-center
+          ${type === "success" ? "border-l-4 border-green-500" : "border-l-4 border-red-500"}
+        `}
+      >
+        <button
+          onClick={onClose}
+          style={{
+            backgroundColor: "white",
+            width: "24px",
+            height: "24px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: "5%",
+            border: "1px solid #D1D5DB",
+          }}
+          className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+        >
+          ×
+        </button>
+        <div className="mb-4">
+          {type === "success" ? (
+            <svg
+              className="w-16 h-16 text-green-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          ) : (
+            <svg
+              className="w-16 h-16 text-red-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          )}
+        </div>
+        <h3 className="text-center text-gray-700">{message}</h3>
+      </div>
+    </div>
+  );
+};
 const StyledButton = styled(Button)(({ theme }) => ({
   backgroundColor: "#000",
   color: "#fff",
@@ -29,6 +122,7 @@ const DashboardContainer = styled(Box)({
   padding: '20px',
   backgroundColor: '#f8f8f8',
   minHeight: '100vh',
+  width:'98%',
 });
 
 const MeetTable = styled(TableContainer)({
@@ -38,6 +132,7 @@ const MeetTable = styled(TableContainer)({
   boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
 });
 
+
 const ShortlistCandidatesModal = ({ onClose }) => {
   const [registrations, setRegistrations] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState({});
@@ -45,12 +140,11 @@ const ShortlistCandidatesModal = ({ onClose }) => {
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [athleteDetails, setAthleteDetails] = useState({});
   const [loading, setLoading] = useState(false);
-  const [topPerformances, setTopPerformances] = useState([]); // Top performances state (list)
-  const [error, setError] = useState(""); // Error handling state
-
+  const [topPerformances, setTopPerformances] = useState([]); 
+  const [error, setError] = useState(""); 
   useEffect(() => {
     setLoading(true);
-    const token = localStorage.getItem("token"); // Fix: Use getItem for localStorage
+    const token = localStorage.getItem("token"); 
     axios
       .get('/admin/registrations/pending', {
         headers: {
@@ -61,12 +155,14 @@ const ShortlistCandidatesModal = ({ onClose }) => {
         setRegistrations(response.data);
         setLoading(false);
       })
-      .catch((error) => console.error('Error fetching pending registrations:', error));
-
+      .catch((error) => {
+        console.error('Error fetching pending registrations:', error);
+        setLoading(false);
+      });
   }, []);
 
   const handleApprove = (registrationId) => {
-    const token = localStorage.getItem("token"); // Fix: Use getItem for localStorage
+    const token = localStorage.getItem("token"); 
     axios
       .put(`/admin/registration/${registrationId}?status=Approved`, {}, {
         headers: {
@@ -75,7 +171,6 @@ const ShortlistCandidatesModal = ({ onClose }) => {
       })
       .then((response) => {
         console.log(response.data);
-        // Re-fetch the pending registrations after approving
         setRegistrations(registrations.filter(reg => reg.registrationId !== registrationId));
       })
       .catch((error) => {
@@ -85,7 +180,7 @@ const ShortlistCandidatesModal = ({ onClose }) => {
   };
 
   const handleReject = (registrationId) => {
-    const token = localStorage.getItem("token"); // Fix: Use getItem for localStorage
+    const token = localStorage.getItem("token"); 
     axios
       .put(`/admin/registration/${registrationId}?status=Rejected`, {}, {
         headers: {
@@ -94,7 +189,6 @@ const ShortlistCandidatesModal = ({ onClose }) => {
       })
       .then((response) => {
         console.log(response.data);
-        // Re-fetch the pending registrations after rejecting
         setRegistrations(registrations.filter(reg => reg.registrationId !== registrationId));
       })
       .catch((error) => console.error('Error rejecting registration:', error));
@@ -212,7 +306,7 @@ const ShortlistCandidatesModal = ({ onClose }) => {
           left: "50%",
           transform: "translate(-50%, -50%)",
           width: "100%",
-          maxWidth: "106vh",
+          maxWidth: "111vh",
           maxHeight: "100vh",
           backgroundColor: "#fff",
           boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
@@ -224,8 +318,8 @@ const ShortlistCandidatesModal = ({ onClose }) => {
       >
         <div className="" >
           <button className="close-btn" onClick={onClose}>&times;</button>
-          <h2 style={{ textAlign: 'center' }} >Pending Registrations</h2>
-          {loading ? <CircularProgress style={{ marginLeft: '50%', marginTop: '10px' }} /> : (
+          <h2 style={{ textAlign: 'center',fontSize:'30px' }} >Pending Registrations</h2>
+         
             <table style={{ width: "100vh", borderCollapse: "collapse" }}>
               <thead>
                 <tr style={{ backgroundColor: "#f4f4f4" }}>
@@ -237,6 +331,16 @@ const ShortlistCandidatesModal = ({ onClose }) => {
                   <th style={styles.th}>Reject</th>
                 </tr>
               </thead>
+              {loading && (
+    <div className="overlay" onClick={onClose}></div>
+  )}
+
+  {/* Loader */}
+  {loading && (
+    <div className="loader-container">
+      <div className="loader"></div>
+    </div>
+  )}
               <tbody>
                 {registrations.map((reg) => (
                   <tr key={reg.registrationId}>
@@ -257,81 +361,145 @@ const ShortlistCandidatesModal = ({ onClose }) => {
                   </tr>
                 ))}
               </tbody>
-            </table>)}
+            </table>
         </div>
-        <Dialog open={openEventDialog} onClose={handleCloseEventDialog} maxWidth="md" fullWidth>
-          <DialogTitle style={{ backgroundColor: '#76ABAE', color: 'white', padding: '16px', fontFamily: 'Roboto, sans-serif', fontWeight: '500', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)' }} align="center">
-            <strong>{selectedEvent.eventTitle}</strong>
-          </DialogTitle>
-          <DialogContent style={{ display: 'flex', justifyContent: 'space-between', padding: '24px', backgroundColor: '#fafafa', borderRadius: '8px', boxShadow: '0 6px 14px rgba(0, 0, 0, 0.1)' }}>
-            <div style={{ flex: '1', display: 'flex', justifyContent: 'center', paddingRight: '20px' }}>
-              <img
-                src={selectedEvent.imageBase64 ? `data:image/jpeg;base64,${selectedEvent.imageBase64}` : '/default-profile.jpg'}
-                alt="Event"
-                style={{ width: '100%', maxWidth: '350px', borderRadius: '8px', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)' }}
-              />
-            </div>
-            <div style={{ flex: '2', padding: '20px', backgroundColor: '#ffffff', borderRadius: '8px', boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.1)', maxWidth: '600px' }}>
-              <Typography variant="h6" style={{ marginBottom: '12px', fontSize: '16px', fontWeight: '400', color: '#333' }}>
-                <strong>Date:</strong> {formatDate(selectedEvent.eventDate)}
-              </Typography>
-              <Typography variant="h6" style={{ marginBottom: '12px', fontSize: '16px', fontWeight: '400', color: '#333' }}>
-                <strong>Location:</strong> {selectedEvent.location}
-              </Typography>
-              <Typography variant="h6" style={{ marginBottom: '12px', fontSize: '16px', fontWeight: '400', color: '#333' }}>
-                <strong>Category:</strong> {selectedEvent.category}
-              </Typography>
-              <Typography variant="h6" style={{ marginBottom: '20px', fontSize: '16px', fontWeight: '400', color: '#333' }}>
-                <strong>Description:</strong> {selectedEvent.eventDescription}
-              </Typography>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '20px' }}>
-                <Button onClick={handleCloseEventDialog} color="primary" variant="contained" style={{ backgroundColor: '#3f51b5', color: 'white', fontWeight: '500', padding: '8px 24px', borderRadius: '20px', boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)', textTransform: 'none', fontFamily: 'Roboto, sans-serif' }}>
-                  Close
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-          <div style={dashboardStyles}>
-            <div style={cardStyles}>
-              <h2 style={{ textAlign: "center", marginBottom: "20px", color: "#333", fontSize: "24px" }}>Result</h2>
-              {error ? (
-                <div className="error-message" style={{ color: "red", textAlign: "center" }}>{error}</div>
-              ) : (
-                <table style={tableStyles}>
-                  <thead>
-                    <tr style={headerRowStyles}>
-                      <th>Athlete Name</th>
-                      <th>Score</th>
-                      <th>Comment</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {eventResults.map((result, index) => (
-                      <tr key={index} style={rowStyles}>
-                        <td>{result.athleteName}</td>
-                        <td>{result.score}</td>
-                        <td>{result.comment}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-              {hasMore && !error && (
-                <button onClick={loadMore2} style={buttonStyles}>
-                  Load More
-                </button>
-              )}
-              {!hasMore && !error && (
-                <p style={noMoreStyles}>No more results to display.</p>
-              )}
-            </div>
-            {/* Existing elements below */}
-            <div>
-              {/* Add other admin dashboard components here */}
-            </div>
-          </div>
+        <Dialog 
+  open={openEventDialog} 
+  onClose={handleCloseEventDialog} 
+  fullWidth 
+  maxWidth="md"
+>
+  <DialogTitle 
+    style={{ 
+      backgroundColor: '#76ABAE', 
+      color: 'white', 
+      padding: '16px', 
+      fontFamily: 'Roboto, sans-serif', 
+      fontWeight: '500', 
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)' 
+    }} 
+    align="center"
+  >
+    <strong>{selectedEvent.eventTitle}</strong>
+  </DialogTitle>
+  <DialogContent 
+    style={{ 
+      backgroundColor: '#fafafa', 
+      padding: '24px' 
+    }}
+  >
+    {/* Top Section: Image and Event Details */}
+    <div style={{ 
+      display: 'flex', 
+      justifyContent: 'space-between', 
+      marginBottom: '24px' 
+    }}>
+      {/* Image Section */}
+      <div style={{ 
+        flex: '1', 
+        marginRight: '24px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}>
+        <img
+          src={selectedEvent.imageBase64 ? `data:image/jpeg;base64,${selectedEvent.imageBase64}` : '/default-profile.jpg'}
+          alt="Event"
+          style={{ 
+            width: '100%', 
+            maxWidth: '400px', 
+            borderRadius: '8px', 
+            boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)' 
+          }}
+        />
+      </div>
 
-        </Dialog>
+      {/* Event Details Section */}
+      <div style={{ 
+        flex: '1', 
+        backgroundColor: '#ffffff', 
+        padding: '20px', 
+        borderRadius: '8px', 
+        boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.1)'
+      }}>
+        <Typography variant="h6" style={{ marginBottom: '12px', fontSize: '16px', fontWeight: '400', color: '#333' }}>
+          <strong>Date:</strong> {formatDate(selectedEvent.eventDate)}
+        </Typography>
+        <Typography variant="h6" style={{ marginBottom: '12px', fontSize: '16px', fontWeight: '400', color: '#333' }}>
+          <strong>Location:</strong> {selectedEvent.location}
+        </Typography>
+        <Typography variant="h6" style={{ marginBottom: '12px', fontSize: '16px', fontWeight: '400', color: '#333' }}>
+          <strong>Category:</strong> {selectedEvent.category}
+        </Typography>
+        <Typography variant="h6" style={{ marginBottom: '20px', fontSize: '16px', fontWeight: '400', color: '#333' }}>
+          <strong>Description:</strong> {selectedEvent.eventDescription}
+        </Typography>
+      </div>
+    </div>
+
+    {/* Event Results Table */}
+    <div style={dashboardStyles}>
+      <div style={cardStyles}>
+        <h2 style={{ textAlign: "center", marginBottom: "20px", color: "#333", fontSize: "24px" }}>
+          Event Results
+        </h2>
+        {error ? (
+          <div className="error-message" style={{ color: "red", textAlign: "center" }}>
+            {error}
+          </div>
+        ) : (
+          <table style={tableStyles}>
+            <thead>
+              <tr style={headerRowStyles}>
+                <th>Athlete Name</th>
+                <th>Score</th>
+                <th>Comment</th>
+              </tr>
+            </thead>
+            <tbody>
+              {eventResults.map((result, index) => (
+                <tr key={index} style={rowStyles}>
+                  <td>{result.athleteName}</td>
+                  <td>{result.score}</td>
+                  <td>{result.comment}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        {hasMore && !error && (
+          <button onClick={loadMore2} style={buttonStyles}>
+            Load More
+          </button>
+        )}
+        {!hasMore && !error && (
+          <p style={noMoreStyles}>No more results to display.</p>
+        )}
+      </div>
+    </div>
+
+    {/* Close Button */}
+    <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '20px' }}>
+      <Button 
+        onClick={handleCloseEventDialog} 
+        color="primary" 
+        variant="contained" 
+        style={{ 
+          backgroundColor: '#3f51b5', 
+          color: 'white', 
+          fontWeight: '500', 
+          padding: '8px 24px', 
+          borderRadius: '20px', 
+          boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)', 
+          textTransform: 'none', 
+          fontFamily: 'Roboto, sans-serif' 
+        }}
+      >
+        Close
+      </Button>
+    </div>
+  </DialogContent>
+</Dialog>
         <Dialog open={profileModalOpen} onClose={handleCloseProfileModal} maxWidth="md" fullWidth>
           <DialogTitle
             style={{
@@ -412,6 +580,16 @@ const ShortlistCandidatesModal = ({ onClose }) => {
               >
                 <strong>Category:</strong> {athleteDetails.category}
               </Typography>
+              </div>
+                <div style={{
+                flex: '3',
+                padding: '20px',
+                backgroundColor: '#ffffff',
+                borderRadius: '8px',
+                boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.1)',
+                maxWidth: '650px', // Increase maxWidth of the details box
+              }}
+            >
               <Typography
                 variant="h6"
                 style={{
@@ -421,6 +599,7 @@ const ShortlistCandidatesModal = ({ onClose }) => {
                   color: '#333',
                 }}
               >
+                
                 <strong>Height:</strong> {athleteDetails.height} cm
               </Typography>
               <Typography
@@ -555,11 +734,12 @@ const PublishResults = ({ onClose }) => {
   const [athletes, setAthletes] = useState([]);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [popup, setPopup] = useState({ show: false, message: '', type: '' });
 
   useEffect(() => {
     // Fetch events with pending results
     setLoading(true);
-    const token = localStorage.getItem("token"); // Or however you store/retrieve the token
+    const token = localStorage.getItem("token");
 
     axios.get("/admin/events/pending-results", {
       headers: {
@@ -570,10 +750,17 @@ const PublishResults = ({ onClose }) => {
         setEvents(response.data);
         setLoading(false)
       })
-      .catch(error => { console.error("Error fetching events:", error); setLoading(false) });
+      .catch(error => { 
+        console.error("Error fetching events:", error); 
+        setLoading(false);
+        setPopup({
+          show: true, 
+          message: "Failed to fetch events", 
+          type: 'error'
+        });
+      });
 
   }, []);
-
 
   const handleEventClick = (eventId) => {
     setSelectedEvent(eventId);
@@ -593,7 +780,15 @@ const PublishResults = ({ onClose }) => {
         })));
         setLoading(false);
       })
-      .catch(error => { console.error("Error fetching events:", error); setLoading(false) });
+      .catch(error => { 
+        console.error("Error fetching athletes:", error); 
+        setLoading(false);
+        setPopup({
+          show: true, 
+          message: "Failed to fetch athletes", 
+          type: 'error'
+        });
+      });
   };
 
   const handleResultChange = (index, field, value) => {
@@ -612,13 +807,27 @@ const PublishResults = ({ onClose }) => {
       }
     })
       .then(() => {
-        alert("Results published successfully!");
-        window.location.reload();
         setSelectedEvent(null);
         setAthletes([]);
         setResults([]);
+        setPopup({
+          show: true, 
+          message: "Results published successfully!", 
+          type: 'success'
+        });
       })
-      .catch(error => console.error("Error publishing results:", error));
+      .catch(error => {
+        console.error("Error publishing results:", error);
+        setPopup({
+          show: true, 
+          message: "Failed to publish results", 
+          type: 'error'
+        });
+      });
+  };
+
+  const closePopup = () => {
+    setPopup({ show: false, message: '', type: '' });
   };
 
   return (
@@ -633,39 +842,50 @@ const PublishResults = ({ onClose }) => {
             justifyContent: 'left',
           }}>&times;</button>
           <h2>Publish Event Results</h2>
+          
+          {/* Popup rendering */}
+          {popup.show && (
+            <Popup 
+              message={popup.message} 
+              type={popup.type} 
+              onClose={closePopup} 
+            />
+          )}
+
           {!selectedEvent ? (
             <div>
               <h3>Events with Pending Results</h3>
-              {loading ? <CircularProgress style={{ marginTop: '10px' }} /> : (
-                <table className="eventTable">
-                  <thead>
-                    <tr>
-                      <th>Event Title</th>
-                      <th>Date</th>
-                      <th>Action</th>
+              {loading && (
+                <div className="loader-container" style={{margin:'5px'}}>
+                  <div className="loader"></div>
+                </div>
+              )}
+             
+              <table className="eventTable">
+                <thead>
+                  <tr>
+                    <th>Event Title</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {events.map(event => (
+                    <tr key={event.eventId}>
+                      <td>{event.eventTitle}</td>
+                      <td>{event.eventDate.split(' ')[0]}</td>
+                      <td>
+                        <button style={{ width: '250px', backgroundColor: 'rgb(67, 218, 67)' }} onClick={() => handleEventClick(event.eventId)}>
+                          Publish Results
+                        </button>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {events.map(event => (
-                      <tr key={event.eventId}>
-                        <td>{event.eventTitle}</td>
-                        <td>{event.eventDate.split(' ')[0]}</td>
-                        <td>
-                          <button style={{ width: '250px', backgroundColor: 'rgb(67, 218, 67)' }} onClick={() => handleEventClick(event.eventId)}>
-                            Publish Results
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>)}
+                  ))}
+                </tbody>
+              </table>
             </div>
-
           ) : (
             <div>
-              <h3>
-
-              </h3>
               <div>
                 <table>
                   <thead>
@@ -679,12 +899,18 @@ const PublishResults = ({ onClose }) => {
                   <tbody>
                     {athletes.map((athlete, index) => (
                       <tr key={athlete.athleteId}>
-                        <td><img src={athlete.athletePicture ? `data:image/jpeg;base64,${athlete.athletePicture}` : './images/default-profile.jpg'} style={{
-                          width: '100%',
-                          maxWidth: '400px', // Increase image maxWidth for a larger image
-                          borderRadius: '8px',
-                          boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-                        }} /></td>
+                        <td>
+                          <img 
+                            src={athlete.athletePicture ? `data:image/jpeg;base64,${athlete.athletePicture}` : './images/default-profile.jpg'} 
+                            style={{
+                              width: '100%',
+                              maxWidth: '400px',
+                              borderRadius: '8px',
+                              boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+                            }} 
+                            alt={athlete.athleteName} 
+                          />
+                        </td>
                         <td>{athlete.athleteName}</td>
                         <td>
                           <input
@@ -725,19 +951,15 @@ const PublishResults = ({ onClose }) => {
         }}
         onClick={onClose}
       />
-
     </>
-
   );
-
-
 };
 
-
 const Meet = ({ onClose }) => {
-  // const [meetName, setMeetName] = useState("");
   const [formData, setFormData] = useState({ meetName: "" });
-
+  const [popupVisible, setPopupVisible] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
+  const [popupType, setPopupType] = useState(""); 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -749,42 +971,47 @@ const Meet = ({ onClose }) => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        alert("No token found in localStorage");
+        setPopupMessage("No token found in localStorage");
+        setPopupType("error");
+        setPopupVisible(true);
         return;
       }
 
       const response = await fetch("/admin/createmeet", {
         method: "POST",
         headers: {
-
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
       });
-      // const result = await response.text();
+
       if (response.ok) {
-        alert("Meet Created Successfully")
-        window.location.reload();
-        onClose();
+        setPopupMessage("Meet Created Successfully");
+        setPopupType("success");
+        setPopupVisible(true);
+        setTimeout(() => {
+          setPopupVisible(false);
+          onClose();
+          window.location.reload();
+        }, 2000);
       } else {
-        alert("Kindly login as admin again")
-        // window.location.reload();
+        setPopupMessage("Kindly login as admin again");
+        setPopupType("error");
+        setPopupVisible(true);
       }
-
-
     } catch (error) {
       console.error("Error creating meet:", error);
-
+      setPopupMessage("An error occurred. Please try again.");
+      setPopupType("error");
+      setPopupVisible(true);
     }
   };
 
   return (
     <>
-      <div
-        className="popup eventPopup"
-      >
-        <h2 style={{ marginLeft: '36%' }}>Create Meet</h2>
+      <div className="popup eventPopup">
+        <h2 style={{ textAlign: "center", fontSize: "30px" }}>Create Meet</h2>
 
         <form onSubmit={handleCreateMeet} className="popup-form">
           <TextField
@@ -796,11 +1023,7 @@ const Meet = ({ onClose }) => {
             onChange={handleChange}
             className="form-field"
           />
-          <Button
-            type="submit"
-            fullWidth
-            className="submit-button"
-          >
+          <Button type="submit" fullWidth className="submit-button">
             Create Meet
           </Button>
         </form>
@@ -808,6 +1031,15 @@ const Meet = ({ onClose }) => {
           Close
         </Button>
       </div>
+
+      {/* Popup */}
+      {popupVisible && (
+        <Popup1
+          message={popupMessage}
+          type={popupType}
+          onClose={() => setPopupVisible(false)}
+        />
+      )}
 
       {/* Overlay */}
       <div
@@ -822,15 +1054,16 @@ const Meet = ({ onClose }) => {
         }}
         onClick={onClose}
       />
-
-
     </>
-
-
   );
 };
 
 const Event = ({ onClose }) => {
+  const [popupVisible, setPopupVisible] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
+  const [popupType, setPopupType] = useState(""); 
+  const [meets, setMeets] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     eventTitle: "",
     eventDate: "",
@@ -840,8 +1073,7 @@ const Event = ({ onClose }) => {
     eventDescription: "",
     image: null,
   });
-  const [meets, setMeets] = useState([]);
-
+  
   useEffect(() => {
     const fetchMeets = async () => {
       const token = localStorage.getItem("token");
@@ -860,26 +1092,37 @@ const Event = ({ onClose }) => {
     };
     fetchMeets();
   }, []);
-
+  
   const handleChangeEvent = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
+  
+  const [fileName, setFileName] = useState("No file selected");
+  //const [isLoading, setIsLoading] = useState(false);
 
   const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setFileName(file ? file.name : "No file selected");
     setFormData((prevFormData) => ({
       ...prevFormData,
       image: e.target.files[0],
-    }));
+      
+    }
+  ));
   };
 
 
   const handleCreateEvent = async (event) => {
     event.preventDefault();
-
+    setIsLoading(true);
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("No token found in localStorage");
+      //alert("No token found in localStorage");
+        setPopupMessage("No token found in localStorage");
+        setPopupType("error");
+        setPopupVisible(true);
+        setIsLoading(false);
       return;
     }
 
@@ -903,25 +1146,37 @@ const Event = ({ onClose }) => {
       });
 
       if (response.ok) {
-        alert("Event Created Successfully");
-        window.location.reload();
-        onClose();
+        //alert("Event Created Successfully");
+        setPopupMessage("Event Created Successfully");
+        setPopupType("success");
+        setPopupVisible(true);
+        setTimeout(() => {
+          window.location.reload();
+          onClose();
+        }, 2000); // Adjust timing as needed
       } else {
-        alert(response.status);
-        window.location.reload();
+        setPopupMessage("Error creating event");
+        setPopupType("error");
+        setPopupVisible(true);
+        //alert(response.status);
+        setTimeout(() => {
+          window.location.reload();
+          onClose();
+        }, 2000); // Adjust timing as needed
       }
     } catch (error) {
       console.error("Error creating event:", error);
     }
+    finally {
+      setIsLoading(false);
+    }
   };
+  
 
   return (
     <>
-      <div
-        className="popup eventPopup"
-
-      >
-        <h2 style={{ marginLeft: '36%', marginTop: '5%', marginBottom: '5%' }}>Create Event</h2>
+      <div className="popup eventPopup" style={{width:'600px'}}>
+        <h2 style={{ textAlign:'center', marginBottom: '3%' ,fontSize:'30px'}}>Create Event</h2>
 
         <form onSubmit={handleCreateEvent} className="popup-form">
           <TextField
@@ -982,45 +1237,116 @@ const Event = ({ onClose }) => {
             required
             onChange={handleChangeEvent}
           />
+          
+          <div className="container">
+          <label>Upload Image</label>
+           <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "1rem",
+              padding:'3px',
+              marginTop: "1rem",
+              border: "2px solid gray", // Dashed border
+              borderRadius: "23px", // Rounded corners
+              transition: "border-color 0.3s ease",
+              cursor: "pointer",
+            }}
+          >
+          <label
+            htmlFor="fileInput"
+            style={{
+              backgroundColor: "#8e44ad", // Purple color
+              color: "white",
+              padding: "10px 20px",
+              borderRadius: "20px",
+              cursor: "pointer",
+              fontSize: "1rem",
+              textAlign: "center",
+            }}
+          >
+            Browse
+          </label>
           <input
+            id="fileInput"
             type="file"
             name="image"
             accept="image/*"
             onChange={handleImageChange}
-            style={{
-              marginTop: "1rem",
-              padding: "10px",
-              border: "2px dashed gray",
-              borderRadius: "5px",
-              cursor: "pointer",
-              transition: "border-color 0.3s ease",
-            }}
-            onMouseEnter={(e) => (e.target.style.borderColor = "green")}
-            onMouseLeave={(e) => (e.target.style.borderColor = "gray")}
+            style={{ display: "none" }}
           />
+          <span
+            style={{
+              fontSize: "1rem",
+              color: "#555",
+            }}
+          >
+            {fileName}
+          </span>
+        </div>
+      </div>
 
-          <Button type="submit" fullWidth sx={{ backgroundColor: "#000000", color: "#ffffff", marginTop: "1rem" }}>
-            Create Event
+      <Button 
+            type="submit" 
+            fullWidth 
+            sx={{ 
+              backgroundColor: "#000000", 
+              color: "#ffffff", 
+              marginTop: "1rem",
+              '&:disabled': {
+                backgroundColor: '#cccccc',
+                color: '#666666'
+              }
+            }}
+            disabled={isLoading}
+          >
+            {isLoading ? "Creating Event..." : "Create Event"}
           </Button>
         </form>
         <Button onClick={onClose} className="close-button">
           Close
         </Button>
       </div>
-      <div className="overlay" onClick={onClose} />
-      {/* Overlay */}
+      {isLoading && (
+        <div className="loader-container">
+          <div className="loader"></div>
+        </div>
+      )}
+      {/* <div className="overlay" onClick={onClose} /> */}
+
       <div
         style={{
           position: "fixed",
           top: 0,
           left: 0,
           width: "100vw",
-          height: "100vh",
+          height: "150vh",
           backgroundColor: "rgba(0, 0, 0, 0.5)",
           zIndex: 999,
         }}
         onClick={onClose}
       />
+
+{popupVisible && (
+        <Popup1
+          message={popupMessage}
+          type={popupType}
+          onClose={() => setPopupVisible(false)}
+        />
+      )}
+      {/* Overlay 
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "150vh",
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          zIndex: 999,
+        }}
+        onClick={onClose}
+      />*/}
     </>
   );
 };
@@ -1032,13 +1358,14 @@ const AdminDashboard = () => {
   const [resultVisible, setResultVisible] = useState(false);
   const navigate = useNavigate();
   const [regVisible, setRegVisible] = useState(false);
-  const [events, setEvents] = useState([])
+  const [events, setEvents] = useState([]);
+  const [popup, setPopup] = useState({ show: false, message: '', type: '' });
 
   const [activeTab, setActiveTab] = useState(0);
 
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    localStorage.clear();
     navigate('/*');
   };
 
@@ -1138,57 +1465,160 @@ const AdminDashboard = () => {
   );
 
 
-  const EventsTable = () => {
-    const [events, setEvents] = useState([]);
-    const [selectedEvent, setSelectedEvent] = useState(null);
-    const [open, setOpen] = useState(false);
-    const [registrations, setRegistrations] = useState([]);
-    const [athleteDetails, setAthleteDetails] = useState(null);
-    const [profileModalOpen, setProfileModalOpen] = useState(false);
-    const [editEventOpen, setEditEventOpen] = useState(false);
-    const [updatedEvent, setUpdatedEvent] = useState(null);
-    const [loadEvents, setLoadEvents] = useState(false);
-
-    useEffect(() => {
-      const fetchEvents = async () => {
-        try {
-          console.log("Loading events...");
-          setLoadEvents(true); // Spinner starts here
-          const token = localStorage.getItem("token");
-          const response = await fetch("/admin/events", {
-            method: "GET",
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          if (!response.ok) throw new Error("Failed to fetch events.");
-          const data = await response.json();
-          setEvents(data);
-        } catch (error) {
-          console.error("Error fetching events:", error);
-        } finally {
-          console.log("Finished loading events.");
-          setLoadEvents(false); // Spinner stops here
-        }
-      };
-
-      fetchEvents();
-    }, []);
-
-    const fetchRegistrations = async (eventId) => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await fetch("/admin/registrations", {
-          method: "GET",
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!response.ok) throw new Error("Failed to fetch registrations.");
-        const data = await response.json();
-        const filteredRegistrations = data.filter((reg) => reg.eventId === eventId && reg.status === 'Approved');
-        setRegistrations(filteredRegistrations);
-      } catch (error) {
-        console.error("Error fetching registrations:", error);
-      }
+    const EventsTable = () => {
+        const [events, setEvents] = useState([]);
+        const [selectedEvent, setSelectedEvent] = useState(null);
+        const [open, setOpen] = useState(false);
+        const [registrations, setRegistrations] = useState([]);
+        const [athleteDetails, setAthleteDetails] = useState(null);
+        const [profileModalOpen, setProfileModalOpen] = useState(false);
+        const [editEventOpen, setEditEventOpen] = useState(false);
+        const [updatedEvent, setUpdatedEvent] = useState(null);
+        const [loadEvents,setLoadEvents]=useState(false);
+        const [eventResults, setEventResults] = useState([]);
+        const [loadingTable, setLoadingTable] = React.useState(false);
+        const [load, setLoad] = React.useState(false);
+        const [page, setPage] = useState(0);
+        const [hasMore, setHasMore] = useState(true);
+        const resultsPerPage = 5;
+        const [popupVisible, setPopupVisible] = useState(false);
+        const [popupMessage, setPopupMessage] = useState('');
+        const [popupType, setPopupType] = useState('info');
+      
+        
+        
+const Popup = ({ message, type, onClose }) => {
+  const getStyles = () => {
+    const baseBorderColor = {
+      success: '#4CAF50', // Green border for success
+      error: '#F44336',   // Red border for error
+      info: '#2196F3',    // Blue border for info (default)
     };
-    const [topPerformances, setTopPerformances] = useState([]); // Top performances state (list)
+    return {
+      container: {
+        position: 'fixed',
+        top: '20px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        //padding: '30px 40px',
+        paddingTop:'10px',
+        paddingBottom: '10px',
+        borderRadius: '12px',
+        backgroundColor: 'white',
+        color: '#333',
+        zIndex: '9999',
+        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center',
+        gap: '15px',
+        position: 'relative',
+        width: '300px',
+        border: `3px solid ${baseBorderColor[type] || baseBorderColor.info}`,
+      },
+      icon: {
+        width: '60px',
+        height: '60px',
+        backgroundColor: '#4CAF50',
+        borderRadius: '50%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+      iconCheck: {
+        color: 'white',
+        fontSize: '32px',
+        fontWeight: 'bold',
+      },
+      closeButton: {
+        position: 'absolute',
+        top: '10px',
+        right: '10px',
+        background: 'none',
+        border: 'none',
+        color: '#999',
+        fontSize: '16px',
+        cursor: 'pointer',
+      },
+      message: {
+        margin: 0,
+        fontSize: '16px',
+        lineHeight: '1.5',
+      },
+    };
+  };
+
+  const styles = getStyles();
+
+  return (
+    <div style={styles.container}>
+      <button onClick={onClose} style={styles.closeButton}>
+        ×
+      </button>
+      <div style={styles.icon}>
+        <span style={styles.iconCheck}>✓</span>
+      </div>
+      <p style={styles.message}>{message}</p>
+    </div>
+  );
+};
+        
+        const showPopup = (message, type = 'info') => {
+          console.log('Showing popup:', { message, type }); // Debug log
+          setPopupMessage(message);
+          setPopupType(type);
+          setPopupVisible(true);
+          const popupTimer = setTimeout(() => {
+            setPopupVisible(false);
+          }, 5000);
+          return () => clearTimeout(popupTimer);
+        };
+
+        useEffect(() => {
+          const fetchEvents = async () => {
+            try {
+              console.log("Loading events...");
+              setLoadEvents(true); // Spinner starts here
+              const token = localStorage.getItem("token");
+              const response = await fetch("/admin/events", {
+                method: "GET",
+                headers: { Authorization: `Bearer ${token}` },
+              });
+              if (!response.ok) throw new Error("Failed to fetch events.");
+              const data = await response.json();
+              setEvents(data);
+            } catch (error) {
+              console.error("Error fetching events:", error);
+            } finally {
+              console.log("Finished loading events.");
+              setLoadEvents(false); // Spinner stops here
+            }
+          };
+        
+          fetchEvents();
+        }, []);
+        
+        const fetchRegistrations = async (eventId) => {
+          setLoad(true);
+          try {
+            const token = localStorage.getItem("token");
+            const response = await fetch("/admin/registrations", {
+              method: "GET",
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            if (!response.ok) throw new Error("Failed to fetch registrations.");
+            const data = await response.json();
+            const filteredRegistrations = data.filter((reg) => reg.eventId === eventId);
+            setRegistrations(filteredRegistrations);
+          } catch (error) {
+            console.error("Error fetching registrations:", error);
+            showPopup("Failed to fetch registrations", 'error');
+          } finally{
+            setLoad(false);
+          }
+        };
+        const [topPerformances, setTopPerformances] = useState([]); // Top performances state (list)
     const [error, setError] = useState(""); // Error handling state
 
     const handleViewAthleteProfile = async (athleteId) => {
@@ -1223,13 +1653,11 @@ const AdminDashboard = () => {
       } catch (error) {
         console.error("Error fetching athlete details:", error);
       }
+      
     };
-    const [eventResults, setEventResults] = useState([]);
-    const [page, setPage] = useState(0);
-    const [hasMore, setHasMore] = useState(true);
-    const resultsPerPage = 5;
 
     const fetchEventResults = async (eventId) => {
+      setLoadingTable(true); 
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(`/admin/event/leaderboard/${eventId}`, {
@@ -1248,6 +1676,9 @@ const AdminDashboard = () => {
       } catch (err) {
         setError(err.response?.data?.error || "NO DATA YET");
       }
+      finally {
+        setLoadingTable(false); // Stop loading
+      }
     };
 
     const loadMore = () => {
@@ -1260,7 +1691,7 @@ const AdminDashboard = () => {
       setSelectedEvent(event);
       setOpen(true);
       fetchRegistrations(event.eventId);
-
+      
       fetchEventResults(event.eventId);
     };
 
@@ -1290,19 +1721,13 @@ const AdminDashboard = () => {
       try {
         const token = localStorage.getItem("token");
         const formData = new FormData();
-    
-        // Add updated fields to the FormData object
         if (updatedEvent.eventTitle) {
           formData.append("eventTitle", updatedEvent.eventTitle);
         }
         const formatDateForDisplayAndForm = (dateString) => {
           if (!dateString) return '';
-          const utcDate = new Date(dateString); // Parse the UTC date string
-          
-          // Adjust for the local timezone offset
+          const utcDate = new Date(dateString); 
           const localDate = new Date(utcDate.getTime() + new Date().getTimezoneOffset() * -60000);
-          
-          // Format to 'YYYY-MM-DD'
           return localDate.toISOString().split('T')[0];
         };
         // Format the event date to avoid timezone issues
@@ -1349,19 +1774,17 @@ const AdminDashboard = () => {
         );
         setEvents(updatedEvents);
     
-        alert("Updated Event Details Successfully");
-        window.location.reload();
-        setEditEventOpen(false);
-        setUpdatedEvent(null);
+        
+        //alert("Updated Event Details Successfully");
+        showPopup("Updated Event Details Successfully", 'success');
+        setTimeout(() => {
+          setEditEventOpen(false);
+          setUpdatedEvent(null);
+          window.location.reload();
+        }, 2000);
       } catch (error) {
         console.error("Error updating event:", error);
-      }
-    };
-    
-    const handleImageChange = (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        setUpdatedEvent({ ...updatedEvent, image: file });
+        showPopup("Failed to update event", 'error');
       }
     };
 
@@ -1394,48 +1817,62 @@ const AdminDashboard = () => {
       return localDate.toISOString().split('T')[0];
     };
 
-    return (
-      <>
-        {loadEvents ? (<CircularProgress style={{ marginLeft: '50%', marginTop: '20px' }} />) : (
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>EVENT TITLE</TableCell>
-                  <TableCell>MEET NAME</TableCell>
-                  <TableCell>ACTIONS</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {events.length > 0 ? (
-                  events.map((event) => (
-                    <TableRow key={event.eventId}>
-                      <TableCell>{event.eventTitle}</TableCell>
-                      <TableCell>{event.meetId?.meetName || "N/A"}</TableCell>
-                      <TableCell>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={() => handleViewEvent(event)}
-                        >
-                          View Event
-                        </Button>
+        return (
+          <>
+           {popupVisible && (
+        <Popup 
+          message={popupMessage} 
+          type={popupType} 
+          onClose={() => setPopupVisible(false)} 
+        />
+      )}
+          {loadEvents && (
+              <div className="spinner-overlay" style={{marginTop:'10%',marginLeft:'50%'}}>
+                  <CircularProgress />
+              </div>
+          )}
+          {loadEvents?(<CircularProgress style={{marginLeft:'50%' ,marginTop:'20px'}} />):(
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>EVENT TITLE</TableCell>
+                    <TableCell>MEET NAME</TableCell>
+                    <TableCell>ACTIONS</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {events.length > 0 ? (
+                    events.map((event) => (
+                        <TableRow key={event.eventId}>
+                        <TableCell>{event.eventTitle}</TableCell>
+                        <TableCell>{event.meetId?.meetName || "N/A"}</TableCell>
+                        <TableCell>
+                          <Button
+                            onClick={() => handleViewEvent(event)}
+                            style={{color:'white'}}
+                            className="bg-gradient-to-r from-blue-500 to-purple-600 px-4 py-2 rounded-full text-white font-medium hover:shadow-lg transition transform hover:scale-105"
+                          >
+                            View Event
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={3} align="center">
+                        No events available.
                       </TableCell>
                     </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={3} align="center">
-                      No events available.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
         )}
-
-        {selectedEvent && (
+      
+      
+      {selectedEvent && (
+          
           <Dialog open={open} onClose={handleCloseEventDialog} maxWidth="md" fullWidth>
             <DialogTitle
               style={{
@@ -1457,6 +1894,11 @@ const AdminDashboard = () => {
                 boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.1)',
               }}
             >
+               {loadEvents? (
+              <div className="spinner-overlay" style={{marginTop:'10%',marginLeft:'50%'}}>
+                  <CircularProgress />
+              </div>):(
+          
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
                 {/* Image Section */}
                 <div style={{ flex: '1', paddingRight: '20px', display: 'flex', justifyContent: 'center' }}>
@@ -1514,7 +1956,19 @@ const AdminDashboard = () => {
                   </Typography>
                 </div>
               </div>
-
+)}
+{loadingTable && (
+  <div
+    style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '200px', // Adjust height as needed
+    }}
+  >
+    <CircularProgress />
+  </div>
+) }
               <div style={dashboardStyles}>
                 <div style={cardStyles}>
                   <h2 style={{ textAlign: "center", marginBottom: "20px", color: "#333", fontSize: "24px" }}>Result</h2>
@@ -1557,6 +2011,7 @@ const AdminDashboard = () => {
 
 
               {/* Registrations Table */}
+            
               {registrations.length > 0 && (
                 <div
                   style={{
@@ -1572,6 +2027,19 @@ const AdminDashboard = () => {
                   >
                     Registrations:
                   </Typography>
+                 
+                  {load && (
+  <div
+    style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '200px',
+    }}
+  >
+    <CircularProgress />
+  </div>
+) }
                   <Table>
                     <TableHead>
                       <TableRow>
@@ -1600,10 +2068,15 @@ const AdminDashboard = () => {
                       ))}
                     </TableBody>
                   </Table>
+                  
                 </div>
               )}
-              {registrations.length === 0 && (
+               {registrations.length === 0 && (
                 <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center", gap: "10px" }}>
+                  {loadEvents && (
+              <div className="spinner-overlay" style={{marginTop:'10%',marginLeft:'50%'}}>
+                  <CircularProgress />
+              </div>)}
                   <Button
                     variant="outlined"
                     color="secondary"
@@ -1626,10 +2099,10 @@ const AdminDashboard = () => {
           </Dialog>
 
         )}
+      
+      
 
-
-
-{editEventOpen && updatedEvent && (
+      {editEventOpen && updatedEvent && (
   <Dialog open={editEventOpen} onClose={handleCloseEditEventModal} maxWidth="sm" fullWidth>
     <DialogTitle>Edit Event</DialogTitle>
     <DialogContent>
@@ -1680,9 +2153,7 @@ const AdminDashboard = () => {
     </DialogContent>
   </Dialog>
 )}
-
-
-        {athleteDetails && (
+           {athleteDetails && (
           <Dialog open={profileModalOpen} onClose={handleCloseProfileModal} maxWidth="md" fullWidth>
             <DialogTitle
               style={{
@@ -1727,7 +2198,7 @@ const AdminDashboard = () => {
                   backgroundColor: '#ffffff',
                   borderRadius: '8px',
                   boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.1)',
-                  maxWidth: '650px', // Increase maxWidth of the details box
+                  maxWidth: '650px', 
                 }}
               >
                 <Typography
@@ -1845,88 +2316,183 @@ const AdminDashboard = () => {
           </Dialog>
 
         )}
-      </>
-    );
-  };
+          </>
+        );
+      };
 
-  return (
-    <div className="adminDashboardHome">
-      <AppBar position="static" className="navbar">
-        <Toolbar className="navbar-content">
-          <Typography variant="h5" className="navbar-title">
-            Admin Dashboard
-          </Typography>
-          <Box className="navbar-actions">
-            {/* <Link to="" className="logout-link">
-              <Button >
-                Athlete
-              </Button>
-            </Link>
-            <Link to="" className="logout-link">
-              <Button >
-                Coach
-              </Button> 
-            </Link> */}
-            <Link to="/*" className="logout-link">
-              <Button
-                onClick={handleLogout}
-                startIcon={<LoginIcon />}
-                className="logout-button"
-              >
-                Logout
-              </Button>
-            </Link>
-          </Box>
-        </Toolbar>
-      </AppBar>
 
-      <div className="dashboard-actions">
 
-        <DashboardContainer  >
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            <StyledButton id="btnMeet" onClick={openMeet} className="action-button">
-              ✨ CREATE MEET
-            </StyledButton>
+const [statisticsVisible, setStatisticsVisible] = useState(false);
 
-            {meetVisible && <Meet onClose={closeMeet} />}
 
-            <StyledButton id="btnEvent" onClick={openEvent} className="action-button">
-              📅 CREATE EVENT
-            </StyledButton>
-
-            {eventVisible && <Event onClose={closeEvent} />}
-
-            <StyledButton onClick={openReg} className="action-button">👥 SHORTLIST CANDIDATE</StyledButton>
-            {regVisible && <ShortlistCandidatesModal onClose={closeReg} />}
-
-            <StyledButton onClick={openResult} className="action-button">📊 PUBLISH RESULT</StyledButton>
-            {resultVisible && <PublishResults onClose={closeResult} />}
-
-          </Box>
-          <div className="table-section">
-            <Tabs
-              value={activeTab}
-              onChange={handleTabChange}
-              className="tabs-container"
-              centered
-            >
-              <Tab label="Created Meets" className="tab" />
-              <Tab label="Created Events" className="tab" />
-            </Tabs>
-
-            <div className="table-content">
-              {activeTab === 0 ? <MeetsTable /> : <EventsTable />}
-            </div>
-          </div>
-        </DashboardContainer>
-      </div>
-    </div>
-  );
+const openStatistics = () => {
+  setStatisticsVisible(true);
 };
 
+// Function to close the statistics modal
+const closeStatistics = () => {
+  setStatisticsVisible(false);
+};
+
+const [exportVisible, setExportVisible] = useState(false);
 
 
-// Inline styles
+const openExport = () => {
+  setExportVisible(true);
+};
+
+const closeExport = () => {
+  setExportVisible(false);
+};
+
+    
+    return (
+        <div className="adminDashboardHome" >
+          
+           <div className="absolute inset-0 overflow-hidden ">
+          <svg
+            className="absolute animate-spin-slow opacity-10"
+            viewBox="0 0 100 100"
+            width="1000"
+            height="1000"
+          >
+            <circle cx="50" cy="50" r="58" stroke="white" strokeWidth="1.5" fill="none" />
+            <circle cx="50" cy="50" r="45" stroke="white" strokeWidth="1.5" fill="none" />
+            <circle cx="50" cy="50" r="35" stroke="white" strokeWidth="0.5" fill="none" />
+          </svg>
+        </div>
+            <AppBar position="static" className="navbar" >
+                <Toolbar className="navbar-content">
+                    <Typography variant="h5" className="navbar-title">
+                    <h1 className="text-3xl font-bold text-center text-[#1e40af]">
+              Admin Dashboard
+            </h1>
+                    </Typography>
+                    <Box className="navbar-actions">
+                    <Button
+            onClick={openStatistics}
+            style={{color:'white'}}
+            className="bg-gradient-to-r from-blue-500 to-purple-600 px-4 py-2 rounded-full text-white font-medium hover:shadow-lg transition transform hover:scale-105"
+                            >
+            📈  Statistics
+          </Button>
+                        <Link to="/*" className="logout-link">
+                            <Button 
+                                onClick={handleLogout} 
+                                startIcon={<LoginIcon />}
+                                style={{color:'white'}}
+                            className="bg-gradient-to-r from-blue-500 to-purple-600 px-4 py-2 rounded-full text-white font-medium hover:shadow-lg transition transform hover:scale-105"
+                            >
+                                Logout
+                            </Button>
+                        </Link>
+                    </Box>
+                </Toolbar>
+            </AppBar>
+
+            <div className="dashboard-actions">
+                
+        <DashboardContainer  >
+            <Box sx={{ display: 'flex', justifyContent: 'center'}}>
+                <StyledButton id="btnMeet" onClick={openMeet} className="action-button">
+                    ✨ CREATE MEET
+                </StyledButton>
+
+                {meetVisible && <Meet onClose={closeMeet} />}
+
+                <StyledButton id="btnEvent" onClick={openEvent} className="action-button">
+                    📅 CREATE EVENT
+                </StyledButton>
+
+                {eventVisible && <Event onClose={closeEvent} />}
+
+                <StyledButton onClick={openReg} className="action-button"  style={{color: 'white'}}>📋 SHORTLIST CANDIDATE</StyledButton>
+                {regVisible && <ShortlistCandidatesModal onClose={closeReg} />}
+
+                <StyledButton onClick={openResult} className="action-button">📊 PUBLISH RESULT</StyledButton>
+                {resultVisible && <PublishResults onClose={closeResult} />}
+
+                <StyledButton onClick={openExport} className="action-button">
+            📥 EXPORT
+          </StyledButton>
+
+            </Box>
+            <div className="table-section">
+                <Tabs 
+                    value={activeTab} 
+                    onChange={handleTabChange} 
+                    className="tabs-container"
+                    centered
+                >
+                    <Tab label="Created Meets" className="tab" />
+                    <Tab label="Created Events" className="tab" />
+                </Tabs>
+
+                <div className="table-content">
+                    {activeTab === 0 ? <MeetsTable /> : <EventsTable />}
+                </div>
+            </div>
+        </DashboardContainer>
+        </div>
+
+        {statisticsVisible && (
+        <Statistics onClose={closeStatistics} />
+      )}
+
+{exportVisible && (
+  <div
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
+      display: "flex",
+      justifyContent: "center", // Center horizontally
+      alignItems: "center", // Center vertically
+      zIndex: 1000,
+    }}
+  >
+    <div
+      style={{
+        backgroundColor: "white",
+        padding: "20px",
+        borderRadius: "8px",
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+        width: "400px",
+        textAlign: "center",
+      }}
+    >
+      <h2 style={{ fontSize: "1.5rem", fontWeight: "bold", marginBottom: "20px" }}>
+        Export
+      </h2>
+      <button
+        onClick={closeExport}
+        style={{
+        
+          marginTop: "10px",
+          padding: "10px 20px",
+          backgroundColor: "#f56565",
+          color: "white",
+          border: "none",
+          borderRadius: "4px",
+          cursor: "pointer",
+          fontWeight: "bold",
+        }}
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
+
+    </div>
+
+
+    );
+};
+
 const dashboardStyles = {
   padding: "20px",
   backgroundColor: "#f0f4f8",
@@ -1984,6 +2550,7 @@ const errorStyles = {
   color: "red",
   fontWeight: "bold",
 };
+
 
 
 
