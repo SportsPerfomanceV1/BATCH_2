@@ -123,7 +123,7 @@ public class UserService {
     }
 
     public BaseUser findByEmailOrUsername(String identifier) {
-        System.out.println("check3");
+//        System.out.println("check3");
         Optional<BaseUser> athleteByUsername = athleteRepository.findByUsername(identifier).map(user -> (BaseUser) user);
         if (athleteByUsername.isPresent()) return athleteByUsername.get();
         Optional<BaseUser> athleteByEmail = athleteRepository.findByEmail(identifier).map(user -> (BaseUser) user);

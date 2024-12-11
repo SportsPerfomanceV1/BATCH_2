@@ -4,18 +4,18 @@ import com.sportsperformance.batch2.Repositories.AssistanceRequestRepository;
 import com.sportsperformance.batch2.Repositories.AthleteRepository;
 import com.sportsperformance.batch2.Repositories.WeightPlanRepository;
 import com.sportsperformance.batch2.Services.AdminService;
+import com.sportsperformance.batch2.Services.AthleteService;
 import com.sportsperformance.batch2.Services.CoachService;
-import com.sportsperformance.batch2.models.AssistanceRequest;
 import com.sportsperformance.batch2.models.Athlete;
-import com.sportsperformance.batch2.models.Coach;
-import com.sportsperformance.batch2.Repositories.CoachRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/coach")
 public class CoachController {
@@ -133,4 +133,22 @@ public class CoachController {
         List<EventResultDTO> results = adminService.getResultsByAthleteId(athleteId);
         return ResponseEntity.ok(results);
     }
+
+
+    private String getLoggedInUsername() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userDetails.getUsername();
+    }
+
+    @Autowired
+    AthleteService athleteService;
+    @GetMapping("/top-performance/by-athlete/{athleteId}")
+    public ResponseEntity<List<EventResultDTO>> getTopPerformanceByAthleteId(@PathVariable Long athleteId) {
+        Athlete ath = athleteRepository.findById(athleteId).get();
+        String username = ath.getUsername();
+        List<EventResultDTO> topPerformance = athleteService.getTop5PerformancesByLoggedInAthlete(username);
+        return ResponseEntity.ok(topPerformance);
+    }
+
+
 }

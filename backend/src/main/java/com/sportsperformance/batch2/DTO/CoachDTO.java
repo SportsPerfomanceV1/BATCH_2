@@ -10,4 +10,5 @@ public class CoachDTO {
     private String email, expertise;
     private MultipartFile imageFile;
     private String imageBase64;
+    private String username;
 }

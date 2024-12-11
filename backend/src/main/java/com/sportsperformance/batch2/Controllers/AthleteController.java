@@ -2,14 +2,10 @@ package com.sportsperformance.batch2.Controllers;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sportsperformance.batch2.DTO.*;
 import com.sportsperformance.batch2.Repositories.EventRepository;
-import com.sportsperformance.batch2.Repositories.EventResultRepository;
-import com.sportsperformance.batch2.Repositories.RegistrationRepository;
-import com.sportsperformance.batch2.Repositories.WeightPlanRepository;
 import com.sportsperformance.batch2.Services.AthleteService;
 import com.sportsperformance.batch2.Services.CoachService;
 import com.sportsperformance.batch2.models.Athlete;
 import com.sportsperformance.batch2.models.Event;
-import com.sportsperformance.batch2.models.Registration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
-import java.util.stream.Collectors;
+
 @JsonIgnoreProperties({"parentField"})
 @RestController
 @RequestMapping("/athlete")
@@ -221,5 +217,11 @@ public class AthleteController {
         String username = userDetails.getUsername();
         List<EventResponseDTO> events = athleteService.getApprovedRegistrationsWithResults(username);
         return ResponseEntity.ok(events);
+    }
+
+
+    private String getLoggedInUsername() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userDetails.getUsername();
     }
 }

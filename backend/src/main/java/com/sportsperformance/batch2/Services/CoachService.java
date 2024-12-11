@@ -40,6 +40,7 @@ public class CoachService {
         dto.setFirstName(coach.getFirstName());
         dto.setLastName(coach.getLastName());
         dto.setEmail(coach.getEmail());
+        dto.setUsername(coach.getUsername());
         dto.setExpertise(coach.getExpertise());
         dto.setImageBase64(ImageUtil.convertToBase64(coach.getImage()));
         return dto;
@@ -50,6 +51,8 @@ public class CoachService {
         Coach coach = coachRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Coach not found with username: " + username));
         CoachDTO dto = new CoachDTO();
+
+        dto.setUsername(coach.getUsername());
         dto.setCoachId(coach.getCoachId());
         dto.setFirstName(coach.getFirstName());
         dto.setLastName(coach.getLastName());
@@ -65,6 +68,8 @@ public class CoachService {
                 .orElseThrow(() -> new RuntimeException("Coach not found with username: " + username));
         coach.setFirstName(coachDTO.getFirstName());
         coach.setLastName(coachDTO.getLastName());
+
+        coach.setUsername(coachDTO.getUsername());
         coach.setEmail(coachDTO.getEmail());
         coach.setExpertise(coachDTO.getExpertise());
         if (coachDTO.getImageFile() != null && !coachDTO.getImageFile().isEmpty()) {
@@ -74,6 +79,8 @@ public class CoachService {
         CoachDTO updatedCoachDTO = new CoachDTO();
         updatedCoachDTO.setFirstName(coach.getFirstName());
         updatedCoachDTO.setLastName(coach.getLastName());
+
+        updatedCoachDTO.setUsername(coach.getUsername());
         updatedCoachDTO.setEmail(coach.getEmail());
         updatedCoachDTO.setExpertise(coach.getExpertise());
         updatedCoachDTO.setImageBase64(coach.getImage() != null ?
@@ -186,6 +193,12 @@ public class CoachService {
                     athleteProfile.setWeight(request.getAthlete().getWeight());
                     athleteProfile.setCategory(request.getAthlete().getCategory());
                     athleteProfile.setPhotoBase64(Arrays.toString(request.getAthlete().getPhoto()));
+                    if (request.getAthlete().getPhoto() != null) {
+                        byte[] photoBytes = request.getAthlete().getPhoto();
+                        athleteProfile.setPhotoBase64(Base64.getEncoder().encodeToString(photoBytes));
+                    } else {
+                        athleteProfile.setPhotoBase64(null);
+                    }
                     athleteProfile.setEmail(request.getAthlete().getEmail());
                     athleteProfile.setUsername(request.getAthlete().getUsername());
                     dto.setAthleteId((Long) request.getAthlete().getAthleteId());
@@ -310,7 +323,13 @@ public class CoachService {
                     dto.setCategory(athlete.getCategory());
                     dto.setEmail(athlete.getEmail());
                     dto.setUsername(athlete.getUsername());
-                    dto.setPhotoBase64(athlete.getPhotoUrl());
+//                    dto.setPhotoBase64(Arrays.toString(athlete.getPhoto()));
+                    if (athlete.getPhoto() != null) {
+                        byte[] photoBytes = athlete.getPhoto();
+                        dto.setPhotoBase64(Base64.getEncoder().encodeToString(photoBytes));
+                    } else {
+                        dto.setPhotoBase64(null);
+                    }
                     return dto;
                 })
                 .collect(Collectors.toList());

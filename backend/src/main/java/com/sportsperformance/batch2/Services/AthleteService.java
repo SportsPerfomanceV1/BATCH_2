@@ -145,14 +145,33 @@ public class AthleteService {
                 .orElseThrow(() -> new RuntimeException("Athlete not found with username: " + username));
         Coach coach = coachRepository.findById((long) dto.getCoachId())
                 .orElseThrow(() -> new RuntimeException("Coach not found with ID: " + dto.getCoachId()));
-        AssistanceRequest request = new AssistanceRequest();
-        request.setAthlete(athlete);
-        request.setCoach(coach);
-        request.setStatus("Pending");
-        request.setRequestDate(new Date());
-        request.setRemarks(dto.getRemarks());
-        AssistanceRequest savedRequest = assistanceRequestRepository.save(request);
-        return mapToDTO(savedRequest);
+        AssistanceRequest request = assistanceRequestRepository.findByAthlete(athlete);
+        if (request == null) {
+            request = new AssistanceRequest();
+            request.setAthlete(athlete);
+            request.setCoach(coach);
+            request.setStatus("Pending");
+            request.setRequestDate(new Date());
+            System.out.println(dto.getRemarks());
+            request.setRemarks(dto.getRemarks());
+            System.out.println(request.getRemarks());
+            assistanceRequestRepository.save(request);
+            return mapToDTO(request);
+//            throw new RuntimeException("No assistance request found for athlete: " + username);
+        } else {
+            request.setAthlete(athlete);
+            request.setCoach(coach);
+            request.setStatus("Pending");
+            request.setRequestDate(new Date());
+            System.out.println(dto.getRemarks());
+            request.setRemarks(dto.getRemarks());
+            System.out.println(request.getRemarks());
+            assistanceRequestRepository.save(request);
+            return mapToDTO(request);
+
+        }
+
+
     }
     private AssistanceRequestDTO mapToDTO(AssistanceRequest request) {
         AssistanceRequestDTO dto = new AssistanceRequestDTO();

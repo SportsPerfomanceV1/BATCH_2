@@ -9,5 +9,5 @@ public class CoachSummaryDTO {
     private String lastName;
     private String imageBase64;
     private String email, expertise;
-
+    private String username;
 }
