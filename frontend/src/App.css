@@ -1,4 +1,5 @@
 /* src/App.css */
+@import './CoachDashboard.css'; 
 input,
 select,
 button {
@@ -22,4 +23,24 @@ button:hover {
 
 h2 {
   text-align: center;
+}.page-enter {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.page-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.page-exit-active {
+  opacity: 0;
+  transform: translateX(-100%);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }

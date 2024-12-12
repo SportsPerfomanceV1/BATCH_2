@@ -13,7 +13,7 @@ public class CreateEventDTO {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date eventDate;
-    private Long meetId; // ID of the selected meet
+    private Long meetId;
     private String location;
     private String category;
     private String eventDescription;

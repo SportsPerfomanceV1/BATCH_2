@@ -11,13 +11,11 @@ public class AssistanceRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int assistanceRequestId;
+    private Long assistanceRequestId;
 
-    @ManyToOne
-    @JoinColumn(name = "eventId", nullable = false)
-    private Event event;
 
-    @ManyToOne
+
+    @OneToOne
     @JoinColumn(name = "athleteId", nullable = false)
     private Athlete athlete;
 
@@ -25,14 +23,9 @@ public class AssistanceRequest {
     @JoinColumn(name = "coachId", nullable = false)
     private Coach coach;
 
-    private String eventTitle;
-    private String meetName;
     private String status;
-    private Date eventDate;
     private Date requestDate;
-    private String location;
     private String remarks;
 
-    // Getters and setters...
 }
 
