@@ -1,2702 +1,119 @@
-// // import React, { useState, useEffect  } from "react";
-// // import { Button, Modal, Table, Form } from "react-bootstrap";
-// // import "./CoachDashboard.css"; // Import CSS file
-// // import axios from "axios";
-
-// // const CoachDashboard = ({
-// //   // coachProfile,
-// //   // achievements,
-// //   // assistanceRequests,
-// //   // athletes,
-// //   // handleProfileUpdate,
-// //   // handleAddAchievement,
-// //   // handleAcceptRequest,
-// //   // handleRejectRequest,
-// //   // fetchAthleteProfile,
-// //   // fetchWeightPlan,
-// //   // currentAthleteProfile,
-// //   // weightPlan,
-// //   // handleInputChange,
-// //   // setUpdatedProfile,
-// //   // updatedProfile,
-// //   // setNewAchievement,
-// //   // setShowEditProfileModal,
-// //   // showEditProfileModal,
-// //   // setShowAchievementModal,
-// //   // showAchievementModal,
-// //   // setShowAthleteProfileModal,
-// //   // showAthleteProfileModal,
-// //   // setShowWeightPlanModal,
-// //   // showWeightPlanModal,
-// // }) => {
-// //   const [currentSection, setCurrentSection] = useState("profile");
-
-
-// //   // States for managing data
-// //   const [coachProfile, setCoachProfile] = useState({});
-// //   const [achievements, setAchievements] = useState([]);
-// //   const [assistanceRequests, setAssistanceRequests] = useState([]);
-// //   const [athletes, setAthletes] = useState([]);
-// //   const [weightPlan, setWeightPlan] = useState(null);
-
-// //   // Modal visibility states
-// //   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
-// //   const [showAchievementModal, setShowAchievementModal] = useState(false);
-// //   const [showAthleteProfileModal, setShowAthleteProfileModal] = useState(false);
-// //   const [showWeightPlanModal, setShowWeightPlanModal] = useState(false);
-
-// //   // State for storing form data
-// //   const [updatedProfile, setUpdatedProfile] = useState({});
-// //   const [newAchievement, setNewAchievement] = useState({});
-// //   const [currentAthleteProfile, setCurrentAthleteProfile] = useState(null);
-
-// //   // Fetch data from API on component mount
-// //   useEffect(() => {
-// //     fetchCoachData();
-// //     fetchAchievements();
-// //     fetchAssistanceRequests();
-// //     fetchAthletes();
-// //   }, []);
-
-// //   // Fetch coach profile data
-// //   const fetchCoachData = async () => {
-// //     try {
-// //       const response = await axios.get("/coach/profile", {
-// //         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-// //       });
-// //       setCoachProfile(response.data);
-// //     } catch (error) {
-// //       console.error("Error fetching coach profile:", error);
-// //     }
-// //   };
-
-// //   // Fetch achievements
-// //   const fetchAchievements = async () => {
-// //     try {
-// //       const response = await axios.get("/coach/achievements", {
-// //         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-// //       });
-// //       setAchievements(response.data);
-// //     } catch (error) {
-// //       console.error("Error fetching achievements:", error);
-// //     }
-// //   };
-
-// //   // Fetch assistance requests
-// //   const fetchAssistanceRequests = async () => {
-// //     try {
-// //       const response = await axios.get("/coach/getallassistancereq", {
-// //         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-// //       });
-// //       setAssistanceRequests(response.data);
-// //     } catch (error) {
-// //       console.error("Error fetching assistance requests:", error);
-// //     }
-// //   };
-
-// //   // Fetch accepted athletes
-// //   const fetchAthletes = async () => {
-// //     try {
-// //       const response = await axios.get("/coach/athletes", {
-// //         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-// //       });
-// //       setAthletes(response.data);
-// //     } catch (error) {
-// //       console.error("Error fetching athletes:", error);
-// //     }
-// //   };
-
-// //   // Fetch athlete profile
-// //   const fetchAthleteProfile = async (athleteId) => {
-// //     try {
-// //       const response = await axios.get(`/coach/athlete/${athleteId}`, {
-// //         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-// //       });
-// //       setCurrentAthleteProfile(response.data);
-// //       setShowAthleteProfileModal(true);
-// //     } catch (error) {
-// //       console.error("Error fetching athlete profile:", error);
-// //     }
-// //   };
-
-// //   // Fetch weight plan
-// //   const fetchWeightPlan = async (athleteId) => {
-// //     try {
-// //       const response = await axios.get(`/weightplan/athlete/${athleteId}`, {
-// //         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-// //       });
-// //       setWeightPlan(response.data);
-// //       setShowWeightPlanModal(true);
-// //     } catch (error) {
-// //       console.error("Error fetching weight plan:", error);
-// //     }
-// //   };
-
-// //   // Update coach profile
-// //   const handleProfileUpdate = async () => {
-// //     try {
-// //       await axios.put("/coach/profile", updatedProfile, {
-// //         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-// //       });
-// //       setShowEditProfileModal(false);
-// //       fetchCoachData(); // Refresh profile data
-// //     } catch (error) {
-// //       console.error("Error updating profile:", error);
-// //     }
-// //   };
-
-// //   // Add a new achievement
-// //   const handleAddAchievement = async () => {
-// //     try {
-// //       await axios.post("/coach/addAchievement", newAchievement, {
-// //         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-// //       });
-// //       setShowAchievementModal(false);
-// //       fetchAchievements(); // Refresh achievements data
-// //     } catch (error) {
-// //       console.error("Error adding achievement:", error);
-// //     }
-// //   };
-
-// //   // Accept assistance request
-// //   const handleAcceptRequest = async (requestId) => {
-// //     try {
-// //       await axios.put(`/assistance/${requestId}/accept`, null, {
-// //         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-// //       });
-// //       fetchAssistanceRequests(); // Refresh requests data
-// //     } catch (error) {
-// //       console.error("Error accepting request:", error);
-// //     }
-// //   };
-
-// //   // Reject assistance request
-// //   const handleRejectRequest = async (requestId) => {
-// //     try {
-// //       await axios.put(`/assistance/${requestId}/reject`, null, {
-// //         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-// //       });
-// //       fetchAssistanceRequests(); // Refresh requests data
-// //     } catch (error) {
-// //       console.error("Error rejecting request:", error);
-// //     }
-// //   };
-
-// //   // Handle input changes for forms
-// //   const handleInputChange = (e, stateUpdater) => {
-// //     const { name, value } = e.target;
-// //     stateUpdater((prev) => ({ ...prev, [name]: value }));
-// //   };
-
-
-
-
-
-// //   return (
-// //     <div className="coach-dashboard container mt-5">
-// //       <header className="dashboard-header py-3">
-// //         <h1>Welcome, {coachProfile.firstName || "Coach" } { coachProfile.lastName || "Coach"}!</h1>
-// //         <nav>
-// //           <Button
-// //             variant={currentSection === "profile" ? "primary" : "light"}
-// //             onClick={() => setCurrentSection("profile")}
-// //             className="mx-2"
-// //           >
-// //             Profile
-// //           </Button>
-// //           <Button
-// //             variant={currentSection === "achievements" ? "primary" : "light"}
-// //             onClick={() => setCurrentSection("achievements")}
-// //             className="mx-2"
-// //           >
-// //             Achievements
-// //           </Button>
-// //           <Button
-// //             variant={currentSection === "requests" ? "primary" : "light"}
-// //             onClick={() => setCurrentSection("requests")}
-// //             className="mx-2"
-// //           >
-// //             Assistance Requests
-// //           </Button>
-// //           <Button
-// //             variant={currentSection === "athletes" ? "primary" : "light"}
-// //             onClick={() => setCurrentSection("athletes")}
-// //             className="mx-2"
-// //           >
-// //             Athletes
-// //           </Button>
-// //         </nav>
-// //       </header>
-
-// //       {/* Profile Section */}
-// //       {currentSection === "profile" && (
-// //         <div className="profile-section my-4">
-// //           <h3>Your Profile</h3>
-// //           <img
-// //               src={coachProfile.imageBase64 ? `data:image/jpeg;base64,${coachProfile.imageBase64}` : '/default-profile.jpg'}
-// //               alt="Athlete"
-// //               style={{
-// //                 width: '100%',
-// //                 maxWidth: '400px', // Increase image maxWidth for a larger image
-// //                 borderRadius: '8px',
-// //                 boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-// //               }}
-// //             />
-// //           <p>Email: {coachProfile.email}</p>
-// //           <p>Specialization: {coachProfile.specialization}</p>
-// //           <Button
-// //             variant="primary"
-// //             onClick={() => {
-// //               setUpdatedProfile(coachProfile);
-// //               setShowEditProfileModal(true);
-// //             }}
-// //           >
-// //             Edit Profile
-// //           </Button>
-// //         </div>
-// //       )}
-
-// //       {/* Achievements Section */}
-// //       {currentSection === "achievements" && (
-// //         <div className="achievements-section my-4">
-// //           <h3>Your Achievements</h3>
-// //           <ul>
-// //             {achievements.map((achievement, index) => (
-// //               <li key={index}>
-// //                 {achievement.title} - {achievement.description}
-// //               </li>
-// //             ))}
-// //           </ul>
-// //           <Button variant="success" onClick={() => setShowAchievementModal(true)}>
-// //             Add Achievement
-// //           </Button>
-// //         </div>
-// //       )}
-
-// //       {/* Assistance Requests Section */}
-// //       {currentSection === "requests" && (
-// //         <div className="assistance-requests-section my-4">
-// //           <h3>Assistance Requests</h3>
-// //           <Table striped bordered hover>
-// //             <thead>
-// //               <tr>
-// //                 <th>#</th>
-// //                 <th>Request By</th>
-// //                 <th>Message</th>
-// //                 <th>Status</th>
-// //                 <th>Actions</th>
-// //               </tr>
-// //             </thead>
-// //             <tbody>
-// //               {assistanceRequests.map((request, index) => (
-// //                 <tr key={request.id}>
-// //                   <td>{index + 1}</td>
-// //                   <td>{request.requestedBy}</td>
-// //                   <td>{request.message}</td>
-// //                   <td>{request.status}</td>
-// //                   <td>
-// //                     {request.status === "Pending" && (
-// //                       <>
-// //                         <Button
-// //                           variant="success"
-// //                           onClick={() => handleAcceptRequest(request.id)}
-// //                           className="me-2"
-// //                         >
-// //                           Accept
-// //                         </Button>
-// //                         <Button
-// //                           variant="danger"
-// //                           onClick={() => handleRejectRequest(request.id)}
-// //                         >
-// //                           Reject
-// //                         </Button>
-// //                       </>
-// //                     )}
-// //                   </td>
-// //                 </tr>
-// //               ))}
-// //             </tbody>
-// //           </Table>
-// //         </div>
-// //       )}
-
-// //       {/* Athletes Section */}
-// //       {currentSection === "athletes" && (
-// //         <div className="athletes-section my-4">
-// //           <h3>Your Athletes</h3>
-// //           <Table striped bordered hover>
-// //             <thead>
-// //               <tr>
-// //                 <th>#</th>
-// //                 <th>Name</th>
-// //                 <th>Email</th>
-// //                 <th>Actions</th>
-// //               </tr>
-// //             </thead>
-// //             <tbody>
-// //               {athletes.map((athlete, index) => (
-// //                 <tr key={athlete.id}>
-// //                   <td>{index + 1}</td>
-// //                   <td>{athlete.name}</td>
-// //                   <td>{athlete.email}</td>
-// //                   <td>
-// //                     <Button
-// //                       variant="info"
-// //                       onClick={() => fetchAthleteProfile(athlete.id)}
-// //                       className="me-2"
-// //                     >
-// //                       View Profile
-// //                     </Button>
-// //                     <Button
-// //                       variant="secondary"
-// //                       onClick={() => fetchWeightPlan(athlete.id)}
-// //                     >
-// //                       View Weight Plan
-// //                     </Button>
-// //                   </td>
-// //                 </tr>
-// //               ))}
-// //             </tbody>
-// //           </Table>
-// //         </div>
-// //       )}
-
-// //       {/* Modals (Reuse existing modal code here) */}
-// //     </div>
-// //   );
-// // };
-
-// // export default CoachDashboard;
-
-
-// // import React, { useState, useEffect } from "react";
-// // import { useNavigate } from "react-router-dom";
-// // import { Typography, AppBar, Table,Button, Toolbar, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper , DialogTitle ,DialogContent, Dialog } from "@mui/material";
-// // import TextField from '@mui/material/TextField';
-
-
-
-// // const CoachDashboard = () => {
-// //   const navigate = useNavigate();
-// //   const [currentSection, setCurrentSection] = useState("profile"); // Default section is Profile
-// //   const [coachProfile, setCoachProfile] = useState(null);
-// //   const [requests, setRequests] = useState([]);
-// //   const [acceptedAthletes, setAcceptedAthletes] = useState([]);
-// //   const [events, setEvents] = useState([]);
-// //   const [selectedAthlete, setSelectedAthlete] = useState(null);
-// //   const [dietPlan, setDietPlan] = useState("");
-// // const [newMessage, setNewMessage] = React.useState("");
-
-// //   const [achievementFormVisible, setAchievementFormVisible] = useState(false);
-// //   const [editingAchievement, setEditingAchievement] = useState(null);
-// // const [weightPlanModalOpen, setWeightPlanModalOpen] = useState(false);
-// // const [startWeight, setStartWeight] = useState("");
-// // const [targetWeight, setTargetWeight] = useState("");
-// // const [dailyCalorieGoal, setDailyCalorieGoal] = useState("");
-// // const [preference, setPreference] = useState("");
-
-
-
-// //   const [achievements, setAchievements] = useState([]);
-
-// //   const [weightPlan, setWeightPlan] = useState("");
-// //   const [athleteMessages, setAthleteMessages] = useState([]);
-// //   const [replyMessage, setReplyMessage] = useState("");
-// //   const [editingProfile, setEditingProfile] = useState(false);
-// //   const [profileModalOpen, setProfileModalOpen] = useState(false);
-// //   // State for the Add Achievement Modal
-// // const [addingAchievement, setAddingAchievement] = useState(false);
-
-// // // State to store new achievement data
-// // const [newAchievement, setNewAchievement] = useState({
-// //   title: "",
-// //   description: "",
-// //   achievedDate: "",
-// // });
-
-
-
-
-// //   const [dietPlanData, setDietPlanData] = useState({
-// //     date: '',
-// //     calories: '',
-// //     currentWeight: '',
-// //     weightPlanId: null, 
-// //   });
-// //   const [errorMessage, setErrorMessage] = useState('');
-
-// //   const [updatedProfile, setUpdatedProfile] = useState({
-// //     firstName: "",
-// //     lastName: "",
-// //   });
-// //   const [newImage, setNewImage] = useState(null);
-// //   const token = localStorage.getItem("token"); // Fetch token from localStorage
-
-// //   useEffect(() => {
-// //     // Load profile data on initial load
-// //     fetchCoachProfile();
-// //     fetchRequests();
-// //     fetchAcceptedAthletes();  
-// //     fetchEvents();
-// //     fetchAchievements();  
-
-// //   }, []);
-
-
-// //   const fetchAchievements = async () => {
-// //     try {
-// //       const token = localStorage.getItem("token");
-
-// //       const response = await fetch("/coach/achievements", {
-// //         method: "GET",
-// //         headers: {
-// //           "Content-Type": "application/json",
-// //           Authorization: `Bearer ${token}` ,
-
-// //         },
-// //       });
-
-// //       if (response.ok) {
-// //         const data = await response.json();
-
-// //         setAchievements(data);
-
-// //       } else {
-// //         console.error("Failed to fetch achievements.");
-// //       }
-// //     } catch (error) {
-// //       console.error("Error fetching achievements:", error);
-// //     }
-// //   };
-
-
-// //   // Function to handle saving an achievement
-// // const handleAddAchievement = async () => {
-// //   try {
-// //     const token = localStorage.getItem("token");
-
-// //     const response = await fetch("/coach/addAchievement", {
-// //       method: "POST",
-// //       headers: {
-// //         "Content-Type": "application/json",
-// //          Authorization: `Bearer ${token}` ,
-
-// //       },
-// //       body: JSON.stringify(newAchievement),
-
-// //     });
-
-// //     if (response.ok) {
-// //       const savedAchievement = await response.json();
-// //       alert("Achievement added successfully!");
-// //       setAddingAchievement(false);
-// //       // Optionally update the UI with the new achievement
-// //     } else {
-// //       alert("Failed to add achievement!");
-// //     }
-// //   } catch (error) {
-// //     console.error("Error adding achievement:", error);
-// //     alert("An error occurred while adding the achievement!");
-// //   }
-// // };
-
-
-
-
-
-
-
-
-
-// //   // Fetch Coach Profile
-// //   const handleCloseProfileModal = () => {
-// //     setProfileModalOpen(false);
-// //     setSelectedAthlete(null);
-// //   };
-
-
-// // {/*
-// //   const handleAddDietPlan = () => {
-// //     // Prompt the user to add a diet plan (can be replaced with a form/modal)
-// //     const dietPlan = prompt('Enter your diet plan:');
-// //     if (dietPlan) {
-// //       setSelectedAthlete(prevState => ({
-// //         ...prevState,
-// //         dietPlan,
-// //       }));
-// //     }
-// //   };
-// //   */}
-
-// //   // Handle the update of the existing diet plan
-// //   const handleUpdateDietPlan = () => {
-// //     const dietPlan = prompt('Update your diet plan:');
-// //     if (dietPlan) {
-// //       setSelectedAthlete(prevState => ({
-// //         ...prevState,
-// //         dietPlan,
-// //       }));
-// //     }
-// //   };
-
-// //   // Handle the addition of a new weight plan
-// //   const handleAddWeightPlan = () => {
-// //     const targetWeight = prompt('Enter your target weight (kg):');
-// //     if (targetWeight) {
-// //       setSelectedAthlete(prevState => ({
-// //         ...prevState,
-// //         targetWeight,
-// //       }));
-// //     }
-// //   };
-
-// //   // Handle the update of the existing weight plan
-// //   const handleUpdateWeightPlan = () => {
-// //     const targetWeight = prompt('Update your target weight (kg):');
-// //     if (targetWeight) {
-// //       setSelectedAthlete(prevState => ({
-// //         ...prevState,
-// //         targetWeight,
-// //       }));
-// //     }
-// //   };
-
-// //   const handleSendMessage = () => {
-// //     // API call to send a message
-// //   };
-
-
-// //   const handleAddDietPlan = () => {
-// //     // API call to submit a new diet plan
-// //   };
-// //   {/*
-// //   const handleAddWeightPlan = () => {
-// //     // API call to submit a new weight plan
-// //   };
-
-// //   const handleSendMessage = () => {
-// //     // API call to send a message
-// //   };
-
-// //   const handleUpdateDietPlan = () => {
-// //     // Logic to update the diet plan
-// //     console.log("Updating diet plan...");
-// //     // Make API call to update the diet plan
-// //   };
-
-// //   const handleUpdateWeightPlan = () => {
-// //     // Logic to update the weight plan
-// //     console.log("Updating weight plan...");
-// //     // Make API call to update the weight plan
-// //   };
-
-// // */}
-
-
-
-// // const handleOpenWeightPlanModal = (athlete) => {
-// //   setSelectedAthlete(athlete);
-// //   setWeightPlanModalOpen(true);
-// // };
-
-// // {/*
-
-// // const handleSubmitWeightPlan = async(e) => {
-// //   e.preventDefault(); // Prevent default form submission
-
-// //   const formData = new FormData();
-// //    // formData.append('athleteId',athleteId);
-// //     formData.append('startWeight', startWeight);
-// //     formData.append('targetWeight',targetWeight);
-// //     formData.append('preference',preference);
-// //     formData.append('dailyCalorieGoal',dailyCalorieGoal);
-// //     const token = localStorage.getItem("token");
-
-// //    try{
-
-// //   // Call the backend API
-// //      const response=await fetch(`/coach/createplan`, {
-
-// //     method: "POST",
-// //     body: formData,
-
-// //     headers: { 
-// //       Authorization: `Bearer ${token}` ,
-// //     },
-// //   });
-
-// //       if (response.ok) {
-// //         alert("Weight Plan created successfully!");
-// //        // handleCloseWeightPlanModal();
-// //        setStartWeight("");
-// //       setTargetWeight("");
-// //       setPreference("");
-// //       setDailyCalorieGoal("");
-// //       } else {
-// //         alert('Failed to create Weight Plan.');
-// //       }
-// //     }
-// //     catch(error) { console.error("Error:", error); }
-// // };
-
-// // */}
-// // const handleSubmitWeightPlan = async () => {
-// //   const formData = new FormData();
-// //   formData.append('startWeight', startWeight);
-// //   formData.append('targetWeight', targetWeight);
-// //   formData.append('preference', preference);
-// //   formData.append('dailyCalorieGoal', dailyCalorieGoal);
-
-// //   try {
-// //     const token = localStorage.getItem("token");
-// //     const response = await fetch('/coach/createPlan', {
-// //       method: 'POST',
-// //       body: formData,
-// //       headers: {
-// //         "Authorization": `Bearer ${token}`,
-// //       },
-// //     });
-
-// //     if (response.ok) {
-// //       alert("Weight Plan created successfully!");
-// //       // Reset the form fields
-// //       setStartWeight("");
-// //       setTargetWeight("");
-// //       setPreference("");
-// //       setDailyCalorieGoal("");
-// //      // handleCloseWeightPlanModal(); // Close modal if applicable
-// //     } else {
-// //       //const errorData = await response.json();
-// //   console.error("Failed to create Weight Plan:");
-// //     }
-// //   } catch (error) {
-// //     console.error('Error creating Weight Plan:', error);
-// //   }
-// // };
-
-
-// //   const handleViewDetails = (athlete) => {
-// //     setSelectedAthlete(athlete);
-// //     setProfileModalOpen(true);
-// //   };
-
-// //   const handleEditProfile = () => {
-// //     setEditingProfile(true);
-// //   };
-
-// //   const fetchCoachProfile = async () => {
-// //     try {
-// //       const response = await fetch("/coach/profile", {
-// //         method: "GET",
-// //         headers: {
-// //           Authorization: `Bearer ${token}`,
-// //           "Content-Type": "application/json",
-// //         },
-// //       });
-// //       const data = await response.json();
-// //       setCoachProfile(data);
-// //       setUpdatedProfile({
-// //         firstName: data.firstName,
-// //         lastName: data.lastName,
-// //       });
-// //     } catch (error) {
-// //       console.error("Error fetching coach profile:", error);
-// //     }
-// //   };
-
-// //   // Fetch Assistance Requests
-// //   const fetchRequests = async () => {
-// //     try {
-// //       const response = await fetch("/coach/getallassistancereq", {
-// //         method: "GET",
-// //         headers: {
-// //           Authorization: `Bearer ${token}`,
-// //         },
-// //       });
-// //       const data = await response.json();
-// //       setRequests(data);
-// //     } catch (error) {
-// //       console.error("Error fetching requests:", error);
-// //     }
-// //   };
-
-// //   // Fetch Accepted Athletes
-// //   const fetchAcceptedAthletes = async () => {
-// //     try {
-// //       const response = await fetch("/coach/accepted-athletes", {
-// //         method: "GET",
-// //         headers: {
-// //           Authorization: `Bearer ${token}`,
-// //         },
-// //       });
-// //       const data = await response.json();
-// //       setAcceptedAthletes(data);
-// //     } catch (error) {
-// //       console.error("Error fetching accepted athletes:", error);
-// //     }
-// //   };
-
-// //   // Fetch Events
-// //   const fetchEvents = async () => {
-// //     try {
-// //       const response = await fetch("/coach/events", {
-// //         method: "GET",
-// //         headers: {
-// //           Authorization: `Bearer ${token}`,
-// //         },
-// //       });
-// //       const data = await response.json();
-// //       setEvents(data);
-// //     } catch (error) {
-// //       console.error("Error fetching events:", error);
-// //     }
-// //   };
-
-// //   // Accept Assistance Request
-// //   const handleAcceptRequest = async (requestId) => {
-// //     try {
-// //       const response = await fetch(`/coach/assistance/${requestId}/accept`, {
-// //         method: "PUT",
-// //         headers: {
-// //           Authorization: `Bearer ${token}`,
-// //         },
-// //       });
-// //       if (response.ok) {
-
-// //         setRequests((prevRequests) =>
-// //           prevRequests.filter((req) => req.assistanceRequestId !== requestId)
-
-// //         );
-// //         fetchRequests();
-// //         fetchAcceptedAthletes();
-// //       } else {
-// //         console.error("Error accepting request:", response.statusText);
-// //       }
-// //     } catch (error) {
-// //       console.error("Error accepting request:", error);
-// //     }
-// //   };
-
-
-// //   // Reject Assistance Request
-// //   const handleRejectRequest = async (requestId) => {
-// //     try {
-// //       await fetch(`/coach/assistance/${requestId}/reject`, {
-// //         method: "PUT",
-// //         headers: {
-// //           Authorization: `Bearer ${token}`,
-// //         },
-// //       });
-// //       setRequests((prevRequests) => prevRequests.filter((req) => req.assistanceRequestId !== requestId));
-
-// //       fetchRequests();
-// //     } catch (error) {
-// //       console.error("Error rejecting request:", error);
-// //     }
-// //   };
-
-// //   // Save Profile Changes
-// //   const handleSaveProfile = async () => {
-// //     const formData = new FormData();
-// //     formData.append("firstName", updatedProfile.firstName);
-// //     formData.append("lastName", updatedProfile.lastName);
-// //     if (newImage) formData.append("imageFile", newImage);
-
-// //     try {
-// //       const response = await fetch("/coach/profile", {
-// //         method: "PUT",
-// //         body: formData,
-// //         headers: {
-// //           Authorization: `Bearer ${token}`,
-// //         },
-// //       });
-// //       if (response.ok) {
-// //         alert("Profile updated successfully!");
-// //         setEditingProfile(false);
-// //         fetchCoachProfile();
-// //       } else {
-// //         console.error("Error updating profile");
-// //       }
-// //     } catch (error) {
-// //       console.error("Error saving profile:", error);
-// //     }
-// //   };
-
-
-
-
-// //   const handleChange = (e) => {
-// //     const { name, value } = e.target;
-// //     setDietPlanData((prevState) => ({
-// //       ...prevState,
-// //       [name]: value,
-// //     }));
-// //   };
-
-
-// //   {/*
-// //   const handleAddDietPlan = async (athleteId) => {
-// //     try {
-// //       const token = localStorage.getItem('token');
-// //       const formData = new FormData();
-// //       formData.append('athleteId', athleteId);
-// //       formData.append('Date', date);
-// //       formData.append('calories',calories);
-// //       formData.append('currentWeight',currentWeight); 
-
-// //       const response = await fetch('/athlete/dailyDiet', {
-// //         method: 'POST',
-// //         headers: {
-// //           'Content-Type': 'application/json',
-// //           "Authorization": `Bearer ${token}`,
-
-// //         },
-
-// //         body: formData,
-// //       });
-
-// //       if (!response.ok) {
-// //         throw new Error('Failed to add diet plan');
-// //       }
-
-// //       // If the request is successful, reset the form and handle success
-// //       setDietPlanData({
-// //         date: '',
-// //         calories: '',
-// //         currentWeight: '',
-// //         weightPlanId: null,
-// //       });
-
-// //       alert('Diet plan added successfully!');
-// //     } catch (error) {
-// //       setErrorMessage(error.message);
-// //     }
-// //   };
-// //   */}
-// //  {/*} const handleDeleteAchievement = async (achievementId) => {
-// //     const confirmDelete = window.confirm('Are you sure you want to delete this achievement?');
-// //     const token = localStorage.getItem("token");
-
-// //     if (confirmDelete) {
-// //       try {
-// //         const response =  await fetch(`/coach/achievements/${achievementId}`, {
-// //            method: 'DELETE' ,
-// //            headers: { Authorization: `Bearer ${token}` },
-// //           });
-// //           if (!response.ok) throw new Error("Failed to delete Achievement.");
-// //             const updatedAchievement = achievements.filter((achievement) => achievement.achievementId !== achievementId);
-// //             setAchievements(updatedAchievement);
-// //       } catch (error) {
-// //         console.error('Error deleting achievement:', error);
-// //       }
-// //     }
-// //   };
-
-// //   */}
-
-
-// //   const saveUpdatedAchievement = async (updatedAchievement) => {
-// //     try {
-// //       const token = localStorage.getItem("token");
-// //     //  Authorization: `Bearer ${token}` ,
-
-
-// //       const response = await fetch(`/coach/achievements/${updatedAchievement.achievementId}`, {
-// //         method: 'PUT',
-// //         headers: { 'Content-Type': 'application/json',
-// //           Authorization: `Bearer ${token}` ,
-
-
-
-// //          },
-// //         body: JSON.stringify(updatedAchievement),
-// //       });
-// //       const data = await response.json();
-
-// //       setAchievements((prev) =>
-// //         prev.map((ach) => (ach.achievementId === data.achievementId ? data : ach))
-// //       );
-// //       setEditingAchievement(null);
-// //     } catch (error) {
-// //       console.error('Error updating achievement:', error);
-// //     }
-// //   };
-
-
-// //   const handleUpdateAchievement = (achievement) => {
-// //     setEditingAchievement(achievement);
-// //   };
-
-
-
-
-
-
-
-// //   return (
-// //     <div className="coach-dashboard">
-// //       <nav>
-// //         <button onClick={() => setCurrentSection("profile")}>Profile</button>
-// //         <button onClick={() => setCurrentSection("requests")}>Requests</button>
-// //         <button onClick={() => setCurrentSection("athletes")}>Athletes</button>
-// //         <button onClick={() => navigate("/*")}>Logout</button>
-// //       </nav>
-
-// //       {/* Coach Profile Section 
-// //       {currentSection === "profile" && (
-// //         <div>
-// //           {coachProfile && (
-// //             <div>
-// //               <img
-// //                 src={
-// //                   coachProfile.imageBase64
-// //                     ? `data:image/jpeg;base64,${coachProfile.imageBase64}`
-// //                     : "/default-profile.jpg"
-// //                 }
-// //                 alt="Coach"
-// //               />
-// //               <p>
-// //                 {coachProfile.firstName} {coachProfile.lastName}
-// //               </p>
-// //               <button onClick={() => setEditingProfile(true)}>Edit Profile</button>
-// //             </div>
-// //           )}
-
-// //           {editingProfile && (
-// //             <div className="edit-profile-form">
-// //               <h2>Edit Profile</h2>
-// //               <form onSubmit={(e) => e.preventDefault()}>
-// //                 <label>
-// //                   <input
-// //                     type="text"
-// //                     name="firstName"
-// //                     value={updatedProfile.firstName}
-// //                     onChange={(e) =>
-// //                       setUpdatedProfile({ ...updatedProfile, firstName: e.target.value })
-// //                     }
-// //                     placeholder="First Name"
-// //                   />
-// //                 </label>
-// //                 <label>
-// //                   <input
-// //                     type="text"
-// //                     name="lastName"
-// //                     value={updatedProfile.lastName}
-// //                     onChange={(e) =>
-// //                       setUpdatedProfile({ ...updatedProfile, lastName: e.target.value })
-// //                     }
-// //                     placeholder="Last Name"
-// //                   />
-// //                 </label>
-// //                 <label>
-// //                   <input
-// //                     type="file"
-// //                     onChange={(e) => setNewImage(e.target.files[0])}
-// //                   />
-// //                 </label>
-// //                 <button onClick={handleSaveProfile}>Save</button>
-// //                 <button onClick={() => setEditingProfile(false)}>Cancel</button>
-// //               </form>
-// //             </div>
-// //           )}
-// //         </div>
-// //       )} */}
-// //       {/* Coach Profile Section */}
-// // {currentSection === "profile" && (
-// //   <div>
-// //     {coachProfile && (
-// //       <div>
-// //         <img
-// //           src={
-// //             coachProfile.imageBase64
-// //               ? `data:image/jpeg;base64,${coachProfile.imageBase64}`
-// //               : "/default-profile.jpg"
-// //           }
-// //           alt="Coach"
-// //         />
-// //         <p>
-// //           {coachProfile.firstName} {coachProfile.lastName}
-// //         </p>
-
-
-// // {achievements && achievements.length > 0 && (
-// //       <div className="achievements-section">
-// //         <h2><strong>Achievements</strong></h2>
-// //         <ul>
-// //           {achievements.map((achievement) => (
-// //             <li key={achievements.achievementId}>
-// //               <h3>{achievement.title}</h3>
-// //               <p>{achievement.description}</p>
-// //               <p>
-// //                 <strong>Date:</strong> {new Date(achievement.achievedDate).toLocaleDateString()}
-// //               </p>
-// //             </li>
-// //           ))}
-// //         </ul>
-// //       </div>
-// //     )}
-
-// // <button onClick={() => setEditingProfile(true)}>Edit Profile</button>
-// //         <button onClick={() => setAddingAchievement(true)}>Add Achievement</button>
-// //       </div>
-// //     )}
-
-
-// // {/*
-// // {achievements && achievements.length > 0 && (
-// //   <div className="achievements-section">
-// //     <h2><strong>Achievements</strong></h2>
-// //     <ul>
-// //       {achievements.map((achievement) => (
-// //         <li key={achievement.achievementId}>
-// //           <h3>{achievement.title}</h3>
-// //           <p>{achievement.description}</p>
-// //           <p>
-// //             <strong>Date:</strong> {new Date(achievement.achievedDate).toLocaleDateString()}
-// //           </p>
-// //           <button onClick={() => handleUpdateAchievement(achievement)}>Update</button>
-// //           <button onClick={() => handleDeleteAchievement(achievement.achievementId)}>Delete</button>
-// //         </li>
-// //       ))}
-// //     </ul>
-// //   </div>
-// // )}
-// // <button onClick={() => setEditingProfile(true)}>Edit Profile</button>
-// // <button onClick={() => setAddingAchievement(true)}>Add Achievement</button>
-// // </div>
-// //     )}
-
-
-// //     */}
-// //     {editingProfile && (
-// //       <div className="edit-profile-form">
-// //         <h2>Edit Profile</h2>
-// //         <form onSubmit={(e) => e.preventDefault()}>
-// //           <label>
-// //             <input
-// //               type="text"
-// //               name="firstName"
-// //               value={updatedProfile.firstName}
-// //               onChange={(e) =>
-// //                 setUpdatedProfile({ ...updatedProfile, firstName: e.target.value })
-// //               }
-// //               placeholder="First Name"
-// //             />
-// //           </label>
-// //           <label>
-// //             <input
-// //               type="text"
-// //               name="lastName"
-// //               value={updatedProfile.lastName}
-// //               onChange={(e) =>
-// //                 setUpdatedProfile({ ...updatedProfile, lastName: e.target.value })
-// //               }
-// //               placeholder="Last Name"
-// //             />
-// //           </label>
-// //           <label>
-// //             <input type="file" onChange={(e) => setNewImage(e.target.files[0])} />
-// //           </label>
-// //           <button onClick={handleSaveProfile}>Save</button>
-// //           <button onClick={() => setEditingProfile(false)}>Cancel</button>
-// //         </form>
-// //       </div>
-// //     )}
-
-// //     {/* Add Achievement Section */}
-// //     {addingAchievement && (
-// //       <div className="add-achievement-form">
-// //         <h2>Add Achievement</h2>
-// //         <form
-// //           onSubmit={(e) => {
-// //             e.preventDefault();
-// //             handleAddAchievement();
-// //           }}
-// //         >
-// //           <label>
-// //             Title:
-// //             <input
-// //               type="text"
-// //               value={newAchievement.title}
-// //               onChange={(e) =>
-// //                 setNewAchievement({ ...newAchievement, title: e.target.value })
-// //               }
-// //               placeholder="Achievement Title"
-// //               required
-// //             />
-// //           </label>
-// //           <label>
-// //             Description:
-// //             <textarea
-// //               value={newAchievement.description}
-// //               onChange={(e) =>
-// //                 setNewAchievement({ ...newAchievement, description: e.target.value })
-// //               }
-// //               placeholder="Description"
-// //               required
-// //             />
-// //           </label>
-// //           <label>
-// //             Achieved Date:
-// //             <input
-// //               type="date"
-// //               value={newAchievement.achievedDate}
-// //               onChange={(e) =>
-// //                 setNewAchievement({ ...newAchievement, achievedDate: e.target.value })
-// //               }
-// //               required
-// //             />
-// //           </label>
-// //           <button type="submit">Save</button>
-// //           <button onClick={() => setAddingAchievement(false)}>Cancel</button>
-// //         </form>
-// //       </div>
-// //     )}
-// //   </div>
-// // )}
-// // {/*
-
-// // {editingAchievement && (
-// //   <div className="modal">
-// //     <div className="modal-content">
-// //       <h2>Update Achievement</h2>
-// //       <form
-// //         onSubmit={(e) => {
-// //           e.preventDefault();
-// //           const updatedAchievement = {
-// //             ...editingAchievement,
-// //             title: e.target.title.value,
-// //             description: e.target.description.value,
-// //             achievedDate: e.target.achievedDate.value,
-// //           };
-// //           saveUpdatedAchievement(updatedAchievement);
-// //         }}
-// //       >
-// //         <input
-// //           type="text"
-// //           name="title"
-// //           defaultValue={editingAchievement.title}
-// //           placeholder="Title"
-// //           required
-// //         />
-// //         <textarea
-// //           name="description"
-// //           defaultValue={editingAchievement.description}
-// //           placeholder="Description"
-// //           required
-// //         ></textarea>
-// //         <input
-// //           type="date"
-// //           name="achievedDate"
-// //           defaultValue={new Date(editingAchievement.achievedDate).toISOString().split('T')[0]}
-// //           required
-// //         />
-// //         <button type="submit">Save Changes</button>
-// //         <button type="button" onClick={() => setEditingAchievement(null)}>Cancel</button>
-// //       </form>
-// //     </div>
-// //   </div>
-// // )}
-
-// // */}
-
-
-
-
-// // {/*
-// // {currentSection === "profile" && (
-// //         <div>
-// //           {coachProfile && (
-// //             <div>
-// //               <img
-// //                 src={
-// //                   coachProfile.imageBase64
-// //                     ? `data:image/jpeg;base64,${coachProfile.imageBase64}`
-// //                     : "/default-profile.jpg"
-// //                 }
-// //                 alt="Coach"
-// //               />
-// //               <p>
-// //                 {coachProfile.firstName} {coachProfile.lastName}
-// //               </p>
-// //               <button onClick={() => setEditingProfile(true)}>Edit Profile</button>
-
-// //               <button onClick={() => setAchievementFormVisible(true)}>
-// //                 Add Achievement
-// //               </button>
-// //             </div>
-// //           )}
-
-// //           {editingProfile && (
-// //             <div className="edit-profile-form">
-// //               <h2>Edit Profile</h2>
-// //               <form onSubmit={(e) => e.preventDefault()}>
-// //                 <label>
-// //                   <input
-// //                     type="text"
-// //                     name="firstName"
-// //                     value={updatedProfile.firstName}
-// //                     onChange={(e) =>
-// //                       setUpdatedProfile({ ...updatedProfile, firstName: e.target.value })
-// //                     }
-// //                     placeholder="First Name"
-// //                   />
-// //                 </label>
-// //                 <label>
-// //                   <input
-// //                     type="text"
-// //                     name="lastName"
-// //                     value={updatedProfile.lastName}
-// //                     onChange={(e) =>
-// //                       setUpdatedProfile({ ...updatedProfile, lastName: e.target.value })
-// //                     }
-// //                     placeholder="Last Name"
-// //                   />
-// //                 </label>
-// //                 <label>
-// //                   <input
-// //                     type="file"
-// //                     onChange={(e) => setNewImage(e.target.files[0])}
-// //                   />
-// //                 </label>
-// //                 <button onClick={handleSaveProfile}>Save</button>
-// //                 <button onClick={() => setEditingProfile(false)}>Cancel</button>
-// //               </form>
-// //             </div>
-// //           )}
-
-
-// //           {achievementFormVisible && (
-// //             <div className="add-achievement-form">
-// //               <h2>Add Achievement</h2>
-// //               <form onSubmit={(e) => e.preventDefault()}>
-// //                 <label>
-// //                   Achievement Name:
-// //                   <input
-// //                     type="text"
-// //                     value={newAchievement.name}
-// //                     onChange={(e) =>
-// //                       setNewAchievement({ ...newAchievement, name: e.target.value })
-// //                     }
-// //                     placeholder="Enter achievement name"
-// //                   />
-// //                 </label>
-// //                 <label>
-// //                   Description:
-// //                   <textarea
-// //                     value={newAchievement.description}
-// //                     onChange={(e) =>
-// //                       setNewAchievement({ ...newAchievement, description: e.target.value })
-// //                     }
-// //                     placeholder="Enter achievement description"
-// //                   />
-// //                 </label>
-// //                 <button onClick={handleAddAchievement}>Save Achievement</button>
-// //                 <button onClick={() => setAchievementFormVisible(false)}>Cancel</button>
-// //               </form>
-// //             </div>
-// //           )}
-
-
-// //           <div className="achievements-list">
-// //             <h3>Achievements</h3>
-// //             {achievements.length > 0 ? (
-// //               achievements.map((achievement) => (
-// //                 <div key={achievement.id} className="achievement-item">
-// //                   <p><strong>{achievement.name}</strong></p>
-// //                   <p>{achievement.description}</p>
-// //                 </div>
-// //               ))
-// //             ) : (
-// //               <p>No achievements added yet.</p>
-// //             )}
-// //           </div>
-// //         </div>
-// //       )}
-
-
-// //     */}
-
-// //       {/* Assistance Requests Section */}
-
-// //       {/*}
-// //       {currentSection === "requests" && (
-// //         <div>
-// //           <h3>Assistance Requests</h3>
-// //           {requests.length > 0 ? (
-// //             requests.map((req) => (
-// //               <div key={req.id} className="request-card">
-// //                 <h4>Athlete Details</h4>
-// //                 <p><strong>Name:</strong> {req.athlete.firstName} {req.athlete.lastName}</p>
-// //                 <div className="request-actions">
-// //                   <button onClick={() => handleAcceptRequest(req.assistanceRequestId)}>Accept</button>
-// //                   <button onClick={() => handleRejectRequest(req.assistanceRequestId)}>Reject</button>
-// //                 </div>
-// //               </div>
-// //             ))
-// //           ) : (
-// //             <p>No assistance requests at the moment.</p>
-// //           )}
-// //         </div>
-// //       )}
-// //         */}
-
-// // {/* Athletes Section */}
-
-// // {/*
-// // {currentSection === "athletes" && (
-// //   <div>
-// //     <h3>Accepted Athletes</h3>
-// //     {requests.length > 0 ? (
-// //       requests
-// //         .filter((request) => request.status === "Accepted") // Filter requests with status "Accepted"
-// //         .map((request) => (
-// //           <div key={request.assistanceRequestId} className="athlete-card">
-// //             <img
-// //               src={
-// //                 request.athlete.imageBase64
-// //                   ? `data:image/jpeg;base64,${request.athlete.imageBase64}`
-// //                   : "/default-profile.jpg"
-// //               }
-// //               alt={`${request.athlete.firstName} ${request.athlete.lastName}`}
-// //             />
-// //             <p>
-// //               {request.athlete.firstName} {request.athlete.lastName}
-// //             </p>
-// //             <p><strong>Remarks:</strong> {request.remarks || "No remarks provided."}</p>
-// //             <p><strong>Request Date:</strong> {new Date(request.requestDate).toLocaleDateString()}</p>
-// //             <button onClick={() => handleViewDetails(request.athlete)}>View Details</button>
-// //           </div>
-// //         ))
-// //     ) : (
-// //       <p>No athletes currently accepted.</p>
-// //     )}
-
-// //     {selectedAthlete && (
-// //         <Dialog
-// //           open={profileModalOpen}
-// //           onClose={handleCloseProfileModal}
-// //           maxWidth="sm"
-// //           fullWidth
-// //         >
-// //           <DialogTitle style={{ textAlign: "center" }}>Athlete Profile</DialogTitle>
-// //           <DialogContent
-// //             style={{
-// //               justifyContent: "center",
-// //               textAlign: "center",
-// //             }}
-// //           >
-// //             <img
-// //               src={
-// //                 selectedAthlete.photoBase64
-// //                   ? `data:image/jpeg;base64,${selectedAthlete.photoBase64}`
-// //                   : "/default-profile.jpg"
-// //               }
-
-// //               style={{ paddingLeft: "3%", width: "400px", height: "220px" }}
-// //             />
-// //             <p></p>
-// //             <Typography variant="h6">
-// //               Name: {selectedAthlete.firstName} {selectedAthlete.lastName}
-// //             </Typography>
-// //             <Typography variant="h6">Gender: {selectedAthlete.gender}</Typography>
-// //             <Typography variant="h6">Category: {selectedAthlete.category}</Typography>
-// //             <Typography variant="h6">
-// //               Height: {selectedAthlete.height} cm
-// //             </Typography>
-// //             <Typography variant="h6">
-// //               Weight: {selectedAthlete.weight} kg
-// //             </Typography>
-// //             <Button
-// //               onClick={handleCloseProfileModal}
-// //               variant="contained"
-// //               style={{ marginTop: "15px" }}
-// //             >
-// //               Close
-// //             </Button>
-// //           </DialogContent>
-// //         </Dialog>
-// //       )}
-// //     </div>
-// // )}
-
-// // */}
-// // {/* Athletes Section */}
-// // {currentSection === "requests" && (
-// //   <div>
-// //     <h3>Pending Athlete Requests</h3>
-// //     {requests.length > 0 ? (
-// //       requests
-// //         .filter((request) => request.status === "Pending")
-// //         .map((request) => (
-// //           <div key={request.assistanceRequestId} className="athlete-card">
-// //             <img
-// //               src={
-// //                 request.athlete.imageBase64
-// //                   ? `data:image/jpeg;base64,${request.athlete.imageBase64}`
-// //                   : "/default-profile.jpg"
-// //               }
-// //               alt={`${request.athlete.firstName} ${request.athlete.lastName}`}
-// //             />
-// //             <p>
-// //               {request.athlete.firstName} {request.athlete.lastName}
-// //             </p>
-// //             <p><strong>Remarks:</strong> {request.remarks || "No remarks provided."}</p>
-// //             <p><strong>Request Date:</strong> {new Date(request.requestDate).toLocaleDateString()}</p>
-// //             <button onClick={() => handleAcceptRequest(request.assistanceRequestId)}>Accept</button>
-// //             <button onClick={() => handleRejectRequest(request.assistanceRequestId)}>Reject</button>
-// //           </div>
-// //         ))
-// //     ) : (
-// //       <p>No pending requests.</p>
-// //     )}
-// //   </div>
-// // )}
-
-// // {/* Accepted Athletes Section */}
-// // {currentSection === "athletes" && (
-// //   <div>
-// //     <h3>Accepted Athletes</h3>
-// //     {requests.length > 0 ? (
-// //       requests
-// //         .filter((request) => request.status === "Accepted") // Filter requests with status "Accepted"
-// //         .map((request) => (
-// //           <div key={request.assistanceRequestId} className="athlete-card">
-// //             <img
-// //               src={
-// //                 request.athlete.imageBase64
-// //                   ? `data:image/jpeg;base64,${request.athlete.imageBase64}`
-// //                   : "/default-profile.jpg"
-// //               }
-// //               alt={`${request.athlete.firstName} ${request.athlete.lastName}`}
-// //             />
-// //             <p>
-// //               {request.athlete.firstName} {request.athlete.lastName}
-// //             </p>
-// //             <p><strong>Remarks:</strong> {request.remarks || "No remarks provided."}</p>
-// //             <p><strong>Request Date:</strong> {new Date(request.requestDate).toLocaleDateString()}</p>
-// //             <button onClick={() => handleViewDetails(request.athlete)}>View Details</button>
-// //             <button onClick={() => handleOpenWeightPlanModal(request.athlete)}>
-// //               Create Weight Plan
-// //             </button>
-// //           </div>
-// //         ))
-// //     ) : (
-// //       <p>No athletes currently accepted.</p>
-// //     )}
-
-
-// //     {/* Weight Plan Modal */}
-// //     {selectedAthlete && (
-// //       <Dialog
-// //         open={weightPlanModalOpen}
-// //         maxWidth="sm"
-// //         fullWidth
-// //       >
-// //         <DialogTitle>Create Weight Plan</DialogTitle>
-// //         <DialogContent>
-// //          <form onSubmit={handleSubmitWeightPlan}>
-// //             <TextField
-// //               label="Start Weight"
-// //               type="number"
-// //               required
-// //               fullWidth
-// //               value={startWeight}
-// //               onChange={(e) => setStartWeight(e.target.value)}
-// //               margin="normal"
-// //             />
-// //             <TextField
-// //               label="Target Weight"
-// //               type="number"
-// //               required
-// //               fullWidth
-// //               value={targetWeight}
-// //               onChange={(e) => setTargetWeight(e.target.value)}
-// //               margin="normal"
-// //             />
-// //             <TextField
-// //               label="Daily Calorie Goal"
-// //               type="number"
-// //               required
-// //               fullWidth
-// //               value={dailyCalorieGoal}
-// //               onChange={(e) => setDailyCalorieGoal(e.target.value)}
-// //               margin="normal"
-// //             />
-// //             <TextField
-// //               label="Preference"
-// //               fullWidth
-// //               value={preference}
-// //               onChange={(e) => setPreference(e.target.value)}
-// //               margin="normal"
-// //             />
-// //             <Button type="submit" variant="contained" color="primary">
-// //               Submit
-// //             </Button>
-// //           </form>
-
-
-// //           {/*
-
-// // <form onSubmit={(e) => e.preventDefault()}>
-// //         <label>
-// //           <input
-// //             type="number"
-// //             name="startWeight"
-// //             value={startWeight}
-// //             onChange={(e) => setStartWeight(e.target.value)}
-// //             placeholder=" "
-// //           />
-// //           <span>Start Weight (kg)</span>
-// //         </label>
-
-// //         <label>
-// //           <input
-// //             type="number"
-// //             name="targetWeight"
-// //             value={targetWeight}
-// //             onChange={(e) => setTargetWeight(e.target.value)}
-// //             placeholder=" "
-// //           />
-// //           <span>Target Weight (kg)</span>
-// //         </label>
-
-// //         <label>
-// //           <input
-// //             type="text"
-// //             name="preference"
-// //             value={preference}
-// //             onChange={(e) => setPreference(e.target.value)}
-// //             placeholder=" "
-// //           />
-// //           <span>Diet Preference</span>
-// //         </label>
-
-// //         <label>
-// //           <input
-// //             type="number"
-// //             name="dailyCalorieGoal"
-// //             value={dailyCalorieGoal}
-// //             onChange={(e) => setDailyCalorieGoal(e.target.value)}
-// //             placeholder=" "
-// //           />
-// //           <span>Daily Calorie Goal</span>
-// //         </label>
-
-// //         <div className="modal-actions">
-// //           <button type="button" onClick={handleSubmitWeightPlan} className="btn2">
-// //             Save
-// //           </button>
-
-// //         </div>
-// //       </form>
-
-// //       */}
-
-// //         </DialogContent>
-// //       </Dialog>
-// //     )}
-
-
-// //     {/* Athlete Profile Dialog */}
-// //     {selectedAthlete && (
-// //       <Dialog
-// //         open={profileModalOpen}
-// //         onClose={handleCloseProfileModal}
-// //         maxWidth="sm"
-// //         fullWidth
-// //       >
-// //         <DialogTitle style={{ textAlign: "center" }}>Athlete Profile</DialogTitle>
-// //         <DialogContent
-// //           style={{
-// //             justifyContent: "center",
-// //             textAlign: "center",
-// //           }}
-// //         >
-// //           <img
-// //             src={
-// //               selectedAthlete.photoBase64
-// //                 ? `data:image/jpeg;base64,${selectedAthlete.photoBase64}`
-// //                 : "/default-profile.jpg"
-// //             }
-// //             alt="Athlete"
-// //             style={{ paddingLeft: "3%", width: "400px", height: "220px" }}
-// //           />
-// //           <Typography variant="h6">
-// //             Name: {selectedAthlete.firstName} {selectedAthlete.lastName}
-// //           </Typography>
-// //           <Typography variant="h6">Gender: {selectedAthlete.gender}</Typography>
-// //           <Typography variant="h6">Category: {selectedAthlete.category}</Typography>
-
-
-
-// // <div>
-
-// // </div>
-// //           <Button
-// //             onClick={handleCloseProfileModal}
-// //             variant="contained"
-// //             style={{ marginTop: "15px" }}
-// //           >
-// //             Close
-// //           </Button>
-// //         </DialogContent>
-// //       </Dialog>
-// //     )}
-// //   </div>
-// // )}
-
-
-
-
-// // </div>
-// // );
-
-// // }
-
-// // export default CoachDashboard; 
-
-
-// import React, { useState, useEffect } from "react";
-// import { Button, Modal, Table, Form } from "react-bootstrap";
-// import "./CoachDashboard.css"; // Import CSS file
-// import axios from "axios";
-// import Dialog from '@mui/material/Dialog';
-// import DialogTitle from '@mui/material/DialogTitle';
-// import DialogContent from '@mui/material/DialogContent';
-// import Typography from '@mui/material/Typography';
-// import TextField from '@mui/material/TextField';
-
-
-// const CoachDashboard = ({
-//   // coachProfile,
-//   // achievements,
-//   // assistanceRequests,
-//   // athletes,
-//   // handleProfileUpdate,
-//   // handleAddAchievement,
-//   // handleAcceptRequest,
-//   // handleRejectRequest,
-//   // fetchAthleteProfile,
-//   // fetchWeightPlan,
-//   // currentAthleteProfile,
-//   // weightPlan,
-//   // handleInputChange,
-//   // setUpdatedProfile,
-//   // updatedProfile,
-//   // setNewAchievement,
-//   // setShowEditProfileModal,
-//   // showEditProfileModal,
-//   // setShowAchievementModal,
-//   // showAchievementModal,
-//   // setShowAthleteProfileModal,
-//   // showAthleteProfileModal,
-//   // setShowWeightPlanModal,
-//   // showWeightPlanModal,
-// }) => {
-//   const [currentSection, setCurrentSection] = useState("profile");
-
-
-//   // States for managing data
-//   const [coachProfile, setCoachProfile] = useState({});
-//   const [achievements, setAchievements] = useState([]);
-//   const [assistanceRequests, setAssistanceRequests] = useState([]);
-//   const [athletes, setAthletes] = useState([]);
-//   const [weightPlan, setWeightPlan] = useState(null);
-//   const [selectedAthlete, setSelectedAthlete] = useState(null); // Stores the selected athlete details
-//   const [profileModalOpen, setProfileModalOpen] = useState(false); // Tracks modal visibility
-
-
-//   // Modal visibility states
-//   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
-//   const [showAchievementModal, setShowAchievementModal] = useState(false);
-//   const [showAthleteProfileModal, setShowAthleteProfileModal] = useState(false);
-//   const [showWeightPlanModal, setShowWeightPlanModal] = useState(false);
-//   const [newImage, setNewImage] = useState(null);
-
-
-//   // State for storing form data
-//   const [updatedProfile, setUpdatedProfile] = useState({});
-//   const [newAchievement, setNewAchievement] = useState({});
-//   const [currentAthleteProfile, setCurrentAthleteProfile] = useState(null);
-
-//   // Fetch data from API on component mount
-
-
-
-//   const [weightPlanModalOpen, setWeightPlanModalOpen] = useState(false);
-//   const [selectedAthleteId, setSelectedAthleteId] = useState(null);
-//   const [weightPlanData, setWeightPlanData] = useState({
-//     startWeight: "",
-//     targetWeight: "",
-//     preference: "",
-//     dailyCalorieGoal: "",
-//     dailyDiets: "",
-//   });
-
-
-//   const openWeightPlanModal = (athleteId) => {
-//     setSelectedAthleteId(athleteId);
-//     setWeightPlanModalOpen(true);
-//   };
-
-//   const closeWeightPlanModal = () => {
-//     setWeightPlanData({ targetWeight: "", duration: "", details: "" });
-//     setWeightPlanModalOpen(false);
-//   };
-
-
-
-
-//   const submitWeightPlan = async (athleteId) => {
-//     try {
-//       const response = await axios.post(
-//         `/coach/createplan`,
-//         {
-//           athleteId: parseFloat(athleteId),
-//           startWeight: parseFloat(weightPlanData.startWeight),
-//           targetWeight: parseFloat(weightPlanData.targetWeight),
-//           preference: weightPlanData.preference,
-//           dailyCalorieGoal: parseInt(weightPlanData.dailyCalorieGoal, 10),
-
-//         },
-//         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
-//       );
-//       console.log("Weight plan created successfully:", response.data);
-//       closeWeightPlanModal();
-//     } catch (error) {
-//       console.error("Error creating weight plan:", error);
-//     }
-//   };
-
-
-
-
-//   useEffect(() => {
-//     fetchCoachData();
-//     fetchAchievements();
-//     fetchAssistanceRequests();
-//     fetchAthletes();
-//   }, []);
-
-//   // Fetch coach profile data
-//   const fetchCoachData = async () => {
-//     try {
-//       const response = await axios.get("/coach/profile", {
-//         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-//       });
-//       setCoachProfile(response.data);
-//     } catch (error) {
-//       console.error("Error fetching coach profile:", error);
-//     }
-//   };
-
-//   // Fetch achievements
-//   const fetchAchievements = async () => {
-//     try {
-//       const response = await axios.get("/coach/achievements", {
-//         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-//       });
-//       setAchievements(response.data);
-//     } catch (error) {
-//       console.error("Error fetching achievements:", error);
-//     }
-//   };
-
-//   // Fetch assistance requests
-//   const fetchAssistanceRequests = async () => {
-//     try {
-//       const response = await axios.get("/coach/getallassistancereq", {
-//         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-//       });
-//       setAssistanceRequests(response.data);
-//     } catch (error) {
-//       console.error("Error fetching assistance requests:", error);
-//     }
-//   };
-
-//   // Fetch accepted athletes
-//   const fetchAthletes = async () => {
-//     try {
-//       const response = await axios.get("/coach/athletes", {
-//         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-//       });
-//       setAthletes(response.data);
-//     } catch (error) {
-//       console.error("Error fetching athletes:", error);
-//     }
-//   };
-
-//   // Fetch athlete profile
-//   const fetchAthleteProfile = async (athleteId) => {
-//     try {
-//       const response = await axios.get(`/coach/athlete/${athleteId}`, {
-//         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-//       });
-//       setCurrentAthleteProfile(response.data);
-//       setShowAthleteProfileModal(true);
-//     } catch (error) {
-//       console.error("Error fetching athlete profile:", error);
-//     }
-//   };
-
-//   // Fetch weight plan
-//   const fetchWeightPlan = async (athleteId) => {
-//     try {
-//       const response = await axios.get(`/coach/createplan/athlete/${athleteId}`, {
-//         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-//       });
-//       setWeightPlan(response.data);
-//       setShowWeightPlanModal(true);
-//     } catch (error) {
-//       console.error("Error fetching weight plan:", error);
-//     }
-//   };
-
-//   // Update coach profile
-//   const handleProfileUpdate = async () => {
-//     try {
-//       await axios.put("/coach/profile", updatedProfile, {
-//         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-//       });
-//       setShowEditProfileModal(false);
-//       fetchCoachData(); // Refresh profile data
-//     } catch (error) {
-//       console.error("Error updating profile:", error);
-//     }
-//   };
-
-//   // Add a new achievement
-//   const handleAddAchievement = async () => {
-//     try {
-//       await axios.post("/coach/addAchievement", newAchievement, {
-//         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-//       });
-//       setShowAchievementModal(false);
-//       fetchAchievements(); // Refresh achievements data
-//     } catch (error) {
-//       console.error("Error adding achievement:", error);
-//     }
-//   };
-
-//   // Accept assistance request
-//   const handleAcceptRequest = async (requestId) => {
-//     try {
-//       await axios.put(`/coach/assistance/${requestId}/accept`, null, {
-//         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-//       });
-//       fetchAssistanceRequests(); // Refresh requests data
-//     } catch (error) {
-//       console.error("Error accepting request:", error);
-//     }
-//   };
-//   const handleInput = (e, field) => {
-//     setWeightPlanData((prev) => ({ ...prev, [field]: e.target.value }));
-//   };
-//   // Reject assistance request
-//   const handleRejectRequest = async (requestId) => {
-//     try {
-//       await axios.put(`/coach/assistance/${requestId}/reject`, null, {
-//         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-//       });
-//       fetchAssistanceRequests(); // Refresh requests data
-//     } catch (error) {
-//       console.error("Error rejecting request:", error);
-//     }
-//   };
-
-//   // Handle input changes for forms
-//   const handleInputChange = (e, stateUpdater) => {
-//     const { name, value } = e.target;
-//     stateUpdater((prev) => ({ ...prev, [name]: value }));
-//   };
-
-//   const handleSaveProfile = async () => {
-//     const token = localStorage.getItem("token");
-//     const formData = new FormData();
-//     formData.append("firstName", updatedProfile.firstName);
-//     formData.append("lastName", updatedProfile.lastName);
-//     if (newImage) formData.append("imageFile", newImage);
-
-//     try {
-//       const response = await fetch("/coach/profile", {
-//         method: "PUT",
-//         body: formData,
-//         headers: {
-//           Authorization: `Bearer ${token}`,
-//         },
-//       });
-//       if (response.ok) {
-//         alert("Profile updated successfully!");
-//         setShowEditProfileModal(false);
-//         fetchCoachData();
-
-//       } else {
-//         console.error("Error updating profile");
-//       }
-//     } catch (error) {
-//       console.error("Error saving profile:", error);
-//     }
-//   };
-
-
-//   const handleViewDetails = (athlete) => {
-//     setSelectedAthlete(athlete);
-//     setProfileModalOpen(true);
-//   };
-
-//   const handleCloseProfileModal = () => {
-//     setProfileModalOpen(false);
-//   };
-
-
-//   const handleOpenProfileModal = (athlete) => {
-//     setSelectedAthlete(athlete);
-//     setProfileModalOpen(true);
-//   };
-
-
-
-
-
-//   return (
-//     <div className="coach-dashboard container mt-5">
-//       <header className="dashboard-header py-3">
-//         <h1>Welcome, {coachProfile.firstName || "Coach"} {coachProfile.lastName || "Coach"}!</h1>
-//         <nav>
-//           <Button
-//             variant={currentSection === "profile" ? "primary" : "light"}
-//             onClick={() => setCurrentSection("profile")}
-//             className="mx-2"
-//           >
-//             Profile
-//           </Button>
-//           <Button
-//             variant={currentSection === "achievements" ? "primary" : "light"}
-//             onClick={() => setCurrentSection("achievements")}
-//             className="mx-2"
-//           >
-//             Achievements
-//           </Button>
-//           <Button
-//             variant={currentSection === "requests" ? "primary" : "light"}
-//             onClick={() => setCurrentSection("requests")}
-//             className="mx-2"
-//           >
-//             Assistance Requests
-//           </Button>
-//           <Button
-//             variant={currentSection === "athletes" ? "primary" : "light"}
-//             onClick={() => setCurrentSection("athletes")}
-//             className="mx-2"
-//           >
-//             Athletes
-//           </Button>
-//         </nav>
-//       </header>
-
-//       {/* Profile Section */}
-//       {currentSection === "profile" && (
-//         <div className="profile-section my-4">
-//           <div
-//             style={{
-//               padding: "20px",
-//               maxWidth: "900px",         // Max width for the profile container
-//               margin: "0 auto",         // Center the container
-//               backgroundColor: "#fff",  // White background for a clean look
-//               borderRadius: "12px",     // Rounded corners for the container
-//               boxShadow: "0 8px 20px rgba(0, 0, 0, 0.1)", // Soft shadow for depth
-//               display: "flex",          // Use flexbox for horizontal alignment
-//               alignItems: "center",     // Vertically align items
-//             }}
-//           >
-//             {/* Profile Image */}
-//             <div
-//               style={{
-//                 flex: "0 0 150px",      // Fixed width for the profile image section
-//                 marginRight: "20px",    // Space between image and text
-//                 textAlign: "center",    // Center image within the div
-//               }}
-//             >
-//               <img
-//                 src={coachProfile.imageBase64 ? `data:image/jpeg;base64,${coachProfile.imageBase64}` : '/default-profile.jpg'}
-//                 alt="Athlete"
-//                 style={{
-//                   width: "100%",
-//                   maxWidth: "120px", // Set a max width for the profile image
-//                   borderRadius: "50%", // Circular profile image
-//                   boxShadow: "0px 8px 15px rgba(0, 0, 0, 0.1)", // Subtle shadow for depth
-//                   // transition: "transform 0.3s ease", // Smooth transition on hover
-//                 }}
-//               />
-//             </div>
-
-//             {/* Profile Details and Edit Button */}
-//             <div
-//               style={{
-//                 flex: "1",            // Take the remaining space
-//                 textAlign: "left",    // Align text to the left
-//               }}
-//             >
-//               <h3
-//                 style={{
-//                   fontSize: "24px",         // Slightly smaller font size for the name
-//                   color: "#2c3e50",         // Dark color for the title
-//                   fontWeight: "600",        // Bold title for emphasis
-//                   marginBottom: "10px",     // Space below the title
-//                 }}
-//               >
-//                 {coachProfile.firstName}{coachProfile.lastName}
-//               </h3>
-
-//               {/* Display Email and Specialization */}
-//               <p
-//                 style={{
-//                   fontSize: "16px",         // Standard font size for text
-//                   color: "#34495e",         // Slightly muted text color
-//                   marginBottom: "8px",      // Space between text
-//                 }}
-//               >
-//                 <strong>Email: </strong>{coachProfile.email || "example@domain.com"}
-//               </p>
-
-//               <p
-//                 style={{
-//                   fontSize: "16px",
-//                   color: "#34495e",
-//                   marginBottom: "20px",     // Space before the edit button
-//                 }}
-//               >
-//                 <strong>Specialization: </strong>{coachProfile.specialization || "Not specified"}
-//               </p>
-
-//               {/* Edit Profile Button */}
-//               <Button
-//                 variant="primary"
-//                 onClick={() => {
-//                   setUpdatedProfile(coachProfile);
-//                   setShowEditProfileModal(true);
-//                 }}
-//                 style={{
-//                   backgroundColor: "#3498db",  // Primary color (blue) for the button
-//                   color: "#fff",               // White text for contrast
-//                   padding: "10px 20px",        // Adequate padding
-//                   borderRadius: "6px",         // Rounded corners for the button
-//                   border: "none",              // Remove default button border
-//                   fontSize: "16px",            // Standard font size for readability
-//                   fontWeight: "600",           // Bold button text
-//                   cursor: "pointer",          // Pointer cursor on hover
-//                   transition: "background-color 0.3s ease", // Smooth hover effect
-//                 }}
-//                 onMouseOver={(e) => {
-//                   e.currentTarget.style.backgroundColor = "#2980b9"; // Darker shade on hover
-//                 }}
-//                 onMouseOut={(e) => {
-//                   e.currentTarget.style.backgroundColor = "#3498db"; // Reset to original color
-//                 }}
-//               >
-//                 Edit Profile
-//               </Button>
-//             </div>
-//           </div>
-
-
-//           {showEditProfileModal && (
-//             <div className="edit-profile-modal" style={modalStyles}>
-//               <div className="edit-modal-content" style={modalContentStyles}>
-//                 <h2 style={modalTitleStyles}>Edit Profile</h2>
-//                 <form
-//                   className="edit-modal-form"
-//                   onSubmit={(e) => {
-//                     e.preventDefault();
-//                     handleSaveProfile();
-//                   }}
-//                 >
-//                   <label style={labelStyles}>
-//                     First Name <span className="required" style={requiredStyles}>*</span>:
-//                     <input
-//                       type="text"
-//                       name="firstName"
-//                       value={updatedProfile.firstName || ""}
-//                       onChange={(e) =>
-//                         setUpdatedProfile({
-//                           ...updatedProfile,
-//                           firstName: e.target.value,
-//                         })
-//                       }
-//                       placeholder="First Name"
-//                       required
-//                       style={inputStyles}
-//                     />
-//                   </label>
-//                   <label style={labelStyles}>
-//                     Last Name <span className="required" style={requiredStyles}>*</span>:
-//                     <input
-//                       type="text"
-//                       name="lastName"
-//                       value={updatedProfile.lastName || ""}
-//                       onChange={(e) =>
-//                         setUpdatedProfile({
-//                           ...updatedProfile,
-//                           lastName: e.target.value,
-//                         })
-//                       }
-//                       placeholder="Last Name"
-//                       required
-//                       style={inputStyles}
-//                     />
-//                   </label>
-//                   <label style={labelStyles}>
-//                     Profile Picture:
-//                     <input
-//                       type="file"
-//                       onChange={(e) => setNewImage(e.target.files[0])}
-//                       style={inputStyles}
-//                     />
-//                   </label>
-//                   <div className="form-buttons" style={buttonContainerStyles}>
-//                     <Button
-//                       type="submit"
-//                       variant="success"
-//                       onClick={handleSaveProfile}
-//                       style={buttonStyles}
-//                     >
-//                       Save
-//                     </Button>
-//                     <Button
-//                       variant="secondary"
-//                       onClick={() => setShowEditProfileModal(false)}
-//                       style={buttonStyles}
-//                     >
-//                       Cancel
-//                     </Button>
-//                   </div>
-//                 </form>
-//               </div>
-//             </div>
-
-//           )}
-//         </div>
-//       )}
-
-
-//       {/* Achievements Section */}
-//       {currentSection === "achievements" && (
-//         <div className="achievements-section my-4">
-//           <h3>Your Achievements</h3>
-
-//           <Button variant="success" onClick={() => setShowAchievementModal(true)}>
-//             Add Achievement
-//           </Button>
-//           <ul
-//             style={{
-//               listStyleType: "none",   // Remove default list styling
-//               padding: 0,              // Remove padding for the list
-//             }}
-//           >
-//             {achievements.map((achievement, index) => (
-//               <li
-//                 key={index}
-//                 style={{
-//                   border: "1px solid #e0e0e0",  // Subtle border for each item
-//                   padding: "20px",               // Ample padding inside the box
-//                   margin: "15px 0",              // Margin between each item
-//                   borderRadius: "12px",          // Rounded corners
-//                   background: "linear-gradient(135deg, #f7f7f7, #ffffff)", // Soft gradient background
-//                   boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)", // Soft shadow for depth
-//                   transition: "transform 0.3s ease, box-shadow 0.3s ease", // Smooth hover transition
-//                 }}
-//                 onMouseOver={(e) => {
-//                   e.currentTarget.style.transform = "scale(1.03)"; // Slightly enlarge on hover
-//                   e.currentTarget.style.boxShadow = "0 8px 20px rgba(0, 0, 0, 0.2)"; // Bigger shadow
-//                 }}
-//                 onMouseOut={(e) => {
-//                   e.currentTarget.style.transform = "scale(1)"; // Reset size when hover ends
-//                   e.currentTarget.style.boxShadow = "0 4px 10px rgba(0, 0, 0, 0.1)"; // Reset shadow
-//                 }}
-
-//               >
-//                 <h3
-//                   style={{
-//                     marginBottom: "10px",  // More space below the title
-//                     fontSize: "20px",      // Slightly larger font for the title
-//                     fontWeight: "600",     // Bold title for emphasis
-//                     color: "#2c3e50",      // Dark text color for better readability
-//                     textTransform: "uppercase", // Uppercase for a formal look
-//                   }}
-//                 >
-//                   {achievement.title}
-//                 </h3>
-//                 <p
-//                   style={{
-//                     marginBottom: "10px",  // More space below the description
-//                     fontSize: "16px",      // Standard readable font size for description
-//                     lineHeight: "1.6",      // Better line spacing for readability
-//                     color: "#34495e",      // Slightly muted text color
-//                   }}
-//                 >
-//                   {achievement.description}
-//                 </p>
-//                 <span
-//                   style={{
-//                     display: "block",      // Make the date a block element for alignment
-//                     fontSize: "14px",      // Smaller font size for the date
-//                     color: "#95a5a6",      // Light gray for the date text
-//                     fontStyle: "italic",   // Italicize for a subtle distinction
-//                     textAlign: "right",    // Align the date to the right
-//                     marginTop: "10px",     // Space between description and date
-//                   }}
-//                 >
-//                   {achievement.achievedDate ? achievement.achievedDate.split("T")[0] : "Date not available"}
-//                 </span>
-//               </li>
-//             ))}
-//           </ul>
-
-
-
-
-
-//           {/* Modal for Adding Achievement */}
-//           {showAchievementModal && (
-//             <div className="achievement-modal">
-//               <div className="modal-content">
-//                 <h2>Add Achievement</h2>
-//                 <form
-//                   onSubmit={(e) => {
-//                     // e.preventDefault();
-//                     handleAddAchievement();
-//                   }}
-//                 >
-//                   <label>
-//                     Title<span className="required">*</span>:
-//                     <input
-//                       type="text"
-//                       value={newAchievement.title}
-//                       onChange={(e) =>
-//                         setNewAchievement({ ...newAchievement, title: e.target.value })
-
-//                       }
-//                       placeholder="Achievement Title"
-//                       required
-//                     />
-//                   </label>
-//                   <label>
-//                     Description<span className="required">*</span>:
-//                     <textarea
-//                       value={newAchievement.description}
-//                       onChange={(e) =>
-//                         setNewAchievement({ ...newAchievement, description: e.target.value })
-//                       }
-//                       placeholder="Description"
-//                       required
-//                     />
-//                   </label>
-//                   <label>
-//                     Achieved Date<span className="required">*</span>:
-//                     <input
-//                       type="date"
-//                       value={newAchievement.achievedDate}
-//                       onChange={(e) =>
-//                         setNewAchievement({ ...newAchievement, achievedDate: e.target.value })
-//                       }
-//                       required
-//                     />
-//                   </label>
-//                   <div className="modal-buttons">
-//                     <button type="submit">Save</button>
-//                     <button
-//                       type="button"
-//                       onClick={() => setShowAchievementModal(false)}
-//                     >
-//                       Cancel
-//                     </button>
-//                   </div>
-//                 </form>
-//               </div>
-//             </div>
-//           )}
-
-//         </div>
-//       )}
-
-//       {/* Assistance Requests Section 
-//       {currentSection === "requests" && (
-//         <div className="assistance-requests-section my-4">
-//           <h3>Assistance Requests</h3>
-//           <Table striped bordered hover>
-//             <thead>
-//               <tr>
-//                 <th>#</th>
-//                 <th>Request By</th>
-//                 <th>Message</th>
-//                 <th>Status</th>
-//                 <th>Actions</th>
-//               </tr>
-//             </thead>
-//             <tbody>
-//               {assistanceRequests.map((request, index) => (
-//                 <tr key={request.id}>
-//                   <td>{index + 1}</td>
-//                   <td>{request.requestedBy}</td>
-//                   <td>{request.message}</td>
-//                   <td>{request.status}</td>
-//                   <td>
-//                     {request.status === "Pending" && (
-//                       <>
-//                         <Button
-//                           variant="success"
-//                           onClick={() => handleAcceptRequest(request.id)}
-//                           className="me-2"
-//                         >
-//                           Accept
-//                         </Button>
-//                         <Button
-//                           variant="danger"
-//                           onClick={() => handleRejectRequest(request.id)}
-//                         >
-//                           Reject
-//                         </Button>
-//                       </>
-//                     )}
-//                   </td>
-//                 </tr>
-//               ))}
-//             </tbody>
-//           </Table>
-//         </div>
-//       )}  */}
-//       {currentSection === "requests" && (
-//         <div className="assistance-requests-section my-4">
-//           <h3>Assistance Requests</h3>
-//           <Table striped bordered hover>
-//             <thead>
-//               <tr>
-//                 <th>#</th>
-//                 <th>Request By</th>
-//                 <th>Message</th>
-//                 <th>Request Date</th>
-//                 <th>Actions</th>
-//               </tr>
-//             </thead>
-//             <tbody>
-//               {assistanceRequests
-//                 .filter((request) => request.status === "Pending") // Filter for Pending requests
-//                 .map((request, index) => (
-//                   <tr key={request.id}>
-//                     <td>{index + 1}</td>
-//                     <td> {request.athlete.firstName} {request.athlete.lastName}</td>
-//                     <td>{request.remarks || "No remarks provided."}</td>
-//                     <td>{request.requestDate.split('T')[0]}</td>
-//                     <td>
-//                       <Button
-//                         variant="success"
-//                         onClick={() => handleAcceptRequest(request.assistanceRequestId)}
-//                         className="me-2"
-//                       >
-//                         Accept
-//                       </Button>
-//                       <Button
-//                         variant="danger"
-//                         onClick={() => handleRejectRequest(request.assistanceRequestId)}
-//                       >
-//                         Reject
-//                       </Button>
-//                     </td>
-//                   </tr>
-//                 ))}
-//             </tbody>
-//           </Table>
-//           {assistanceRequests.filter((request) => request.status === "Pending").length === 0 && (
-//             <p>No pending requests available.</p>
-//           )}
-//         </div>
-//       )}
-
-
-//       {/* Athletes Section */}
-//       {currentSection === "athletes" && (
-//         <div className="athletes-section my-4">
-//           <h3>Your Athletes</h3>
-//           <Table striped bordered hover>
-//             <thead>
-//               <tr>
-//                 <th>#</th>
-//                 <th>Name</th>
-//                 <th>Email</th>
-//                 <th>Actions</th>
-//               </tr>
-//             </thead>
-//             <tbody>
-//               {athletes.map((athlete, index) => (
-//                 <tr key={athlete.id}>
-//                   <td>{index + 1}</td>
-//                   <td>{athlete.firstName} {athlete.lastName}</td>
-//                   <td>{athlete.email}</td>
-//                   <td>
-//                     <Button
-//                       variant="info"
-//                       onClick={() => handleViewDetails(athlete)}
-//                       className="me-2"
-//                     >
-//                       View Profile
-//                     </Button>
-//                     <Button
-//                       variant="secondary"
-//                       onClick={() => openWeightPlanModal(athlete.athleteId)}
-//                     >
-//                       View Weight Plan
-//                     </Button>
-//                   </td>
-//                 </tr>
-//               ))}
-//             </tbody>
-//           </Table>
-
-//           {selectedAthlete && (
-//             <Dialog
-//               open={profileModalOpen}
-//               onClose={handleCloseProfileModal}
-//               maxWidth="sm"
-//               fullWidth
-//             >
-//               <DialogTitle style={{ textAlign: "center" }}>Athlete Profile</DialogTitle>
-//               <DialogContent
-//                 style={{
-//                   justifyContent: "center",
-//                   textAlign: "center",
-//                 }}
-//               >
-//                 <img
-//                   src={
-//                     selectedAthlete.photoBase64
-//                       ? `data:image/jpeg;base64,${selectedAthlete.photoBase64}`
-//                       : "/default-profile.jpg"
-//                   }
-//                   alt="Athlete"
-//                   style={{ paddingLeft: "3%", width: "400px", height: "220px" }}
-//                 />
-//                 <Typography variant="h6">
-//                   Name: {selectedAthlete.firstName} {selectedAthlete.lastName}
-//                 </Typography>
-//                 <Typography variant="h6">Gender: {selectedAthlete.gender} </Typography>
-//                 <Typography variant="h6">Height: {selectedAthlete.height} </Typography>
-//                 <Typography variant="h6">Weight: {selectedAthlete.weight} </Typography>
-
-//                 <Typography variant="h6">Category: {selectedAthlete.category}</Typography>
-
-
-
-
-//                 <div>
-
-//                 </div>
-//                 <Button
-//                   onClick={handleCloseProfileModal}
-//                   variant="contained"
-//                   style={{ marginTop: "15px" }}
-//                 >
-//                   Close
-//                 </Button>
-//               </DialogContent>
-//             </Dialog>
-//           )}
-
-//           {/* Modal for Creating Weight Plan */}
-//           <Dialog
-//             open={weightPlanModalOpen}
-//             onClose={closeWeightPlanModal}
-//             maxWidth="sm"
-//             fullWidth
-//           >
-//             <DialogTitle style={{ textAlign: "center" }}>Create Weight Plan</DialogTitle>
-//             <DialogContent>
-//               <TextField
-//                 label="Start Weight"
-//                 fullWidth
-//                 margin="normal"
-//                 variant="outlined"
-
-//                 value={weightPlanData.startWeight}
-//                 onChange={(e) => handleInput(e, "startWeight")}
-//               />
-//               <TextField
-//                 label="Target Weight"
-//                 fullWidth
-//                 margin="normal"
-//                 variant="outlined"
-
-//                 value={weightPlanData.targetWeight}
-//                 onChange={(e) => handleInput(e, "targetWeight")}
-//               />
-//               <TextField
-//                 label="Preference"
-//                 fullWidth
-//                 margin="normal"
-//                 variant="outlined"
-//                 value={weightPlanData.preference}
-//                 onChange={(e) => handleInput(e, "preference")}
-//               />
-//               <TextField
-//                 label="Daily Calorie Goal"
-//                 fullWidth
-//                 margin="normal"
-//                 variant="outlined"
-
-//                 value={weightPlanData.dailyCalorieGoal}
-//                 onChange={(e) => handleInput(e, "dailyCalorieGoal")}
-//               />
-//               {/* Optional: Textarea for Daily Diets */}
-
-//               <Button
-//                 onClick={() => submitWeightPlan(selectedAthlete.athleteId)}
-//                 variant="contained"
-//                 color="primary"
-//                 style={{ marginTop: "15px" }}
-//               >
-//                 Submit Plan
-//               </Button>
-//               <Button
-//                 onClick={closeWeightPlanModal}
-//                 variant="outlined"
-//                 style={{ marginTop: "15px", marginLeft: "10px" }}
-//               >
-//                 Cancel
-//               </Button>
-//             </DialogContent>
-//           </Dialog>
-
-//         </div>
-//       )}
-
-
-
-//       {/* Modals (Reuse existing modal code here) */}
-//     </div>
-//   );
-// };
-
-// export default CoachDashboard;
-
-
-
-
-// const modalStyles = {
-//   position: "fixed",
-//   top: 0,
-//   left: 0,
-//   width: "100%",
-//   height: "100%",
-//   backgroundColor: "rgba(0, 0, 0, 0.5)",  // Semi-transparent background
-//   display: "flex",
-//   justifyContent: "center",
-//   alignItems: "center",
-//   zIndex: 1000,  // Ensure modal is on top
-// };
-
-// const modalContentStyles = {
-//   backgroundColor: "#fff",
-//   padding: "30px",
-//   borderRadius: "12px",
-//   width: "80%",
-//   maxWidth: "600px",
-//   boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-//   animation: "fadeIn 0.3s ease-in-out",
-// };
-
-// const modalTitleStyles = {
-//   textAlign: "center",
-//   fontSize: "24px",
-//   color: "#333",
-//   marginBottom: "20px",
-// };
-
-// const labelStyles = {
-//   display: "block",
-//   marginBottom: "15px",
-//   fontSize: "16px",
-//   color: "#555",
-// };
-
-// const requiredStyles = {
-//   color: "red",
-// };
-
-// const inputStyles = {
-//   width: "100%",
-//   padding: "10px",
-//   marginTop: "5px",
-//   border: "1px solid #ddd",
-//   borderRadius: "6px",
-//   fontSize: "16px",
-//   color: "#333",
-//   outline: "none",
-//   boxSizing: "border-box",
-//   transition: "border-color 0.3s",
-// };
-
-// const inputFocusStyles = {
-//   borderColor: "#3498db",
-// };
-
-// const buttonContainerStyles = {
-//   display: "flex",
-//   justifyContent: "space-between",
-//   marginTop: "20px",
-// };
-
-// const buttonStyles = {
-//   padding: "12px 20px",
-//   borderRadius: "6px",
-//   fontSize: "16px",
-//   cursor: "pointer",
-//   width: "48%", // Button width to make them align horizontally
-//   textAlign: "center",
-// };
-
-// // Add a fade-in animation to the modal
-// const fadeInKeyframes = `@keyframes fadeIn {
-//   0% { opacity: 0; }
-//   100% { opacity: 1; }
-// }`;
-// document.styleSheets[0].insertRule(fadeInKeyframes, 0);
-
-
-
 import React, { useState, useEffect } from "react";
 import { Button } from "react-bootstrap";
-import "../styles/coach.css"; // Import CSS file
+
+import {  Spinner } from "react-bootstrap";
+import "../styles/coach.css";
 import axios from "axios";
-import { Typography, AppBar, Table, Toolbar, DialogTitle, DialogContent, Dialog, Box,Card,CardContent } from "@mui/material";
+import { Typography, AppBar, Table, Toolbar, DialogTitle, DialogContent, Dialog, IconButton, Card, CardContent } from "@mui/material";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import LoginIcon from "@mui/icons-material/Login";
+import CloseIcon from '@mui/icons-material/Close';
+import { IoIosArrowBack } from "react-icons/io";
+import CoachStatistics from "./CoachStatistics";
+
+const Popup = ({ message, type, onClose }) => {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" style={{zIndex: '9999'}}>
+      <div className={`
+        relative 
+        bg-white 
+        rounded-lg 
+        shadow-xl 
+        p-6 
+        max-w-sm 
+        w-full 
+        mx-4
+        flex 
+        flex-col 
+        items-center
+        ${type === 'success' ? 'border-l-4 border-green-500' : 'border-l-4 border-red-500'}
+      `}>
+        <button
+          onClick={onClose}
+          style={{ backgroundColor: 'white' }}
+          className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl"
+        >
+          ×
+        </button>
+        {/* Icon */}
+        <div className="mb-4">
+          {type === 'success' ? (
+            <svg
+              className="w-16 h-16 text-green-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          ) : (
+            <svg
+              className="w-16 h-16 text-red-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          )}
+        </div>
+        {/* Message */}
+        <h3 className="text-center text-gray-700">{message}</h3>
+      </div>
+    </div>
+  );
+};
+
+const spinnerContainerStyle = {
+  display: 'flex',
+  justifyContent: 'center', // Center horizontally
+  alignItems: 'center',     // Center vertically
+  height: '100vh',          // Full viewport height
+  backgroundColor: 'rgba(0, 0, 0, 0.2)', // Semi-transparent background
+  zIndex: 1000,             // Ensure it's on top
+};
+
+const spinnerWrapperStyle = {
+  textAlign: 'center',       // Align spinner text in the center
+  padding: '20px',           // Add padding around the spinner
+  backgroundColor: '#fff',   // White background for the spinner container
+  borderRadius: '12px',      // Rounded corners for the background
+  boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)', // Soft shadow for depth
+};
+
+const spinnerStyle = {
+  width: '80px',             // Increase spinner size
+  height: '80px',            // Increase spinner size
+  borderWidth: '5px',        // Make the spinner border thicker
+  borderColor: 'transparent', // Hide the default border
+  borderTopColor: '#3498db', // Blue color for the top border (spinner effect)
+  animationDuration: '1.2s', // Smooth spinning animation
+};
+
+const loadingTextStyle = {
+  marginTop: '15px',         // Space between spinner and text
+  fontSize: '18px',          // Set a readable font size
+  color: '#3498db',          // Blue color for the text
+  fontWeight: '600',         // Bold text
+  textTransform: 'uppercase', // Uppercase text for emphasis
+  letterSpacing: '2px',      // Slight letter spacing for better readability
+  fontFamily: '"Roboto", sans-serif', // Smooth and modern font
+};
 
 
 const CoachDashboard = ({
-  // coachProfile,
-  // achievements,
-  // assistanceRequests,
-  // athletes,
-  // handleProfileUpdate,
-  // handleAddAchievement,
-  // handleAcceptRequest,
-  // handleRejectRequest,
-  // fetchAthleteProfile,
-  // fetchWeightPlan,
-  // currentAthleteProfile,
-  // weightPlan,
-  // handleInputChange,
-  // setUpdatedProfile,
-  // updatedProfile,
-  // setNewAchievement,
-  // setShowEditProfileModal,
-  // showEditProfileModal,
-  // setShowAchievementModal,
-  // showAchievementModal,
-  // setShowAthleteProfileModal,
-  // showAthleteProfileModal,
-  // setShowWeightPlanModal,
-  // showWeightPlanModal,
 }) => {
   const [currentSection, setCurrentSection] = useState("profile");
 
@@ -2710,31 +127,47 @@ const CoachDashboard = ({
   const [selectedAthlete, setSelectedAthlete] = useState(null); // Stores the selected athlete details
   const [profileModalOpen, setProfileModalOpen] = useState(false); // Tracks modal visibility
   const [coachDietPlan, setCoachDietPlan] = useState([]);
-
+  const [isLoading, setIsLoading] = useState(true);
   // Modal visibility states
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const [showAchievementModal, setShowAchievementModal] = useState(false);
   const [showAthleteProfileModal, setShowAthleteProfileModal] = useState(false);
   const [showWeightPlanModal, setShowWeightPlanModal] = useState(false);
   const [newImage, setNewImage] = useState(null);
-
+  const [isSaving, setIsSaving] = useState(false);
+ // const [popup, setPopup] = useState({ show: false, message: '', type: '' });
 
   // State for storing form data
+  const [topPerformances, setTopPerformances] = useState([]); 
+
   const [updatedProfile, setUpdatedProfile] = useState({});
   const [newAchievement, setNewAchievement] = useState({});
   const [currentAthleteProfile, setCurrentAthleteProfile] = useState(null);
   const navigate = useNavigate();
+
+
   // Fetch data from API on component mount
   useEffect(() => {
     fetchCoachData();
     fetchAchievements();
     fetchAssistanceRequests();
     fetchAthletes();
+
+    const intervalId = setInterval(fetchAssistanceRequests, 500);
+    const intervalIds = setInterval(fetchAthletes, 500);
+    return () =>
+    { 
+      clearInterval(intervalId);
+      clearInterval(intervalIds);
+    }
   }, []);
 
-  // Fetch coach profile data
   const fetchCoachData = async () => {
     try {
+      setIsLoading(true);
+      setTimeout(() => {
+        setIsLoading(false); // Stop the loader after 1 second
+      }, 1000);
       const response = await axios.get("/coach/profile", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
@@ -2744,7 +177,9 @@ const CoachDashboard = ({
     }
   };
 
+ 
   const handleLogout = () => {
+    localStorage.clear();
     navigate('\*');
   }
 
@@ -2779,6 +214,7 @@ const CoachDashboard = ({
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setAthletes(response.data);
+      //console.log(athletes);
     } catch (error) {
       console.error("Error fetching athletes:", error);
     }
@@ -2794,6 +230,7 @@ const CoachDashboard = ({
       });
 
       setCurrentAthleteProfile(response.data);
+      console.log(currentAthleteProfile);
       // setShowAthleteProfileModal(true);
 
       fetchWeightPlan(athleteId)
@@ -2900,9 +337,13 @@ const CoachDashboard = ({
   const handleSaveProfile = async () => {
     const token = localStorage.getItem("token");
     const formData = new FormData();
+    setIsSaving(true);
     formData.append("firstName", updatedProfile.firstName);
     formData.append("lastName", updatedProfile.lastName);
+    formData.append("email", updatedProfile.email);
+    formData.append("expertise", updatedProfile.expertise);
     if (newImage) formData.append("imageFile", newImage);
+
 
     try {
       const response = await fetch("/coach/profile", {
@@ -2913,17 +354,47 @@ const CoachDashboard = ({
         },
       });
       if (response.ok) {
-        alert("Profile updated successfully!");
+        setIsSaving(false);
         setShowEditProfileModal(false);
+        //alert("Profile updated successfully!");
         fetchCoachData();
+        setPopup({
+          show: true,
+          message: "Profile updated successfully!",
+          type: 'success'
+        });
 
       } else {
+        setShowEditProfileModal(false);
+        setIsSaving(false);
+        setPopup({
+          show: true,
+          message: "Failed to update the profile. Please try again.",
+          type: 'error'
+        });
         console.error("Error updating profile");
       }
     } catch (error) {
       console.error("Error saving profile:", error);
+      setShowEditProfileModal(false);
+      setIsSaving(false);
+      setPopup({
+        show: true,
+        message: "An unexpected error occurred. Please try again.",
+        type: 'error'
+      });
     }
   };
+
+  const closePopup = () => {
+    setPopup({ show: false, message: '', type: '' });
+  };
+
+  const [error, setError] = useState("");
+  const [eventResults, setEventResults] = useState([]);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const resultsPerPage = 15;
 
 
   const handleViewDetails = (athleteId) => {
@@ -2933,8 +404,55 @@ const CoachDashboard = ({
     fetchAthleteProfile(athleteId)
     // setProfileModalOpen(true);
     setSelectedAthlete(athlete);
-  setProfileModalOpen(true);
+    setProfileModalOpen(true);
+
+    const fetchTopPerformances = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(`/coach/top-performance/by-athlete/${athleteId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setTopPerformances(response.data); // Expecting an array
+      } catch (err) {
+        setError(err.response?.data?.error || "NO DATA YET");
+      }
+    }
+
+    const fetchEventResults = async () => {
+      // setEventResults(null);
+      try {
+        // prevResults(null);
+        const token = localStorage.getItem("token");
+        const response = await axios.get(`coach/result/by-athlete/${athleteId}`, {
+          params: { page, size: resultsPerPage },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.data.length < resultsPerPage) {
+          setHasMore(false);
+        }
+        setEventResults(response.data);
+
+        // setEventResults((prevResults) => [...prevResults, ...response.data]);
+      } catch (err) {
+        setError(err.response?.data?.error || "NO DATA YET");
+      }
+    };
+
+    fetchEventResults();
+    fetchTopPerformances();
+
+
+
   };
+  const loadMore = () => {
+    setPage((prevPage) => prevPage + 1);
+  };
+
 
   const handleCloseProfileModal = () => {
     setProfileModalOpen(false);
@@ -2963,8 +481,16 @@ const CoachDashboard = ({
   };
   const [isEdit, setIsEdit] = useState(false);
 
-  const handleSubmit = async (athleteId) => {
-    // e.preventDefault();
+  const [popup, setPopup] = useState({
+    show: false,
+    message: '',
+    type: 'success'
+  });
+
+ 
+  const handleSubmit = async (e, athleteId) => {
+    e.preventDefault(); // Prevent the default form submission behavior
+    
     const token = localStorage.getItem("token");
     if (!isEdit) {
       try {
@@ -2983,8 +509,14 @@ const CoachDashboard = ({
             },
           }
         );
-        alert("Weight plan created successfully!");
+  
+        // Success actions
         setShowModal2(false);
+        setPopup({
+          show: true,
+          message: "Weight plan created successfully!",
+          type: "success",
+        });
         setFormData2({
           startWeight: "",
           targetWeight: "",
@@ -2993,15 +525,17 @@ const CoachDashboard = ({
         });
       } catch (error) {
         console.error("Error creating weight plan:", error);
-        alert("Failed to create weight plan.");
+        setPopup({
+          show: true,
+          message: "Failed to create weight plan.",
+          type: "error",
+        });
       }
-
     } else {
       try {
         await axios.put(
           `/coach/updateplan/${athleteId}`,
           {
-            // athleteId: parseFloat(athleteId),
             startWeight: parseFloat(formData2.startWeight),
             targetWeight: parseFloat(formData2.targetWeight),
             preference: formData2.preference,
@@ -3013,8 +547,14 @@ const CoachDashboard = ({
             },
           }
         );
-        alert("Weight plan updated successfully!");
+  
+        // Success actions
         setShowModal2(false);
+        setPopup({
+          show: true,
+          message: "Weight plan updated successfully!",
+          type: "success",
+        });
         setFormData2({
           startWeight: "",
           targetWeight: "",
@@ -3022,13 +562,18 @@ const CoachDashboard = ({
           dailyCalorieGoal: "",
         });
       } catch (error) {
-        console.error("Error creating weight plan:", error);
-        alert("Failed to update weight plan.");
+        console.error("Error updating weight plan:", error);
+        setPopup({
+          show: true,
+          message: "Failed to update weight plan.",
+          type: "error",
+        });
       }
     }
-
-  }
-
+    window.location.reload();
+    fetchWeightPlan();
+  };
+  
   const setView2 = () => {
     setShowModal2(true);
     setIsEdit(true);
@@ -3051,6 +596,20 @@ const CoachDashboard = ({
     waterIntake: ""
   });
 
+  const [fileName, setFileName] = useState("No file selected");
+  const handleImageChange = (e) => {
+    setNewImage(e.target.files[0]);
+    const file = e.target.files[0];
+    setFileName(file ? file.name : "No file selected");
+    if (file) {
+      setIsLoading(true); // Start the loading
+      // Simulate an image upload process with a timeout (you would replace this with actual upload logic)
+      setTimeout(() => {
+        setIsLoading(false); // Stop the loading after 2 seconds (replace with real upload logic)
+        console.log("Image uploaded:", file);
+      }, 1000); // Simulated delay (2 seconds)
+    }
+  };
   // Automatically set today's date
   const today = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
 
@@ -3061,9 +620,30 @@ const CoachDashboard = ({
     });
   };
 
+  const formatDateForDisplayAndForm = (dateString) => {
+    if (!dateString) return '';
+    const utcDate = new Date(dateString); 
+    const localDate = new Date(utcDate.getTime() + new Date().getTimezoneOffset() * -60000);
+    return localDate.toISOString().split('T')[0];
+  };
+
   const handleSubmit3 = async (athleteId) => {
     try {
       const token = localStorage.getItem("token"); // Get the token from localStorage
+      if (token) {
+        // Assuming the token is a JSON Web Token (JWT)
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1])); // Decode JWT payload
+          if (payload.role !== 'COACH') {
+            window.location.href = '/login'; // Redirect to login page
+          }
+        } catch (error) {
+          console.error('Invalid token:', error);
+          window.location.href = '/login'; // Redirect if token is invalid
+        }
+      } else {
+        window.location.href = '/login'; // Redirect if no token exists
+      }
       const response = await axios.post(
         "/coach/creatediet",
         {
@@ -3084,11 +664,22 @@ const CoachDashboard = ({
           },
         }
       );
-      alert("Diet plan created successfully!");
+      //alert("Diet plan created successfully!");
       setIsVisible(false); // Close the modal on success
+      setPopup({
+        show: true,
+        message: "Diet plan created successfully!",
+        type: 'success'
+      });
     } catch (error) {
       console.error("Error creating diet plan:", error);
-      alert("Failed to create diet plan.");
+      //alert("Failed to create diet plan.");
+      setIsVisible(false);
+      setPopup({
+        show: true,
+        message: "Diet plan created successfully!",
+        type: 'error'
+      });
     }
   };
 
@@ -3096,7 +687,6 @@ const CoachDashboard = ({
 
   return (
     <div className="coachDashboard">
-
       <AppBar position="static" className="navbar">
         <Toolbar className="navbar-content" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           {/* Left Section: Coach */}
@@ -3142,6 +732,15 @@ const CoachDashboard = ({
                 Athletes
               </Button>
             </Link>
+            <Link to="" className="logout-link">
+              <Button
+                variant={currentSection === "athletes" ? "primary" : "light"}
+                onClick={() => setCurrentSection("CoachStatistics")}
+                className="px-2"
+              >
+                Statistics
+              </Button>
+            </Link>
             <Link to="/*" className="logout-link">
               <Button
                 onClick={handleLogout}
@@ -3157,46 +756,61 @@ const CoachDashboard = ({
       </AppBar>
       <div>
 
+      {currentSection === 'CoachStatistics' && <CoachStatistics />}
+
 
 
         {/* Profile Section */}
         {currentSection === "profile" && (
+        isLoading ? (
+          <div className="spinner-container" style={spinnerContainerStyle}>
+          <div className="spinner-wrapper" style={spinnerWrapperStyle}>
+            <Spinner animation="border" role="status" style={spinnerStyle}>
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+            <p style={loadingTextStyle}>Loading, please wait...</p>
+          </div>
+        </div>
+        
+        ) : (
           <div>
-            <br></br>
-            <b><h1 style={{ fontSize: '36px', color: 'white', textAlign: 'center' }}>Welcome, {coachProfile.firstName || "Coach"} {coachProfile.lastName || "Coach"}!</h1></b>
-            <br></br>
+            <br />
+            <b>
+              <h1 style={{ fontSize: '36px', color: 'white', textAlign: 'center' }}>
+                Welcome, {coachProfile.firstName || "Coach"} {coachProfile.lastName || "Coach"}!
+              </h1>
+            </b>
+            <br />
             <div className="profile-section">
               <div
                 style={{
                   padding: "20px",
-                  Width: "900px",
-                  height: "330px",         // Max width for the profile container
-                  margin: "20",
-                  marginLeft: "30%",       // Center the container
-                  backgroundColor: "#E5E3D4",  // White background for a clean look
-                  borderRadius: "12px",     // Rounded corners for the container
-                  boxShadow: "0 8px 20px rgba(0, 0, 0, 0.1)", // Soft shadow for depth
-                  display: "flex",          // Use flexbox for horizontal alignment
-                  alignItems: "center",     // Vertically align items
+                  width: "900px",
+                  height: "330px",
+                  margin: "20px",
+                  marginLeft: "30%",
+                  backgroundColor: "#E5E3D4",
+                  borderRadius: "12px",
+                  boxShadow: "0 8px 20px rgba(0, 0, 0, 0.1)",
+                  display: "flex",
+                  alignItems: "center",
                 }}
               >
                 {/* Profile Image */}
                 <div
                   style={{
-                    flex: "0 0 150px",      // Fixed width for the profile image section
-                    marginRight: "20px",    // Space between image and text
-                    textAlign: "center",    // Center image within the div
+                    flex: "0 0 150px",
+                    marginRight: "20px",
+                    textAlign: "center",
                   }}
                 >
                   <img
                     src={coachProfile.imageBase64 ? `data:image/jpeg;base64,${coachProfile.imageBase64}` : '/default-profile.jpg'}
-                    alt="Athlete"
+                    alt="Coach"
                     style={{
-                      width: "100%",
-                      maxWidth: "120px", // Set a max width for the profile image
-                      borderRadius: "50%", // Circular profile image
-                      boxShadow: "0px 8px 15px rgba(0, 0, 0, 0.1)", // Subtle shadow for depth
-                      // transition: "transform 0.3s ease", // Smooth transition on hover
+                      maxWidth: "200px",
+                      borderRadius: "15px",
+                      boxShadow: "0px 8px 15px rgba(0, 0, 0, 0.1)",
                     }}
                   />
                 </div>
@@ -3204,16 +818,16 @@ const CoachDashboard = ({
                 {/* Profile Details and Edit Button */}
                 <div
                   style={{
-                    flex: "1",            // Take the remaining space
-                    textAlign: "left",    // Align text to the left
+                    flex: "1",
+                    textAlign: "left",
                   }}
                 >
                   <h3
                     style={{
-                      fontSize: "24px",         // Slightly smaller font size for the name
-                      color: "#2c3e50",         // Dark color for the title
-                      fontWeight: "600",        // Bold title for emphasis
-                      marginBottom: "10px",     // Space below the title
+                      fontSize: "24px",
+                      color: "#2c3e50",
+                      fontWeight: "600",
+                      marginBottom: "10px",
                     }}
                   >
                     {coachProfile.firstName} {coachProfile.lastName}
@@ -3222,22 +836,22 @@ const CoachDashboard = ({
                   {/* Display Email and Specialization */}
                   <p
                     style={{
-                      fontSize: "16px",         // Standard font size for text
-                      color: "#34495e",         // Slightly muted text color
-                      marginBottom: "8px",      // Space between text
+                      fontSize: "16px",
+                      color: "#34495e",
+                      marginBottom: "8px",
                     }}
                   >
-                    <strong>Email: </strong>{coachProfile.email || "example@domain.com"}
+                    <strong>Email: </strong>{coachProfile.email}
                   </p>
 
                   <p
                     style={{
                       fontSize: "16px",
                       color: "#34495e",
-                      marginBottom: "20px",     // Space before the edit button
+                      marginBottom: "20px",
                     }}
                   >
-                    <strong>Specialization: </strong>{coachProfile.specialization || "Not specified"}
+                    <strong>Expertise: </strong>{coachProfile.expertise}
                   </p>
 
                   {/* Edit Profile Button */}
@@ -3248,30 +862,38 @@ const CoachDashboard = ({
                       setShowEditProfileModal(true);
                     }}
                     style={{
-                      backgroundColor: "#3498db",  // Primary color (blue) for the button
-                      color: "#fff",               // White text for contrast
-                      padding: "10px 20px",        // Adequate padding
-                      borderRadius: "6px",         // Rounded corners for the button
-                      border: "none",              // Remove default button border
-                      fontSize: "16px",            // Standard font size for readability
-                      fontWeight: "600",           // Bold button text
-                      cursor: "pointer",          // Pointer cursor on hover
-                      transition: "background-color 0.3s ease", // Smooth hover effect
+                      backgroundColor: "#3498db",
+                      color: "#fff",
+                      padding: "10px 20px",
+                      borderRadius: "6px",
+                      border: "none",
+                      fontSize: "16px",
+                      fontWeight: "600",
+                      cursor: "pointer",
+                      transition: "background-color 0.3s ease",
                     }}
                     onMouseOver={(e) => {
-                      e.currentTarget.style.backgroundColor = "#2980b9"; // Darker shade on hover
+                      e.currentTarget.style.backgroundColor = "#2980b9";
                     }}
                     onMouseOut={(e) => {
-                      e.currentTarget.style.backgroundColor = "#3498db"; // Reset to original color
+                      e.currentTarget.style.backgroundColor = "#3498db";
                     }}
                   >
                     Edit Profile
                   </Button>
                 </div>
               </div>
-
             </div>
           </div>
+        )
+      )}
+
+      {popup.show && (
+          <Popup
+            message={popup.message}
+            type={popup.type}
+            onClose={closePopup}
+          />
         )}
 
         {showEditProfileModal && (
@@ -3320,13 +942,78 @@ const CoachDashboard = ({
                   />
                 </label>
                 <label style={labelStyles}>
-                  Profile Picture:
+                  Expertise <span className="required" style={requiredStyles}>*</span>:
                   <input
-                    type="file"
-                    onChange={(e) => setNewImage(e.target.files[0])}
+                    type="text"
+                    name="expertise"
+                    value={updatedProfile.expertise || ""}
+                    onChange={(e) =>
+                      setUpdatedProfile({
+                        ...updatedProfile,
+                        expertise: e.target.value,
+                      })
+                    }
+                    placeholder="Expertise"
+                    required
                     style={inputStyles}
                   />
                 </label>
+                <label style={labelStyles}>
+                  Profile Picture:
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "1rem",
+                      padding: '3px',
+                      border: "2px solid gray", // Dashed border
+                      borderRadius: "23px", // Rounded corners
+                      transition: "border-color 0.3s ease",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <label
+                      htmlFor="fileInput"
+                      style={{
+                        backgroundColor: "#8e44ad", // Purple color
+                        color: "white",
+                        padding: "10px 20px",
+                        borderRadius: "20px",
+                        cursor: "pointer",
+                        fontSize: "1rem",
+                        textAlign: "center",
+                        margin: '0px',
+                      }}
+                    >
+                      Browse
+                    </label>
+                    {/* Hidden File Input */}
+                    <input
+                      id="fileInput"
+                      type="file"
+                      name="image"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      style={{ display: "none" }}
+                    />
+                    {/* File Name Display */}
+                    <span
+                      style={{
+                        fontSize: "1rem",
+                        color: "#555", // Subtle gray for text
+                      }}
+                    >
+                      {fileName}
+                    </span>
+                  </div>
+
+                </label>
+                {isSaving && (
+                  <div className="loader-overlay">
+                    <div className="loader"></div>
+                    <p>Uploading...</p>
+                  </div>
+                )}
                 <div className="form-buttons" style={buttonContainerStyles}>
                   <Button
                     type="submit"
@@ -3350,7 +1037,7 @@ const CoachDashboard = ({
 
         )}
 
-
+       
         {/* Achievements Section */}
         {currentSection === "achievements" && (
           <>
@@ -3436,10 +1123,10 @@ const CoachDashboard = ({
               {showAchievementModal && (
                 <div className="achievement-modal">
                   <div className="modal-content">
-                    <h1 style={{ fontSize: "26p" }}>Add Achievement</h1>
+                    <h1 style={{ fontSize: "26px" }}>Add Achievement</h1>
                     <form
                       onSubmit={(e) => {
-                        // e.preventDefault();
+                        e.preventDefault();
                         handleAddAchievement();
                       }}
                     >
@@ -3496,53 +1183,7 @@ const CoachDashboard = ({
           </>
         )}
 
-        {/* Assistance Requests Section 
-      {currentSection === "requests" && (
-        <div className="assistance-requests-section my-4">
-          <h3>Assistance Requests</h3>
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Request By</th>
-                <th>Message</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {assistanceRequests.map((request, index) => (
-                <tr key={request.id}>
-                  <td>{index + 1}</td>
-                  <td>{request.requestedBy}</td>
-                  <td>{request.message}</td>
-                  <td>{request.status}</td>
-                  <td>
-                    {request.status === "Pending" && (
-                      <>
-                        <Button
-                          variant="success"
-                          onClick={() => handleAcceptRequest(request.id)}
-                          className="me-2"
-                        >
-                          Accept
-                        </Button>
-                        <Button
-                          variant="danger"
-                          onClick={() => handleRejectRequest(request.id)}
-                        >
-                          Reject
-                        </Button>
-                      </>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </div>
-      )}  */}
-        {currentSection === "requests" && (
+         {currentSection === "requests" && (
           <>
             <br></br>
             <b><h1 style={{ fontSize: '36px', color: 'white', textAlign: 'center' }}>Assistance Requests</h1></b>
@@ -3554,21 +1195,31 @@ const CoachDashboard = ({
                   <tr>
                     <th>#</th>
                     <th>Request By</th>
+                    <th>Athlete Details</th>
                     <th>Message</th>
                     <th>Request Date</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {assistanceRequests
-                    .filter((request) => request.status === "Pending") // Filter for Pending requests
-                    .map((request, index) => (
-                      <tr key={request.id}>
-                        <td>{index + 1}</td>
-                        <td> {request.athlete.firstName} {request.athlete.lastName}</td>
-                        <td>{request.remarks || "No remarks provided."}</td>
-                        <td>{request.requestDate.split('T')[0]}</td>
-                        <td>
+                {assistanceRequests
+                  .filter((request) => request.status === "Pending") // Filter for Pending requests
+                  .map((request, index) => (
+                <tr key={request.id}>
+                  <td>{index + 1}</td>
+                  <td>{request.athlete.firstName} {request.athlete.lastName}</td>
+                  <td><Button
+          variant="primary"
+          size="sm"
+          onClick={() => handleViewDetails(request.athlete.athleteId)}
+          className="ms-2"
+        >
+          View Athlete
+        </Button></td>
+                  <td>{request.remarks || "No remarks provided."}</td>
+                  <td>{formatDateForDisplayAndForm(request.requestDate)}</td>
+                   
+                        <td> 
                           <Button
                             variant="success"
                             onClick={() => handleAcceptRequest(request.assistanceRequestId)}
@@ -3591,689 +1242,807 @@ const CoachDashboard = ({
                 <p>No pending requests available.</p>
               )}
             </div>
-          </>
+
+        {currentAthleteProfile && (
+<Dialog
+  open={profileModalOpen}
+  onClose={handleCloseProfileModal}
+  maxWidth="md"
+  fullWidth
+  classes={{
+    paper: 'athlete-profile-modal',
+    root: 'dialog-root',
+  }}
+  sx={{
+    '& .MuiDialog-paper': {
+      margin: '20px',
+      padding: '10px',
+      backgroundColor: '#f5f5f5',
+      borderRadius: '8px',
+      overflowY: 'auto',
+    },
+  }}
+>
+  <DialogTitle
+    style={{
+      textAlign: "center",
+      fontSize: '24px',
+      position: 'relative',
+      color: 'white',
+      backgroundColor: '#f08080', // Peach or light orange
+      padding: '16px',
+      borderTopLeftRadius: '8px',
+      borderTopRightRadius: '8px',
+    }}
+  >
+    Athlete Profile
+    <IconButton
+      onClick={handleCloseProfileModal}
+      style={{
+        position: 'absolute',
+        left: 8,
+        top: 8,
+        color: 'white',
+      }}
+    >
+      <IoIosArrowBack />
+    </IconButton>
+  </DialogTitle>
+  <DialogContent
+    style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      color: '#333',
+      padding: '20px',
+      maxHeight: '80vh',
+      overflowY: 'auto',
+    }}
+  >
+    <div className="flex items-center space-x-6 w-full">
+      <div className="flex-shrink-0 w-1/3">
+        <img
+          src={currentAthleteProfile.photoBase64
+            ? `data:image/jpeg;base64,${currentAthleteProfile.photoBase64}`
+            : "/default-profile.jpg"
+          }
+          alt="Athlete"
+          className="w-full h-[220px] object-cover rounded-lg"
+        />
+      </div>
+      <div className="flex-grow">
+        <h1 style={{ color: '#f08080', fontSize: '26px', marginBottom: '20px' }}>
+          {currentAthleteProfile.firstName}
+        </h1>
+        <Typography variant="body1" gutterBottom>
+          <strong>Name:</strong> {currentAthleteProfile.firstName} {currentAthleteProfile.lastName}
+        </Typography>
+        <Typography variant="body1" gutterBottom>
+          <strong>Gender:</strong> {currentAthleteProfile.gender}
+        </Typography>
+        <Typography variant="body1" gutterBottom>
+          <strong>Height:</strong> {currentAthleteProfile.height} cm
+        </Typography>
+        <Typography variant="body1" gutterBottom>
+          <strong>Weight:</strong> {currentAthleteProfile.weight} kg
+        </Typography>
+        <Typography variant="body1">
+          <strong>Category:</strong> {currentAthleteProfile.category}
+        </Typography>
+      </div>
+    </div>
+
+    <div
+      className="top-performance-card mt-6"
+      style={{
+        color: "#333",
+        width: '100%',
+        padding: "30px",
+        border: "1px solid #ddd",
+        borderRadius: "8px",
+        backgroundColor: "white",
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+        maxHeight: '300px',
+        overflowY: 'auto',
+      }}
+    >
+      <h2 style={{ textAlign: "center", marginBottom: "20px", color: "#f08080", fontSize: "20px" }}>
+        Top 5 Performances
+      </h2>
+      {error ? (
+        <div className="error-message" style={{ color: "red", textAlign: "center" }}>
+          {error}
+        </div>
+      ) : topPerformances.length > 0 ? (
+        <table
+          style={{
+            width: "100%",
+            borderCollapse: "collapse",
+            textAlign: "left",
+            color: "#333",
+          }}
+        >
+          <thead>
+            <tr style={{ backgroundColor: "#f4f4f4", borderBottom: "2px solid #ddd" }}>
+              <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Event Name</th>
+              <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Meet Name</th>
+              <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Score</th>
+              <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Comment</th>
+            </tr>
+          </thead>
+          <tbody>
+            {topPerformances.slice(0, 5).map((performance, index) => (
+              <tr key={index} style={{ borderBottom: "1px solid #ddd" }}>
+                <td style={{ padding: "10px" }}>{performance.eventName}</td>
+                <td style={{ padding: "10px" }}>{performance.meetName}</td>
+                <td style={{ padding: "10px", textAlign: "center" }}>{performance.score}</td>
+                <td style={{ padding: "10px" }}>{performance.comment}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p style={{ textAlign: "center", color: "#666" }}>No top performances found.</p>
+      )}
+    </div>
+  </DialogContent>
+</Dialog>
+
+)}
+
+
+</>
         )}
 
-
-        {/* Athletes Section */}
         {currentSection === "athletes" && (
           <>
             <div id="athletePage">
               <br></br>
               <b><h1 style={{ fontSize: '36px', color: 'white', textAlign: 'center' }}>Your Athletes</h1></b>
               <br></br>
-              <div className="athletes-section my-4">
+          
+             <div
+  className="athletes-section my-4"
+  style={{
+    background: "linear-gradient(rgb(2, 0, 97) 15%, rgb(24, 23, 24) 158.5%, rgb(5, 5, 5) 158.5%)",
+    padding: "20px", // Adds some spacing inside the section
+    borderRadius: "10px", // Optional: Rounds the corners of the section
+  }}
+>
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    {athletes.map((athlete, index) => (
+      <div
+        key={athlete.athleteId}
+        className="bg-white shadow-md rounded-lg p-4 flex flex-col items-center"
+      >
+       <img    src={athlete.photoBase64
+                                ? `data:image/jpeg;base64,${athlete.photoBase64}`
+                                : "/default-profile.jpg"
+                              }
+                              alt="Athlete"
+                              className="w-full h-[220px] object-cover rounded-lg"
+                            />
+        
+        <div className="text-lg font-semibold text-gray-800 mb-2">
+          {athlete.firstName} {athlete.lastName}
+        </div>
+        <div className="text-sm text-gray-600 mb-4">{athlete.email}</div>
+        <button
+          onClick={() => handleViewDetails(athlete.athleteId)}
+          className="py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors"
+        >
+          View Profile
+        </button>
+      </div>
+    ))}
+  </div>
+</div>
 
-                <Table striped bordered hover>
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Name</th>
-                      <th>Email</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {athletes.map((athlete, index) => (
-                      <tr key={athlete.athleteId}>
-                        <td>{index + 1}</td>
-                        <td>{athlete.firstName}{athlete.lastName}</td>
-                        <td>{athlete.email}</td>
-                        <td>
-                          <Button
-                            variant="info"
-                            onClick={() => handleViewDetails(athlete.athleteId)}
-                            className="me-2"
-                          >
-                            View Profile
-                          </Button>
-                       {/*   <Button
-                            variant="secondary"
-                            onClick={() => fetchWeightPlan(athlete.athleteId)}
-                          >
-                            View Weight Plan
-                          </Button>   */}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
-
-                {/* {selectedAthlete && (
-                  <Dialog  
-                   open={profileModalOpen}
-                 // open={open}
-                    onClose={handleCloseProfileModal}
-                    maxWidth="sm"
-                    fullWidth
-                  >
-                    <DialogTitle style={{ textAlign: "center" }}>Athlete Profile</DialogTitle>
-                    <DialogContent
-                      style={{
-                        justifyContent: "center",
-                        textAlign: "center",
-                      }}
-                    >
-                      <img
-                        src={
-                          selectedAthlete.photoBase64
-                            ? `data:image/jpeg;base64,${selectedAthlete.photoBase64}`
-                            : "/default-profile.jpg"
-                        }
-                        alt="Athlete"
-                        style={{ paddingLeft: "3%", width: "400px", height: "220px" }}
-                      />
-                      <Typography variant="h6">
-                        Name: {selectedAthlete.firstName} {selectedAthlete.lastName}
-                      </Typography>
-                      <Typography variant="h6">Gender: {selectedAthlete.gender} </Typography>
-                      <Typography variant="h6">Height: {selectedAthlete.height} </Typography>
-                      <Typography variant="h6">Weight: {selectedAthlete.weight} </Typography>
-
-                      <Typography variant="h6">Category: {selectedAthlete.category}</Typography>
-
-
-
-
-                      <div>
-
-                      </div>
-                      <Button
-                        onClick={handleCloseProfileModal}
-                        variant="contained"
-                        style={{ marginTop: "15px" }}
-                      >
-                        Close
-                      </Button>
-                    </DialogContent>
-                  </Dialog>
-                )} */}
-              </div>
             </div>
             <div id="athleteProfile">
               {currentAthleteProfile && (
-                <Dialog  
-                open={profileModalOpen}
-              // open={open}
-                 onClose={handleCloseProfileModal}
-                 maxWidth="sm"
-                 fullWidth
-                 classes={{ paper: 'athlete-profile-modal' }}
-               >
-                 <DialogTitle style={{ textAlign: "center" }}>Athlete Profile</DialogTitle>
-                 <DialogContent
-                   style={{
-                     justifyContent: "center",
-                     textAlign: "center",
-                   }}
-                 >
-                <div>
-                  <strong><h1 style={{color: 'white', textAlign: 'center' }}>{currentAthleteProfile.firstName}</h1></strong>
-                 
-                  {/* <img
-                    src={
-                      currentAthleteProfile.photoBase64
-                        ? `data:image/jpeg;base64,${currentAthleteProfile.photoBase64}`
-                        : "/default-profile.jpg"
+                <Dialog
+                  open={profileModalOpen}
+                  onClose={handleCloseProfileModal}
+                  fullScreen
+                  classes={{
+                    paper: 'athlete-profile-modal',
+                    root: 'dialog-root'
+                  }}
+                  sx={{
+                    '& .MuiDialog-paper': {
+                      margin: '5px',
+                      backgroundColor: 'transparent', // Ensure underlying background is transparent
+                    },
+                    '&::before': {
+                      content: '""',
+                      position: 'fixed',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      //margin: '5px',
+                      background: 'linear-gradient(rgb(2, 0, 97) 15%, rgb(24, 23, 24) 158.5%, rgb(24, 23, 24) 158.5%, rgb(5, 5, 5) 158.5%)',
+                      zIndex: -1,
+                      pointerEvents: 'none',
+                      borderRadius: '10px', // Optional: adds rounded corners to the margin
                     }
-                    alt="Athlete"
-                    style={{ paddingLeft: "3%", width: "400px", height: "220px" }}
-                  />
-                  <Typography variant="h6">
-                    Name: {currentAthleteProfile.firstName} {currentAthleteProfile.lastName}
-                  </Typography>
-                  <Typography variant="h6">Gender: {currentAthleteProfile.gender} </Typography>
-                  <Typography variant="h6">Height: {currentAthleteProfile.height} </Typography>
-                  <Typography variant="h6">Weight: {currentAthleteProfile.weight} </Typography>
-
-                  <Typography variant="h6">Category: {currentAthleteProfile.category}</Typography> */}
-                   <Card className="w-full max-w-4xl mx-auto">
-      <CardContent className="flex items-center space-x-6 p-6">
-        {/* Image Section */}
-        <div className="flex-shrink-0 w-1/3">
-          <img 
-            src={currentAthleteProfile.photoBase64 
-              ? `data:image/jpeg;base64,${currentAthleteProfile.photoBase64}` 
-              : "/default-profile.jpg"
-            }
-            alt="Athlete" 
-            className="w-full h-[220px] object-cover rounded-lg"
-          />
-        </div>
-        
-        {/* Details Section */}
-        <div className="flex-grow">
-          <Typography variant="h6" gutterBottom>
-            Name: {currentAthleteProfile.firstName} {currentAthleteProfile.lastName}
-          </Typography>
-          <Typography variant="h6" gutterBottom>
-            Gender: {currentAthleteProfile.gender}
-          </Typography>
-          <Typography variant="h6" gutterBottom>
-            Height: {currentAthleteProfile.height}
-          </Typography>
-          <Typography variant="h6" gutterBottom>
-            Weight: {currentAthleteProfile.weight}
-          </Typography>
-          <Typography variant="h6">
-            Category: {currentAthleteProfile.category}
-          </Typography>
-        </div>
-      </CardContent>
-    </Card>
-
-                  <h4 style={styles2.sectionTitle}>Weight Plan</h4>
-
-                  {weightPlan ? (
-                    <>
-
-                      <div style={styles2.section}>
-
-
-                        <>
-                          <p>
-                            <strong>Plan ID:</strong> {weightPlan.planId}
-                          </p>
-                          <p>
-                            <strong>Start Weight:</strong> {weightPlan.startWeight} kg
-                          </p>
-                          <p>
-                            <strong>Target Weight:</strong> {weightPlan.targetWeight} kg
-                          </p>
-                          <p>
-                            <strong>Preference:</strong> {weightPlan.preference}
-                          </p>
-                          <p>
-                            <strong>Daily Calorie Goal:</strong> {weightPlan.dailyCalorieGoal} kcal
-                          </p>
-                        </>
-
-                      </div>
-                      <button
-                        onClick={() => setView2()}
-                        style={{
-                          padding: "10px 20px",
-                          backgroundColor: "#007BFF",
-                          color: "#fff",
-                          border: "none",
-                          borderRadius: "4px",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Update Weight Plan
-                      </button>
-
-                      <h4 style={styles2.sectionTitle}>Diet Plan</h4>
-                  <div>
-                    {/* Button to open the modal */}
-                    <button
-                      onClick={() => setIsVisible(true)}
+                  }}
+                >
+                  <DialogTitle
+                    style={{
+                      textAlign: "center",
+                      fontSize: '28px',
+                      position: 'relative',
+                      color: 'white'
+                    }}
+                  >
+                    Athlete Profile
+                    <IconButton
+                      onClick={handleCloseProfileModal}
                       style={{
-                        padding: "10px 20px",
-                        backgroundColor: "#4CAF50",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "5px",
-                        cursor: "pointer",
+                        position: 'absolute',
+                        left: 8,
+                        top: 8,
+                        color: 'white'
                       }}
                     >
-                      Create Diet Plan
-                    </button>
+                     <IoIosArrowBack />
+                    </IconButton>
+                  </DialogTitle>
+                  <DialogContent
+                    style={{
+                      justifyContent: "center",
+                      textAlign: "center",
+                      color: 'white',
+                    }}
+                  >
 
-                    {/* Modal  */}
-                    {isVisible && (
-                      <div
-                        style={{
-                         position: "fixed",
-                         top: "50%",
-                         left: "50%",
-                        
+                    <div>
+                      <strong><h1 style={{ color: 'white', textAlign: 'center', fontSize: '30px', fontFamily: 'initial' }}>{currentAthleteProfile.firstName}</h1></strong>
 
-                         transform: "translate(-50%, -50%)",
-                         zIndex: 1000,
-                         backgroundColor: "#fff",
-                         padding: "20px",
-                          borderRadius: "8px",
-                          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.3)",
-                         width: "400px",
+                      <Card className="w-full max-w-4xl mx-auto">
+                        <CardContent className="flex items-center space-x-6 p-6">
+                          {/* Image Section */}
+                          <div className="flex-shrink-0 w-1/3">
+                            <img
+                              src={currentAthleteProfile.photoBase64
+                                ? `data:image/jpeg;base64,${currentAthleteProfile.photoBase64}`
+                                : "/default-profile.jpg"
+                              }
+                              alt="Athlete"
+                              className="w-full h-[220px] object-cover rounded-lg"
+                            />
+                          </div>
 
-                        
-                        }} 
-                      >
-                        <h2 style={{ marginBottom: "20px", color: "#333" }}>Create Daily Diet Plan</h2>
-                        <form
-                          onSubmit={(e) => {
-                            e.preventDefault();
-                            handleSubmit3(currentAthleteProfile.athleteId);
-                          }}
-                        >
-                          {/* <div style={{ marginBottom: "10px" }}>
-                            <label>Athlete ID:</label>
-                            <input
-                              type="number"
-                              name="athleteId"
-                              value={formData3.athleteId}
-                              onChange={handleChange3}
-                              style={{
-                                width: "100%",
-                                padding: "8px",
-                                marginTop: "5px",
-                                borderRadius: "5px",
-                                border: "1px solid #ccc",
-                              }}
-                            />
-                          </div> */}
-                          <div style={{ marginBottom: "10px" }}>
-                            <label>Calories:</label>
-                            <input
-                              type="number"
-                              name="calories"
-                              step="0.01"
-                              value={formData3.calories}
-                              onChange={handleChange3}
-                              style={{
-                                width: "100%",
-                                padding: "8px",
-                                marginTop: "5px",
-                                borderRadius: "5px",
-                                border: "1px solid #ccc",
-                              }}
-                            />
+                          {/* Details Section */}
+                          <div className="flex-grow">
+                            <Typography variant="h6" gutterBottom>
+                              Name: {currentAthleteProfile.firstName} {currentAthleteProfile.lastName}
+                            </Typography>
+                            <Typography variant="h6" gutterBottom>
+                              Gender: {currentAthleteProfile.gender}
+                            </Typography>
+                            <Typography variant="h6" gutterBottom>
+                              Height: {currentAthleteProfile.height}
+                            </Typography>
+                            <Typography variant="h6" gutterBottom>
+                              Weight: {currentAthleteProfile.weight}
+                            </Typography>
+                            <Typography variant="h6">
+                              Category: {currentAthleteProfile.category}
+                            </Typography>
                           </div>
-                          {/* <div style={{ marginBottom: "10px" }}>
-                            <label>Current Weight (kg):</label>
-                            <input
-                              type="number"
-                              name="currentWeight"
-                              step="0.01"
-                              value={formData3.currentWeight}
-                              onChange={handleChange3}
-                              style={{
-                                width: "100%",
-                                padding: "8px",
-                                marginTop: "5px",
-                                borderRadius: "5px",
-                                border: "1px solid #ccc",
-                              }}
-                            />
-                          </div> */}
-                          {/* <div style={{ marginBottom: "10px" }}>
-                            <label>Weight Plan ID:</label>
-                            <input
-                              type="number"
-                              name="weightPlanId"
-                              value={formData3.weightPlanId}
-                              onChange={handleChange3}
-                              style={{
-                                width: "100%",
-                                padding: "8px",
-                                marginTop: "5px",
-                                borderRadius: "5px",
-                                border: "1px solid #ccc",
-                              }}
-                            />
-                          </div> */}
-                          <div style={{ marginBottom: "10px" }}>
-                            <label>Protein Intake (grams):</label>
-                            <input
-                              type="number"
-                              name="proteinIntake"
-                              step="0.01"
-                              value={formData3.proteinIntake}
-                              onChange={handleChange3}
-                              style={{
-                                width: "100%",
-                                padding: "8px",
-                                marginTop: "5px",
-                                borderRadius: "5px",
-                                border: "1px solid #ccc",
-                              }}
-                            />
+                        </CardContent>
+                      </Card>
+
+                      <h4 style={styles2.sectionTitle}>Weight Plan</h4>
+
+                      {weightPlan ? (
+                        <>
+
+                          <div style={styles2.section}>
+
+
+                            <>
+
+                              <p>
+                                <strong>Start Weight:</strong> {weightPlan.startWeight} kg
+                              </p>
+                              <p>
+                                <strong>Target Weight:</strong> {weightPlan.targetWeight} kg
+                              </p>
+                              <p>
+                                <strong>Preference:</strong> {weightPlan.preference}
+                              </p>
+                              <p>
+                                <strong>Daily Calorie Goal:</strong> {weightPlan.dailyCalorieGoal} kcal
+                              </p>
+                            </>
+
                           </div>
-                          <div style={{ marginBottom: "10px" }}>
-                            <label>Carbohydrate Intake (grams):</label>
-                            <input
-                              type="number"
-                              name="carbohydrateIntake"
-                              step="0.01"
-                              value={formData3.carbohydrateIntake}
-                              onChange={handleChange3}
-                              style={{
-                                width: "100%",
-                                padding: "8px",
-                                marginTop: "5px",
-                                borderRadius: "5px",
-                                border: "1px solid #ccc",
-                              }}
-                            />
-                          </div>
-                          <div style={{ marginBottom: "10px" }}>
-                            <label>Fat Intake (grams):</label>
-                            <input
-                              type="number"
-                              name="fatIntake"
-                              step="0.01"
-                              value={formData3.fatIntake}
-                              onChange={handleChange3}
-                              style={{
-                                width: "100%",
-                                padding: "8px",
-                                marginTop: "5px",
-                                borderRadius: "5px",
-                                border: "1px solid #ccc",
-                              }}
-                            />
-                          </div>
-                          <div style={{ marginBottom: "10px" }}>
-                            <label>Fibre Intake (grams):</label>
-                            <input
-                              type="number"
-                              name="fibreIntake"
-                              step="0.01"
-                              value={formData3.fibreIntake}
-                              onChange={handleChange3}
-                              style={{
-                                width: "100%",
-                                padding: "8px",
-                                marginTop: "5px",
-                                borderRadius: "5px",
-                                border: "1px solid #ccc",
-                              }}
-                            />
-                          </div>
-                          <div style={{ marginBottom: "10px" }}>
-                            <label>Water Intake (Litre):</label>
-                            <input
-                              type="number"
-                              name="waterIntake"
-                              step="0.01"
-                              value={formData3.waterIntake}
-                              onChange={handleChange3}
-                              style={{
-                                width: "100%",
-                                padding: "8px",
-                                marginTop: "5px",
-                                borderRadius: "5px",
-                                border: "1px solid #ccc",
-                              }}
-                            />
-                          </div>
-                          <div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
+                          <button
+                            onClick={() => setView2()}
+                            style={{
+                              padding: "10px 20px",
+                              backgroundColor: "#007BFF",
+                              color: "#fff",
+                              border: "none",
+                              borderRadius: "4px",
+                              cursor: "pointer",
+                            }}
+                          >
+                            Update Weight Plan
+                          </button>
+
+                          <h4 style={styles2.sectionTitle}>Diet Plan</h4>
+                          <div>
+                            {/* Button to open the modal */}
                             <button
-                              type="submit"
+                              onClick={() => setIsVisible(true)}
                               style={{
                                 padding: "10px 20px",
                                 backgroundColor: "#4CAF50",
                                 color: "white",
                                 border: "none",
                                 borderRadius: "5px",
-                                width:'170px',
                                 cursor: "pointer",
                               }}
                             >
-                              Submit
+                              Create Diet Plan
                             </button>
+
+                            {/* Modal  */}
+                            {isVisible && (
+                              <div
+                                style={{
+                                  position: "fixed",
+                                  top: "50%",
+                                  left: "50%",
+
+
+                                  transform: "translate(-50%, -50%)",
+                                  zIndex: 1000,
+                                  backgroundColor: "#fff",
+                                  padding: "20px",
+                                  borderRadius: "8px",
+                                  boxShadow: "0 4px 10px rgba(0, 0, 0, 0.3)",
+                                  width: "400px",
+                                  color: 'black',
+
+                                }}
+                              >
+                                <h2 style={{ marginBottom: "20px", color: "#333" }}>Create Daily Diet Plan</h2>
+                                <form
+                                  onSubmit={(e) => {
+                                    e.preventDefault();
+                                    handleSubmit3(currentAthleteProfile.athleteId);
+                                  }}
+                                >
+                                  <div style={{ marginBottom: "10px" }}>
+                                    <label>Calories:</label>
+                                    <input
+                                      type="number"
+                                      name="calories"
+                                      step="0.01"
+                                      value={formData3.calories}
+                                      onChange={handleChange3}
+                                      style={{
+                                        width: "100%",
+                                        padding: "8px",
+                                        marginTop: "5px",
+                                        borderRadius: "5px",
+                                        border: "1px solid #ccc",
+                                      }}
+                                    />
+                                  </div>
+                                  <div style={{ marginBottom: "10px" }}>
+                                    <label>Protein Intake (grams):</label>
+                                    <input
+                                      type="number"
+                                      name="proteinIntake"
+                                      step="0.01"
+                                      value={formData3.proteinIntake}
+                                      onChange={handleChange3}
+                                      style={{
+                                        width: "100%",
+                                        padding: "8px",
+                                        marginTop: "5px",
+                                        borderRadius: "5px",
+                                        border: "1px solid #ccc",
+                                      }}
+                                    />
+                                  </div>
+                                  <div style={{ marginBottom: "10px" }}>
+                                    <label>Carbohydrate Intake (grams):</label>
+                                    <input
+                                      type="number"
+                                      name="carbohydrateIntake"
+                                      step="0.01"
+                                      value={formData3.carbohydrateIntake}
+                                      onChange={handleChange3}
+                                      style={{
+                                        width: "100%",
+                                        padding: "8px",
+                                        marginTop: "5px",
+                                        borderRadius: "5px",
+                                        border: "1px solid #ccc",
+                                      }}
+                                    />
+                                  </div>
+                                  <div style={{ marginBottom: "10px" }}>
+                                    <label>Fat Intake (grams):</label>
+                                    <input
+                                      type="number"
+                                      name="fatIntake"
+                                      step="0.01"
+                                      value={formData3.fatIntake}
+                                      onChange={handleChange3}
+                                      style={{
+                                        width: "100%",
+                                        padding: "8px",
+                                        marginTop: "5px",
+                                        borderRadius: "5px",
+                                        border: "1px solid #ccc",
+                                      }}
+                                    />
+                                  </div>
+                                  <div style={{ marginBottom: "10px" }}>
+                                    <label>Fibre Intake (grams):</label>
+                                    <input
+                                      type="number"
+                                      name="fibreIntake"
+                                      step="0.01"
+                                      value={formData3.fibreIntake}
+                                      onChange={handleChange3}
+                                      style={{
+                                        width: "100%",
+                                        padding: "8px",
+                                        marginTop: "5px",
+                                        borderRadius: "5px",
+                                        border: "1px solid #ccc",
+                                      }}
+                                    />
+                                  </div>
+                                  <div style={{ marginBottom: "10px" }}>
+                                    <label>Water Intake (Litre):</label>
+                                    <input
+                                      type="number"
+                                      name="waterIntake"
+                                      step="0.01"
+                                      value={formData3.waterIntake}
+                                      onChange={handleChange3}
+                                      style={{
+                                        width: "100%",
+                                        padding: "8px",
+                                        marginTop: "5px",
+                                        borderRadius: "5px",
+                                        border: "1px solid #ccc",
+                                      }}
+                                    />
+                                  </div>
+                                  <div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
+                                    <button
+                                      type="submit"
+                                      style={{
+                                        padding: "10px 20px",
+                                        backgroundColor: "#4CAF50",
+                                        color: "white",
+                                        border: "none",
+                                        borderRadius: "5px",
+                                        width: '170px',
+                                        cursor: "pointer",
+                                      }}
+                                    >
+                                      Submit
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => setIsVisible(false)}
+                                      style={{
+                                        padding: "10px 20px",
+                                        backgroundColor: "#f44336",
+                                        color: "white",
+                                        border: "none",
+                                        borderRadius: "5px",
+                                        cursor: "pointer",
+                                        width: '170px',
+                                      }}
+                                    >
+                                      Cancel
+                                    </button>
+                                  </div>
+                                </form>
+                              </div>
+                            )}
+
+                            {/* Background overlay */}
+                            {isVisible && (
+                              <div
+                                onClick={() => setIsVisible(false)}
+                                style={{
+                                  position: "fixed",
+                                  top: 0,
+                                  left: 0,
+                                  width: "100%",
+                                  height: "100%",
+                                  backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                  zIndex: 999,
+                                }}
+                              ></div>
+                            )}
+                          </div>
+
+
+
+                        </>
+                      ) : (
+                        <>
+                          <p style={styles2.emptyText}>No weight plan available</p>
+                          <button
+                            onClick={() => setView3()}
+                            style={{
+                              padding: "10px 20px",
+                              backgroundColor: "#007BFF",
+                              color: "#fff",
+                              border: "none",
+                              borderRadius: "4px",
+                              cursor: "pointer",
+                            }}
+                          >
+                            Create Weight Plan
+                          </button>
+                        </>
+                      )}
+
+
+                      {weightPlan && coachDietPlan && (
+                        <>
+                          <div style={{ ...styles2.section1, display: 'flex', flexDirection: 'row', gap: '20px', flexWrap: 'nowrap', overflowX: 'auto' }}>
+                            {coachDietPlan?.length > 0 ? (
+                              coachDietPlan.map((diet, index) => (
+                                <div key={index} style={styles2.dietItem}>
+                                  <p>
+                                    <strong>Date:</strong> {new Date(diet.date).toLocaleDateString()}
+                                  </p>
+                                  <p>
+                                    <strong>Calories:</strong> {diet.calories} kcal
+                                  </p>
+                                  <p>
+                                    <strong>Current Weight:</strong> {diet.currentWeight} kg
+                                  </p>
+                                  <p>
+                                    <strong>Protein Intake:</strong> {diet.protein} grams
+                                  </p>
+                                  <p>
+                                    <strong>Carbohydrate Intake:</strong> {diet.carbohydrate} grams
+                                  </p>
+                                  <p>
+                                    <strong>Fat Intake:</strong> {diet.fat} grams
+                                  </p>
+                                  <p>
+                                    <strong>Fibre Intake:</strong> {diet.fibre} grams
+                                  </p>
+                                  <p>
+                                    <strong>Water Intake:</strong> {diet.water} Litre
+                                  </p>
+                                </div>
+                              ))
+                            ) : (
+                              <p style={styles2.emptyText}>No diet plan available</p>
+                            )}
+                          </div>
+                        </>
+                      )}
+
+
+                      {eventResults && (
+                        <div style={dashboardStyles}>
+                          <div style={cardStyles}>
+                            <h2 style={{ textAlign: "center", marginBottom: "20px", color: "#333", fontSize: "24px" }}>All Event Results</h2>
+                            {error ? (
+                              <div style={errorStyles}>{error}</div>
+                            ) : (
+                              <table style={tableStyles}>
+                                <thead>
+                                  <tr style={headerRowStyles}>
+                                    <th>Event Name</th>
+                                    <th>Meet Name</th>
+                                    <th>Date</th>
+                                    <th>Score</th>
+                                    <th>Comment</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {eventResults.map((result, index) => (
+                                    <tr key={index} style={rowStyles}>
+                                      <td style={{ color: 'black' }}>{result.eventName}</td>
+                                      <td style={{ color: 'black' }}>{result.meetName}</td>
+                                      <td style={{ color: 'black' }}>{result.eventDate ?
+                                        (() => {
+                                          const date = new Date(result.eventDate);
+                                          return date.toISOString().split('T')[0]; // Format to YYYY-MM-DD
+                                        })()
+                                        : 'N/A'}</td>
+                                      <td style={{ color: 'black' }}>{result.score}</td>
+                                      <td style={{ color: 'black' }}>{result.comment}</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            )}
+                            {hasMore && !error && (
+                              <button onClick={loadMore} style={buttonStyles}>
+                                Load More
+                              </button>
+                            )}
+                            {!hasMore && !error && (
+                              <p style={noMoreStyles}>No more results to display.</p>
+                            )}
+                          </div>
+                          {/* Existing elements below */}
+                          <div>
+                            {/* Add other admin dashboard components here */}
+                          </div>
+                        </div>
+
+
+                      )}
+
+                      <div>
+
+
+                        {showModal2 && (
+                          <div
+                            style={{
+                              position: "fixed",
+                              top: "50%",
+                              left: "50%",
+                              transform: "translate(-50%, -50%)",
+                              zIndex: "1000",
+                              backgroundColor: "#fff",
+                              padding: "20px",
+                              borderRadius: "8px",
+                              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+                              width: "400px",
+                              color:'black',
+                            }}
+                          >
+                            <h2 style={{ marginBottom: "20px", textAlign: "center" ,fontFamily:'cursive',fontSize:'26px'
+                            }}>
+                              Weight Plan
+                            </h2>
+                            <form onSubmit={(e) => handleSubmit(e, currentAthleteProfile.athleteId)}>
+                              <div style={{ marginBottom: "15px" }}>
+                                <label style={{ display: "block", marginBottom: "5px" }}>
+                                  Start Weight
+                                </label>
+                                <input
+                                  type="number"
+                                  name="startWeight"
+                                  value={formData2.startWeight}
+                                  onChange={handleInputChange2}
+                                  required
+                                  style={{
+                                    width: "100%",
+                                    padding: "10px",
+                                    borderRadius: "4px",
+                                    border: "1px solid #ccc",
+                                  }}
+                                />
+                              </div>
+                              <div style={{ marginBottom: "15px" }}>
+                                <label style={{ display: "block", marginBottom: "5px" }}>
+                                  Target Weight
+                                </label>
+                                <input
+                                  type="number"
+                                  name="targetWeight"
+                                  value={formData2.targetWeight}
+                                  onChange={handleInputChange2}
+                                  required
+                                  style={{
+                                    width: "100%",
+                                    padding: "10px",
+                                    borderRadius: "4px",
+                                    border: "1px solid #ccc",
+                                  }}
+                                />
+                              </div>
+                              <div style={{ marginBottom: "15px" }}>
+                                <label style={{ display: "block", marginBottom: "5px" }}>
+                                  Preference
+                                </label>
+                                <input
+                                  type="text"
+                                  name="preference"
+                                  value={formData2.preference}
+                                  onChange={handleInputChange2}
+                                  required
+                                  style={{
+                                    width: "100%",
+                                    padding: "10px",
+                                    borderRadius: "4px",
+                                    border: "1px solid #ccc",
+                                  }}
+                                />
+                              </div>
+                              <div style={{ marginBottom: "15px" }}>
+                                <label style={{ display: "block", marginBottom: "5px" }}>
+                                  Daily Calorie Goal
+                                </label>
+                                <input
+                                  type="number"
+                                  name="dailyCalorieGoal"
+                                  value={formData2.dailyCalorieGoal}
+                                  onChange={handleInputChange2}
+                                  required
+                                  style={{
+                                    width: "100%",
+                                    padding: "10px",
+                                    borderRadius: "4px",
+                                    border: "1px solid #ccc",
+                                  }}
+                                />
+                              </div>
+                              <button
+                                type="submit"
+                                style={{
+                                  padding: "10px 20px",
+                                  backgroundColor: "#28A745",
+                                  color: "#fff",
+                                  border: "none",
+                                  borderRadius: "4px",
+                                  cursor: "pointer",
+                                  width: "100%",
+                                }}
+                              >
+                                Submit
+                              </button>
+                            </form>
                             <button
-                              type="button"
-                              onClick={() => setIsVisible(false)}
+                              onClick={() => setShowModal2(false)}
                               style={{
                                 padding: "10px 20px",
-                                backgroundColor: "#f44336",
-                                color: "white",
+                                backgroundColor: "#DC3545",
+                                color: "#fff",
                                 border: "none",
-                                borderRadius: "5px",
+                                borderRadius: "4px",
                                 cursor: "pointer",
-                                width:'170px',
+                                marginTop: "10px",
+                                width: "100%",
                               }}
                             >
-                              Cancel
+                              Close
                             </button>
                           </div>
-                        </form>
-                      </div>
-                    )}
+                        )}
 
-                    {/* Background overlay */}
-                    {isVisible && (
-                      <div
-                        onClick={() => setIsVisible(false)}
-                        style={{
-                          position: "fixed",
-                          top: 0,
-                          left: 0,
-                          width: "100%",
-                          height: "100%",
-                          backgroundColor: "rgba(0, 0, 0, 0.5)",
-                          zIndex: 999,
-                        }}
-                      ></div>
-                    )}
-                  </div>
-
-
-
-                    </>
-                  ) : (
-                    <>
-                      <p style={styles2.emptyText}>No weight plan available</p>
-                      <button
-                        onClick={() => setView3()}
-                        style={{
-                          padding: "10px 20px",
-                          backgroundColor: "#007BFF",
-                          color: "#fff",
-                          border: "none",
-                          borderRadius: "4px",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Create Weight Plan
-                      </button>
-                    </>
-                  )}
-
-               
-
-                  {weightPlan && coachDietPlan && (
-                    <>
-
-                      {/* Diet Plan Section */}
-                      <div style={styles2.section}>
-
-                        {coachDietPlan?.length > 0 ? (
-                          <ul style={styles2.dietList}>
-                            {coachDietPlan.map((diet, index) => (
-                              <li key={index} style={styles2.dietItem}>
-                                <p>
-                                  <strong>Date:</strong> {new Date(diet.date).toLocaleDateString()}
-                                </p>
-                                <p>
-                                  <strong>Calories:</strong> {diet.calories} kcal
-                                </p>
-                                {/* <p>
-                                  <strong>Current Weight:</strong> {diet.currentWeight} kg
-                                </p> */}
-                                <p>
-                                  <strong>Protein Intake:</strong> {diet.protein} grams
-                                </p>
-                                <p>
-                                  <strong>Carbohydrate Intake:</strong> {diet.carbohydrate} grams
-                                </p>
-                                <p>
-                                  <strong>Fat Intake:</strong> {diet.fat} grams
-                                </p>
-                                <p>
-                                  <strong>Fibre Intake:</strong> {diet.fibre} grams
-                                </p>
-                                <p>
-                                  <strong>Water Intake:</strong> {diet.water} Litre
-                                </p>
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p style={styles2.emptyText}>No diet plan available</p>
+                        {showModal2 && (
+                          <div
+                            onClick={() => setShowModal2(false)}
+                            style={{
+                              position: "fixed",
+                              top: "0",
+                              left: "0",
+                              width: "100%",
+                              height: "100%",
+                              backgroundColor: "rgba(0, 0, 0, 0.5)",
+                              zIndex: "999",
+                            }}
+                          ></div>
                         )}
                       </div>
 
 
 
-                    </>
+
+                    </div>
 
 
-                  )}
-
-                  <div>
-
-
-                    {showModal2 && (
-                      <div
-                        style={{
-                          position: "fixed",
-                          top: "50%",
-                          left: "50%",
-                          transform: "translate(-50%, -50%)",
-                          zIndex: "1000",
-                          backgroundColor: "#fff",
-                          padding: "20px",
-                          borderRadius: "8px",
-                          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
-                          width: "400px",
-                        }}
-                      >
-                        <h2 style={{ marginBottom: "20px", textAlign: "center" }}>
-                          Weight Plan
-                        </h2>
-                        <form onSubmit={() => handleSubmit(currentAthleteProfile.athleteId)}>
-                          <div style={{ marginBottom: "15px" }}>
-                            <label style={{ display: "block", marginBottom: "5px" }}>
-                              Start Weight
-                            </label>
-                            <input
-                              type="number"
-                              name="startWeight"
-                              value={formData2.startWeight}
-                              onChange={handleInputChange2}
-                              required
-                              style={{
-                                width: "100%",
-                                padding: "10px",
-                                borderRadius: "4px",
-                                border: "1px solid #ccc",
-                              }}
-                            />
-                          </div>
-                          <div style={{ marginBottom: "15px" }}>
-                            <label style={{ display: "block", marginBottom: "5px" }}>
-                              Target Weight
-                            </label>
-                            <input
-                              type="number"
-                              name="targetWeight"
-                              value={formData2.targetWeight}
-                              onChange={handleInputChange2}
-                              required
-                              style={{
-                                width: "100%",
-                                padding: "10px",
-                                borderRadius: "4px",
-                                border: "1px solid #ccc",
-                              }}
-                            />
-                          </div>
-                          <div style={{ marginBottom: "15px" }}>
-                            <label style={{ display: "block", marginBottom: "5px" }}>
-                              Preference
-                            </label>
-                            <input
-                              type="text"
-                              name="preference"
-                              value={formData2.preference}
-                              onChange={handleInputChange2}
-                              required
-                              style={{
-                                width: "100%",
-                                padding: "10px",
-                                borderRadius: "4px",
-                                border: "1px solid #ccc",
-                              }}
-                            />
-                          </div>
-                          <div style={{ marginBottom: "15px" }}>
-                            <label style={{ display: "block", marginBottom: "5px" }}>
-                              Daily Calorie Goal
-                            </label>
-                            <input
-                              type="number"
-                              name="dailyCalorieGoal"
-                              value={formData2.dailyCalorieGoal}
-                              onChange={handleInputChange2}
-                              required
-                              style={{
-                                width: "100%",
-                                padding: "10px",
-                                borderRadius: "4px",
-                                border: "1px solid #ccc",
-                              }}
-                            />
-                          </div>
-                          <button
-                            type="submit"
-                            style={{
-                              padding: "10px 20px",
-                              backgroundColor: "#28A745",
-                              color: "#fff",
-                              border: "none",
-                              borderRadius: "4px",
-                              cursor: "pointer",
-                              width: "100%",
-                            }}
-                          >
-                            Submit
-                          </button>
-                        </form>
-                        <button
-                          onClick={() => setShowModal2(false)}
-                          style={{
-                            padding: "10px 20px",
-                            backgroundColor: "#DC3545",
-                            color: "#fff",
-                            border: "none",
-                            borderRadius: "4px",
-                            cursor: "pointer",
-                            marginTop: "10px",
-                            width: "100%",
-                          }}
-                        >
-                          Close
-                        </button>
-                      </div>
-                    )}
-
-                    {showModal2 && (
-                      <div
-                        onClick={() => setShowModal2(false)}
-                        style={{
-                          position: "fixed",
-                          top: "0",
-                          left: "0",
-                          width: "100%",
-                          height: "100%",
-                          backgroundColor: "rgba(0, 0, 0, 0.5)",
-                          zIndex: "999",
-                        }}
-                      ></div>
-                    )}
-                  </div>
-
-
-
-
-                </div>
-              
-              
-              </DialogContent>
-              </Dialog>)}
+                  </DialogContent>
+                </Dialog>
+              )}
             </div>
 
 
@@ -4295,15 +2064,19 @@ export default CoachDashboard;
 
 const styles2 = {
   container: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    display: 'flex', // Enables flexbox
+    justifyContent: 'flex-start', // Aligns cards to the right
+    gap: '20px', // Adds spacing between cards
+    //alignItems: 'flex-start',
     padding: '20px',
-    backgroundColor: '#f4f4f4',
+    //backgroundColor: '#f4f4f4',
+
+    backgroundColor: 'red',
+
   },
   coachCard: {
     width: '100%',
-    maxWidth: '800px',
+    width: '800px',
     backgroundColor: '#fff',
     borderRadius: '10px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
@@ -4329,9 +2102,16 @@ const styles2 = {
     color: '#666',
     margin: '5px 0',
   },
+  section1: {
+    marginTop: '20px',
+    textAlign: 'left',
+    width: '800px',
+
+  },
   section: {
     marginTop: '20px',
     textAlign: 'left',
+
   },
   sectionTitle: {
     fontSize: '20px',
@@ -4365,13 +2145,23 @@ const styles2 = {
   dietList: {
     listStyleType: 'none',
     padding: '0',
+    margin: '0',
   },
   dietItem: {
     backgroundColor: '#f9f9f9',
     border: '1px solid #ddd',
     borderRadius: '5px',
     padding: '10px',
-    marginBottom: '10px',
+    color: 'black',
+    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+    minWidth: '250px', // Ensures a fixed width for each card
+    maxWidth: '300px',
+    flexShrink: 0, // Prevents items from shrinking when space is limited
+  },
+  emptyText: {
+    fontSize: '14px',
+    color: '#999',
+    fontStyle: 'italic',
   },
 };
 
@@ -4455,3 +2245,49 @@ const fadeInKeyframes = `@keyframes fadeIn {
   100% { opacity: 1; }
 }`;
 document.styleSheets[0].insertRule(fadeInKeyframes, 0);
+const dashboardStyles = {
+  padding: "20px",
+  //backgroundColor: "#f0f4f8",
+};
+
+const cardStyles = {
+  padding: "20px",
+  border: "1px solid #ccc",
+  borderRadius: "8px",
+  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+  marginBottom: "20px",
+  backgroundColor: "#fff",
+};
+
+const headerStyles = {
+  textAlign: "center",
+  marginBottom: "20px",
+  color: "#333",
+};
+
+const tableStyles = {
+  width: "100%",
+  borderCollapse: "collapse",
+  marginBottom: "20px",
+};
+
+const headerRowStyles = {
+  backgroundColor: "#007BFF",
+  color: "white",
+  textAlign: "left",
+};
+
+const rowStyles = {
+  borderBottom: "1px solid #ccc",
+};
+
+const noMoreStyles = {
+  textAlign: "center",
+  color: "#777",
+};
+
+const errorStyles = {
+  textAlign: "center",
+  color: "red",
+  fontWeight: "bold",
+};

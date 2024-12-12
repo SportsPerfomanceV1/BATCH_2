@@ -62,15 +62,15 @@ public class CoachService {
         return dto;
     }
     public CoachDTO updateCoachProfileByUsername(CoachDTO coachDTO) throws IOException {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = userDetails.getUsername();
+//        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = getLoggedInUsername();
         Coach coach = coachRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Coach not found with username: " + username));
         coach.setFirstName(coachDTO.getFirstName());
         coach.setLastName(coachDTO.getLastName());
 
-        coach.setUsername(coachDTO.getUsername());
-        coach.setEmail(coachDTO.getEmail());
+//        coach.setUsername(coachDTO.getUsername());
+//        coach.setEmail(coachDTO.getEmail());
         coach.setExpertise(coachDTO.getExpertise());
         if (coachDTO.getImageFile() != null && !coachDTO.getImageFile().isEmpty()) {
             coach.setImage(coachDTO.getImageFile().getBytes());
